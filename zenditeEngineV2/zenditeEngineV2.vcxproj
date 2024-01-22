@@ -164,6 +164,8 @@
     <ClInclude Include="src\Helper\Texture.h" />
     <ClInclude Include="src\menu.h" />
     <ClInclude Include="src\Object.h" />
+    <ClInclude Include="src\RT\color.h" />
+    <ClInclude Include="src\RT\vec3.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\Texture2D.h" />
     <ClInclude Include="src\utils.h" />
