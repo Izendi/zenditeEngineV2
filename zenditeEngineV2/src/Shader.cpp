@@ -21,9 +21,6 @@ unsigned int Shader::getShaderHandle() const
 	return shaderProgHandle;
 }
 
-
-
-
 void Shader::readShaderCodeFromFile(const char* vs_path, const char* fs_path)
 {
 

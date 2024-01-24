@@ -85,8 +85,6 @@ void Texture2D::setupHeightMapTexturePNG(unsigned int unit, const char* texfilep
 		ASSERT(false);
 	}
 
-
-
 }
 
 void Texture2D::setupTexture(const char* texfilepath)

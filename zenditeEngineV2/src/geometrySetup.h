@@ -9,7 +9,17 @@ void GenerateCubeNoEBO(unsigned int& VAO_Cube, unsigned int& VBO_Cube);
 
 void GenerateCubeNoEBONoNormals(unsigned int& VAO_Cube, unsigned int& VBO_Cube);
 
-void GenerateHeightmapPlane(unsigned int& VAO_HeightPlane, unsigned int& VBO_HeightPlane);
+void GenerateHeightmapPlane(unsigned int& heightMapVAO, 
+	unsigned int& heightMapVBO, 
+	unsigned int& heightMapEBO, 
+	std::vector<Vert>& hmVerts,
+	std::vector<unsigned int>& hmIndices,
+	std::vector<Face>& hmFaces,
+	int hmWidth,
+	int hmHeight,
+	int hmNrChannels,
+	unsigned char* hmTexData
+	);
 
 void bindVao(unsigned int VAO);
 

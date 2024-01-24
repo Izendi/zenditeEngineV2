@@ -16,83 +16,10 @@
 
 namespace fs = std::filesystem;
 
-struct Vert
-{
-	//Position
-	glm::vec3 pos;
-
-	glm::vec3 norm;
-
-	//TexCoords
-	glm::vec2 texCord;
-
-};
-
-struct Face
-{
-	unsigned int in_1;
-	unsigned int in_2;
-	unsigned int in_3;
-
-	glm::vec3 faceNormal;
-};
-
-struct Material
-{
-	glm::vec3 ambientColor;
-	glm::vec3 diffuseColor;
-	glm::vec3 specularColor;
-	float shininess; //AKA: specularStrength
-};
-
-struct PointLight
-{
-	glm::vec3 position;
-
-	glm::vec3 ambient;
-	glm::vec3 diffuse;
-	glm::vec3 specular;
-
-	float constant;
-	float linear;
-	float quadratic;
-};
-
-struct Light
-{
-	glm::vec3 ambient;
-	glm::vec3 diffuse;
-	glm::vec3 specular;
-};
-
-struct DirLight
-{
-	glm::vec3 direction;
-
-	glm::vec3 ambient;
-	glm::vec3 diffuse;
-	glm::vec3 specular;
-};
-
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
-
-glm::vec3 calcVertNormal(std::vector<Face> faces)
-{
-	glm::vec3 vertNormal(0.0f, 0.0f, 0.0f);
-
-	for(unsigned int i = 0; i < faces.size(); i++)
-	{
-		vertNormal = vertNormal + faces[0].faceNormal;
-	}
-
-	glm::normalize(vertNormal);
-
-	return vertNormal;
-
-}
 
 // settings
 const unsigned int SCR_WIDTH = 1200;
@@ -141,7 +68,7 @@ int main(void)
 
 	stbi_set_flip_vertically_on_load(true); //#### THIS NEEDS TO BE ACTIVE ### or else image texture will be upside down.
 
-	std::cout << "Current working directory: " << fs::current_path() << std::endl;
+	//std::cout << "Current working directory: " << fs::current_path() << std::endl;
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -157,7 +84,7 @@ int main(void)
 	light.diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
 	light.specular = glm::vec3(1.0f, 1.0f, 1.0f);
 
-	std::cout <<glGetString(GL_VERSION) << "\n";
+	std::cout << glGetString(GL_VERSION) << "\n";
 
 	Shader shader_LightSource("res/shaders/LightingShaders/vs_LightSource.glsl",
 		"res/shaders/LightingShaders/fs_LightSource.glsl");
@@ -167,6 +94,7 @@ int main(void)
 
 	Shader sh_modelLoading("res/shaders/modelLoading/vs_model_loading.glsl",
 		"res/shaders/modelLoading/fs_model_loading.glsl");
+
 
 	//HeightMap SetUp
 	// ----------------------------------
@@ -179,7 +107,6 @@ int main(void)
 	int hmHeight;
 	int hmNrChannels;
 
-	//"C:/Code/Chalmers/myGraphicsCode/zenditeEngineV2/zenditeEngineV2/res/textures/mt_fuji.png"
 	unsigned char* hmTexData = stbi_load("res/textures/heightmap.png", &hmWidth, &hmHeight, &hmNrChannels, 0);
 
 	if (!hmTexData)
@@ -199,223 +126,22 @@ int main(void)
 
 	//Load in vertex data to the heightMapVBO Data (using the hmTexData for the y axis Data):
 
-	float yScale = 64.0f / 256.0f; 
-	float yShift = 16.0f;
-
-	float x_texPoint = 1.0f / (hmWidth/6);
-	float y_texPoint = 1.0f / (hmHeight/6);
-
-	for(unsigned int z = 0; z < hmHeight; z++)
-	{
-		for(unsigned int x = 0; x < hmWidth; x++)
-		{
-			Vert vert;
-			unsigned char* texel = hmTexData + (x + hmWidth * z) * hmNrChannels;
-			unsigned char y = texel[0];
-
-			glm::vec3 vec;
-			vec.x = x;
-			vec.y = (int)y * yScale - yShift;
-			vec.z = z;
-
-			vert.pos = vec;
-
-			glm::vec2 texCoord;
-			texCoord.x = x * x_texPoint;
-			texCoord.y = z * y_texPoint;
-
-			vert.texCord = texCoord;
-
-			hmVerts.push_back(vert);
-		}
-	}
-
-	//Fill Height map indices data and hm face data:
-	for(unsigned int i = 0; i < (hmHeight-1); i++)
-	{
-		for(unsigned int ii = 0; ii < (hmWidth-1)*6; ii = ii + 6)
-		{
-			unsigned int val = 0;
-			Face face1;
-			Face face2;
-
-			val = i * hmWidth + ii / 6;
-			hmIndices.push_back(val);
-			face1.in_1 = val;
-
-			val = (i + 1) * hmWidth + ii / 6;
-			hmIndices.push_back(val);
-			face1.in_2 = val;
-
-			val = ((i + 1) * hmWidth + ii / 6) + 1;
-			hmIndices.push_back(val);
-			face1.in_3 = val;
-
-			glm::vec3 AB = hmVerts[face1.in_2].pos - hmVerts[face1.in_1].pos;
-			glm::vec3 AC = hmVerts[face1.in_3].pos - hmVerts[face1.in_1].pos;
-
-			face1.faceNormal = glm::normalize(glm::cross(AB, AC));
-			
-
-			val = i * hmWidth + ii / 6;
-			hmIndices.push_back(val);
-			face2.in_1 = val;
-
-			val = ((i + 1) * hmWidth + ii / 6) + 1;
-			hmIndices.push_back(val);
-			face2.in_2 = val;
-
-			val = (i * hmWidth + ii / 6) + 1;
-			hmIndices.push_back(val);
-			face2.in_3 = val;
-
-			AB = hmVerts[face2.in_2].pos - hmVerts[face2.in_1].pos;
-			AC = hmVerts[face2.in_3].pos - hmVerts[face2.in_1].pos;
-
-			face2.faceNormal = glm::normalize(glm::cross(AB, AC));
-
-			hmFaces.push_back(face1);
-			hmFaces.push_back(face2);
-		}
-	}
-
-	//Iterate though all hmVerts and calculate the normal from the faces:
-
-	//First row and last row are special cases, as such they shall be handled separately
-
-	//First element (of first row - special case)
-	std::vector<Face> fb;
-	fb.push_back(hmFaces[0]);
-	fb.push_back(hmFaces[1]);
-
-	hmVerts[0].norm = calcVertNormal(fb);
-
-	fb.clear();
-
-	for(unsigned int i = 1; i < hmWidth - 1; i++)
-	{
-		fb.clear();
-
-		fb.push_back(hmFaces[(i * 2) + 1]);
-		fb.push_back(hmFaces[(i * 2) + 2]);
-		fb.push_back(hmFaces[(i * 2) + 3]);
-
-		hmVerts[i].norm = calcVertNormal(fb);
-	}
-
-	//last element of first row (special case)
-	fb.clear();
-
-	fb.push_back(hmFaces[hmWidth - 1]);
-
-	hmVerts[hmWidth - 1].norm = calcVertNormal(fb);
-
-	fb.clear();
-
-	unsigned int facesPerRow = (hmWidth * 2) - 2;
-
-	for (unsigned int i = 1; i < hmHeight - 1; i++)
-	{
-		//Handle first and last elements of each row here
-		fb.clear();
-
-		fb.push_back(hmFaces[(i - 1) * facesPerRow]);
-		fb.push_back(hmFaces[(i) * facesPerRow]);
-		fb.push_back(hmFaces[(i*facesPerRow) + 1]);
-
-		hmVerts[i * hmWidth].norm = calcVertNormal(fb);
-
-		fb.clear();
-
-		for (unsigned int ii = 1; ii < hmWidth - 1; ii++)
-		{
-			fb.clear();
-
-			fb.push_back(hmFaces[((ii - 1) * 2) + ((i - 1) * facesPerRow)]); //0
-			fb.push_back(hmFaces[((ii - 1) * 2) + ((i - 1) * facesPerRow) + 1]); //1
-			fb.push_back(hmFaces[((ii - 1) * 2) + ((i - 1) * facesPerRow) + 2]); //2
-
-			fb.push_back(hmFaces[((ii - 1) * 2) + ((i) * facesPerRow) + 1]);
-			fb.push_back(hmFaces[((ii - 1) * 2) + ((i) * facesPerRow) + 2]);
-			fb.push_back(hmFaces[((ii - 1) * 2) + ((i) * facesPerRow) + 3]);
-
-			hmVerts[(i * hmWidth) + ii].norm = calcVertNormal(fb);
-
-		}
-
-		fb.clear();
-
-		fb.push_back(hmFaces[((i) * facesPerRow) - 1]);
-		fb.push_back(hmFaces[((i) * facesPerRow) - 2]);
-		fb.push_back(hmFaces[((i+1) * facesPerRow) - 1]);
-
-		hmVerts[((i+1) * hmWidth) - 1].norm = calcVertNormal(fb);
-
-		fb.clear();
-
-	}
-
-	//Last Row Elements:
-	fb.clear();
-
-	//First last town vertex:
-	fb.push_back(hmFaces[facesPerRow * (hmHeight - 2)]);
-
-	hmVerts[hmWidth * (hmHeight - 1)].norm = calcVertNormal(fb);
-
-	fb.clear();
-
-	//Each last row element
-	unsigned int k = 0;
-	for (unsigned int i = hmWidth * (hmHeight - 1) + 1; i < (hmWidth * (hmHeight)) - 2; i++)
-	{
-		fb.clear();
-
-		fb.push_back(hmFaces[facesPerRow * (hmHeight - 2) + (k * 2)]);
-		fb.push_back(hmFaces[facesPerRow * (hmHeight - 2) + (k * 2) + 1]);
-		fb.push_back(hmFaces[facesPerRow * (hmHeight - 2) + (k * 2) + 2]);
-
-		hmVerts[i].norm = calcVertNormal(fb);
-
-		k++;
-	}
-
-	//last element of first row (special case)
-	fb.clear();
-
-	fb.push_back(hmFaces[facesPerRow * (hmHeight - 2) + ((k - 1) * 2) + 2]);
-	fb.push_back(hmFaces[facesPerRow * (hmHeight - 2) + ((k-1) * 2) + 3]); //#Check this one again!!!
-
-	hmVerts[(hmWidth * (hmHeight)) - 2].norm = calcVertNormal(fb);
-
-	fb.clear();
-
-
-	GLCALL(glGenVertexArrays(1, &heightMapVAO));
-	GLCALL(glGenBuffers(1, &heightMapVBO));
-	GLCALL(glGenBuffers(1, &heightMapEBO));
-
-	GLCALL(glBindVertexArray(heightMapVAO));
-	GLCALL(glBindBuffer(GL_ARRAY_BUFFER, heightMapVBO));
-
-	GLCALL(glBindBuffer(GL_ARRAY_BUFFER, heightMapVBO));
-	GLCALL(glBufferData(GL_ARRAY_BUFFER, hmVerts.size() * sizeof(Vert), &hmVerts[0], GL_STATIC_DRAW));
-
-	GLCALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, heightMapEBO));
-	GLCALL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, hmIndices.size() * sizeof(unsigned int), &hmIndices[0], GL_STATIC_DRAW));
-
-	GLCALL(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vert), (void*)0));
-	GLCALL(glEnableVertexAttribArray(0));
-
-	GLCALL(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vert), (void*)offsetof(Vert, norm)));
-	GLCALL(glEnableVertexAttribArray(1));
-
-	GLCALL(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vert), (void*)offsetof(Vert, texCord)));
-	GLCALL(glEnableVertexAttribArray(2));
-
+	//Set up height map:
+	GenerateHeightmapPlane(heightMapVAO,
+		heightMapVBO,
+		heightMapEBO,
+		hmVerts,
+		hmIndices,
+		hmFaces,
+		hmWidth,
+		hmHeight,
+		hmNrChannels,
+		hmTexData);
+	
+	//Set height map texture
 	Texture2D hmSurfaceTex("diffuse");
 	hmSurfaceTex.setupTexturePNG(0, "res/textures/rockySurface.png");
-	
+
 	int count = 0;
 	bool rotation = false;
 	float rotationSpeed = 30.0f;
@@ -423,13 +149,9 @@ int main(void)
 	int specularIntensity = 32;
 	float angle = 1.0f;
 
-	//Texture2D hmSurfaceTex_2("diffuse");
-	//hmSurfaceTex.setupTexturePNG(1, "C:/Code/Chalmers/myGraphicsCode/zenditeEngineV2/zenditeEngineV2/res/textures/heightmap.png");
-	//Texture2D heightMapTex("diffuse");
-	//heightMapTex.setupHeightMapTexturePNG(1, "C:/Code/Chalmers/myGraphicsCode/zenditeEngineV2/zenditeEngineV2/res/textures/mt_fuji.png");
-
 	// ----------------------------------
 	//End HeightMap SetUp
+
 	
 	//Create our regular cube VAO
 	unsigned int VAO_Cube;
@@ -474,8 +196,6 @@ int main(void)
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		
-
 		if (rotation)
 		{
 			angle = angle + rotationSpeed * deltaTime;
@@ -513,7 +233,6 @@ int main(void)
 
 		GLCALL(glDrawArrays(GL_TRIANGLES, 0, 36));
 	
-
 		//HeightMapRendering:
 		sh_HeightMap.bindProgram();
 		GLCALL(glBindVertexArray(heightMapVAO));

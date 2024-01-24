@@ -1,5 +1,5 @@
 #pragma once
-
+//#NOTE: This class is unimplemented and needs to be reworked. 
 //#protype_object_class_redisgn_when_you_have_more_insight_into_what_you_want_to_automate
 
 #include "utils.h"
