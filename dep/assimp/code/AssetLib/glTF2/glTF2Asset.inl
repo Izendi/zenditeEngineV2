@@ -1392,7 +1392,7 @@ inline void PbrSpecularGlossiness::SetDefaults() {
 inline void MaterialSpecular::SetDefaults() {
     //KHR_materials_specular properties
     SetVector(specularColorFactor, defaultSpecularColorFactor);
-    specularFactor = 1.f;
+    specularFactor = 0.f;
 }
 
 inline void MaterialSheen::SetDefaults() {

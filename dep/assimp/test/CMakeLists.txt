@@ -165,7 +165,6 @@ SET( IMPORTERS
   unit/ImportExport/MDL/utMDLImporter_HL1_Nodes.cpp
   unit/ImportExport/RAW/utRAWImportExport.cpp
   unit/ImportExport/Terragen/utTerragenImportExport.cpp
-  unit/ImportExport/Pbrt/utPbrtImportExport.cpp
 )
 
 SET( MATERIAL
