@@ -94,6 +94,7 @@ void Shader::setUniformTextureUnit(std::string name, unsigned int x)
 void Shader::setUniformMat4(std::string name, GLboolean transpose, const GLfloat* mat)
 {
 	const char* n = name.c_str();
+
 	GLCALL(glUniformMatrix4fv(glGetUniformLocation(shaderProgHandle, n), 1, transpose, mat));
 }
 

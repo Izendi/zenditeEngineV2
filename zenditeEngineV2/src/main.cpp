@@ -280,7 +280,7 @@ int main(void)
 		bindVao(CubeVAO);
 		glm::mat4 cubeProjection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 		glm::mat4 cubeView = camera.GetViewMatrix();
-		sh_basicWithTex.setUniformMat4("projection", GL_FALSE, glm::value_ptr(cubeProjection));
+		//sh_basicWithTex.setUniformMat4("projection", GL_FALSE, glm::value_ptr(cubeProjection)); //#BROKEN
 		sh_basicWithTex.setUniformMat4("view", GL_FALSE, glm::value_ptr(cubeView));
 
 		glm::mat4 cubeModel = glm::mat4(1.0f);
@@ -290,7 +290,7 @@ int main(void)
 
 		cubeTex.changeTexUnit(0);
 
-		sh_basicWithTex.setUniformTextureUnit("colorTexture", 0);
+		//sh_basicWithTex.setUniformTextureUnit("colorTexture", 0); //#BROKEN
 
 		//GLCALL(glDrawArrays(GL_TRIANGLES, 0, 36));
 		
