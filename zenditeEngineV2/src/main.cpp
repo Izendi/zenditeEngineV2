@@ -41,6 +41,9 @@ bool wireframe = false;
 
 int main(void)
 {
+
+	std::cout << "Test222\n" << std::endl;
+
 	GLFWwindow* window;
 	if (!glfwInit()) {
 		return -1;
