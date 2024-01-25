@@ -41,9 +41,6 @@ bool wireframe = false;
 
 int main(void)
 {
-
-	std::cout << "Test222\n" << std::endl;
-
 	GLFWwindow* window;
 	if (!glfwInit()) {
 		return -1;
@@ -181,8 +178,8 @@ int main(void)
 	Texture2D cubeTex("diffuse");
 	cubeTex.setupTexturePNG(0, "res/textures/container2.png");
 
-	//Model ourModel("C:/Code/Chalmers/myGraphicsCode/zenditeEngineV2/zenditeEngineV2/res/models/backpack/backpack.obj", sh_modelLoading);
-
+	Model ourModel("C:/Code/Chalmers/myGraphicsCode/zenditeEngineV2/zenditeEngineV2/res/models/backpack/backpack.obj", sh_modelLoading);
+	
 	//IMGUI setup:
 	imGuiSetup(window);
 	glEnable(GL_DEPTH_TEST);
@@ -280,7 +277,7 @@ int main(void)
 		bindVao(CubeVAO);
 		glm::mat4 cubeProjection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 		glm::mat4 cubeView = camera.GetViewMatrix();
-		//sh_basicWithTex.setUniformMat4("projection", GL_FALSE, glm::value_ptr(cubeProjection)); //#BROKEN
+		sh_basicWithTex.setUniformMat4("projection", GL_FALSE, glm::value_ptr(cubeProjection));
 		sh_basicWithTex.setUniformMat4("view", GL_FALSE, glm::value_ptr(cubeView));
 
 		glm::mat4 cubeModel = glm::mat4(1.0f);
@@ -290,7 +287,7 @@ int main(void)
 
 		cubeTex.changeTexUnit(0);
 
-		//sh_basicWithTex.setUniformTextureUnit("colorTexture", 0); //#BROKEN
+		sh_basicWithTex.setUniformTextureUnit("colorTexture", 0);
 
 		//GLCALL(glDrawArrays(GL_TRIANGLES, 0, 36));
 		
@@ -303,10 +300,10 @@ int main(void)
 		sh_modelLoading.setUniformMat4("view", GL_FALSE, glm::value_ptr(view));
 
 		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 0.0f, -4.0f)); // translate it down so it's at the center of the scene
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, -8.0f)); // translate it down so it's at the center of the scene
 		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
 		sh_modelLoading.setUniformMat4("model", GL_FALSE, glm::value_ptr(model));
-		//ourModel.Draw(sh_modelLoading);
+		ourModel.Draw(sh_modelLoading);
 
 		if(wireframe)
 		{
