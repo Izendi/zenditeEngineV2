@@ -361,3 +361,14 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Add exceptions
+!dep/GLEW/lib/Release/x64/
+!dep/GLEW/lib/Release/Win32/
+!dep/GLEW/bin/Release/Win32/
+!dep/GLEW/bin/Release/x64/
+!dep/assimp/
+!dep/assimp/x64/
+!dep/assimp/lib/
+!dep/assimp/bin/
+
