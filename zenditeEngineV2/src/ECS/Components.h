@@ -4,6 +4,12 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+struct Vertex {
+	glm::vec3 Position;
+	glm::vec3 Normal;
+	//glm::vec2 TexCoords;
+};
+
 struct c_Transform
 {
 	//std::vector<glm::vec3> pos;
@@ -61,6 +67,12 @@ struct c_RenderableComponent
 	float* surfaceNormalVertices; //#HERE
 	size_t posArraySize;
 	size_t snArraySize;
+};
+
+struct c_Renderable
+{
+	std::vector<Vertex> vertices;
+	std::vector<unsigned int> indices;
 };
 
 struct c_Texture
