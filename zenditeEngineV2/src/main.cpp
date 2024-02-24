@@ -408,11 +408,19 @@ int main(void)
 	c_Transform tr_0;
 	c_Transform tr_1;
 	c_Transform tr_2;
-	tr_0.pos = glm::vec3(0.0f,0.0f,0.0f);
+	tr_0.pos.push_back(glm::vec3(0.0f,0.0f,0.0f));
 	tr_0.scale = glm::vec3(1.0f, 1.0f, 1.0f);
-	tr_1.pos = glm::vec3(-2.0f, 0.0f, 3.0f);
+	tr_1.pos.push_back(glm::vec3(-2.0f, 0.0f, 3.0f));
 	tr_1.scale = glm::vec3(0.5f, 0.5f, 0.5f);
-	tr_2.pos = glm::vec3(-0.2f, 0.0f, -4.5f);
+	tr_2.pos.push_back(glm::vec3(-0.2f, 0.0f, -4.5f));
+	tr_2.pos.push_back(glm::vec3(-3.2f, 0.0f, -4.5f));
+	tr_2.pos.push_back(glm::vec3(-6.2f, 0.0f, -4.5f));
+	tr_2.pos.push_back(glm::vec3(-9.2f, 0.0f, -4.5f));
+	tr_2.pos.push_back(glm::vec3(-12.2f, 0.0f, -4.5f));
+	tr_2.pos.push_back(glm::vec3(-15.2f, 0.0f, -4.5f));
+	tr_2.pos.push_back(glm::vec3(-18.2f, 0.0f, -4.5f));
+	tr_2.pos.push_back(glm::vec3(-21.2f, 0.0f, -4.5f));
+	tr_2.pos.push_back(glm::vec3(-24.2f, 0.0f, -4.5f));
 	tr_2.scale = glm::vec3(1.0f, 1.0f, 1.0f);
 
 	c_RenderableComponent rc_0;
@@ -482,6 +490,7 @@ int main(void)
 	COORD.AddComponentToEntity<c_RenderableComponent>(entities[1], rc_1);
 	COORD.AddComponentToEntity<c_Texture>(entities[1], tx_1);
 	COORD.AddComponentToEntity<c_Modified>(entities[1], md_1);
+	
 	COORD.SetUpRenderData(entities[1]);
 	COORD.setShaderForEntity(entities[1], sh_basicWithTex);
 	COORD.StoreShaderInEntityDataHandle(entities[1]);
@@ -569,13 +578,13 @@ int main(void)
 
 void moveEntityBackAndFourth(c_Transform& entTrans, float DT)
 {
-	if(entTrans.pos.z > (-4.0f))
+	if(entTrans.pos[0].z > (-4.0f))
 	{
-		entTrans.pos.z = entTrans.pos.z + (DT * (-0.4f));
+		entTrans.pos[0].z = entTrans.pos[0].z + (DT * (-0.4f));
 	}
 	else
 	{
-		entTrans.pos.z = entTrans.pos.z + (DT * 0.4f);
+		entTrans.pos[0].z = entTrans.pos[0].z + (DT * 0.4f);
 	}
 }
 

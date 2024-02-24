@@ -22,13 +22,6 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 	(DataHandle.shader)->setUniformMat4("projection", GL_FALSE, glm::value_ptr(cubeProjection));
 	(DataHandle.shader)->setUniformMat4("view", GL_FALSE, glm::value_ptr(cubeView));
 
-	glm::mat4 cubeModel = glm::mat4(1.0f);
-	cubeModel = glm::translate(cubeModel, trans.pos);
-	cubeModel = glm::scale(cubeModel, trans.scale);
-	(DataHandle.shader)->setUniformMat4("model", GL_FALSE, glm::value_ptr(cubeModel));
-
-	
-
 	//(DataHandle.texture)->changeTexUnit(DataHandle.texUnit); //#unnecessary. Each texture is saved to a texture unit and is not changed throught the programs lifespan
 															   //			   This might be useful later if assigned texture units can be modified later during runtime
 															   //			   Although, all this does is take a texture and assign it to a texture unit.
@@ -46,7 +39,15 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 
 	(DataHandle.shader)->setUniformTextureUnit("colorTexture", DataHandle.texUnit);
 
-	GLCALL(glDrawArrays(GL_TRIANGLES, 0, 36));
+	for (int i = 0; i < trans.pos.size(); ++i)
+	{
+		glm::mat4 cubeModel = glm::mat4(1.0f);
+		cubeModel = glm::translate(cubeModel, trans.pos[i]);
+		cubeModel = glm::scale(cubeModel, trans.scale);
+		(DataHandle.shader)->setUniformMat4("model", GL_FALSE, glm::value_ptr(cubeModel));
+
+		GLCALL(glDrawArrays(GL_TRIANGLES, 0, 36));
+	}
 }
 
 void OpenGL_Renderer::RenderAABB(const R_DataHandle& DataHandle, 
@@ -63,7 +64,7 @@ void OpenGL_Renderer::RenderAABB(const R_DataHandle& DataHandle,
 	AABBShader.setUniformMat4("view", GL_FALSE, glm::value_ptr(cubeView));
 
 	glm::mat4 cubeModel = glm::mat4(1.0f);
-	cubeModel = glm::translate(cubeModel, trans.pos);
+	cubeModel = glm::translate(cubeModel, trans.pos[0]); // Always use position 0
 	cubeModel = glm::scale(cubeModel, AABB_Data.scale);
 	AABBShader.setUniformMat4("model", GL_FALSE, glm::value_ptr(cubeModel));
 

@@ -31,10 +31,10 @@ private:
 		//#CONTINUE_HERE
 		glm::mat4 E0_Model = glm::mat4(1.0f);
 		glm::mat4 E1_Model = glm::mat4(1.0f);
-		E0_Model = glm::translate(E0_Model, ECScoord->GetComponentDataFromEntity<c_Transform>(E0).pos);
+		E0_Model = glm::translate(E0_Model, ECScoord->GetComponentDataFromEntity<c_Transform>(E0).pos[0]);
 		E0_Model = glm::scale(E0_Model, ECScoord->GetComponentDataFromEntity<c_AABB>(E0).scale);
 
-		E1_Model = glm::translate(E1_Model, ECScoord->GetComponentDataFromEntity<c_Transform>(E1).pos);
+		E1_Model = glm::translate(E1_Model, ECScoord->GetComponentDataFromEntity<c_Transform>(E1).pos[0]);
 		E1_Model = glm::scale(E1_Model, ECScoord->GetComponentDataFromEntity<c_AABB>(E1).scale);
 
 		float* E0_AABBVertices = ECScoord->GetComponentDataFromEntity<c_AABB>(E0).vertices;

@@ -35,8 +35,7 @@ public:
 		{
 			//If entities "modified" component is true, then call
 			c_Transform& transData = ECScoord->GetComponentDataFromEntity<c_Transform>(EID);
-			transData.prevPos = transData.pos;
-			
+			transData.prevPos = transData.pos[0];
 			
 		}
 	}

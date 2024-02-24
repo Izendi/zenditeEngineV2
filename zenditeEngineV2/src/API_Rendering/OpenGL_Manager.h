@@ -72,7 +72,7 @@ public:
 		}
 		else
 		{
-			
+			//#Give_a_default tex unit value perhaps. then remove the system requirement for renderables to have a texture.
 		}
 
 		m_Map_ENTITYtoHANDLE[EID] = DH; //Insert modified DH into the map.

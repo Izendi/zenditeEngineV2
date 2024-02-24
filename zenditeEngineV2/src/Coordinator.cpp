@@ -67,6 +67,7 @@ void Coordinator::SetUpSystemBitsets()
 	Signature RenerableSysSig;
 	RenerableSysSig.set(m_ECSCoord->GetComponentBitsetPos<c_Transform>());
 	RenerableSysSig.set(m_ECSCoord->GetComponentBitsetPos<c_RenderableComponent>());
+	RenerableSysSig.set(m_ECSCoord->GetComponentBitsetPos<c_Texture>());
 	RenerableSysSig.set(m_ECSCoord->GetComponentBitsetPos<c_Modified>());
 	m_ECSCoord->SetSystemBitsetSignature<RenderableSystem>(RenerableSysSig);
 

@@ -36,7 +36,7 @@ void genMenu_1(c_Transform& posData, c_Texture& texData, c_Modified& modified, s
 
 	ImGui::Separator();
 
-	if (ImGui::SliderFloat3("My Vec3 Slider", &posData.pos[0], -5.0f, 5.0f));
+	if (ImGui::SliderFloat3("My Vec3 Slider", &(posData.pos[0])[0], -5.0f, 5.0f));
 	{
 		// The slider was used; myVec3 has been updated.
 		// You can handle the change here if needed.

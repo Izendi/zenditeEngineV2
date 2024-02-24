@@ -6,9 +6,11 @@
 
 struct c_Transform
 {
-	glm::vec3 pos;
-	glm::vec3 prevPos;
-	glm::vec3 scale;
+	//std::vector<glm::vec3> pos;
+	//glm::vec3 prevPos;
+	//glm::vec3 scale;
+
+	glm::mat4 modelMat;
 };
 
 struct c_AABB
