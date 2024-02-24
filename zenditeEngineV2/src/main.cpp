@@ -64,8 +64,8 @@ float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
 
 
-//Note, the model matrix is applied icorrectly here, if an obj was used that had unique model matrices per node, this code would ovveride them
-// and they would all be rendered arounf the same orign, distorting the object's shape.
+//Note, the model matrix is applied incorrectly here, if an obj was used that had unique model matrices per node, this code would ovveride them
+// and they would all be rendered around the same orign, distorting the object's shape.
 //instead you would ideally extract the model matrix and then concatenate it with your world space model matrix.
 
 int main(void)
