@@ -110,139 +110,136 @@ int main(void)
 
 
 	//#TODO Need to pass data read in from the model loader to the ECS system for rendering.
-	float vertexDataValues[] = {
-		// positions          
-		-0.5f, -0.5f, -0.5f,
-		 0.5f, -0.5f, -0.5f,
-		 0.5f,  0.5f, -0.5f,
-		 0.5f,  0.5f, -0.5f,
-		-0.5f,  0.5f, -0.5f,
-		-0.5f, -0.5f, -0.5f,
+	float vertCubePosData[] = {
+		// Positions        // Normals
+		// Front face
+		-1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
 
-		-0.5f, -0.5f,  0.5f,
-		 0.5f, -0.5f,  0.5f,
-		 0.5f,  0.5f,  0.5f,
-		 0.5f,  0.5f,  0.5f,
-		-0.5f,  0.5f,  0.5f,
-		-0.5f, -0.5f,  0.5f,
+		// Back face
+		-1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
 
-		-0.5f,  0.5f,  0.5f,
-		-0.5f,  0.5f, -0.5f,
-		-0.5f, -0.5f, -0.5f,
-		-0.5f, -0.5f, -0.5f,
-		-0.5f, -0.5f,  0.5f,
-		-0.5f,  0.5f,  0.5f,
+		//Right Face
+		 1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,
+		 1.0f,  1.0f,  1.0f,
 
-		 0.5f,  0.5f,  0.5f,
-		 0.5f,  0.5f, -0.5f,
-		 0.5f, -0.5f, -0.5f,
-		 0.5f, -0.5f, -0.5f,
-		 0.5f, -0.5f,  0.5f,
-		 0.5f,  0.5f,  0.5f,
+		 //LeftFace
+		 -1.0f, -1.0f,  1.0f,
+		 -1.0f, -1.0f, -1.0f,
+		 -1.0f,  1.0f, -1.0f,
+		 -1.0f,  1.0f,  1.0f,
 
-		-0.5f, -0.5f, -0.5f,
-		 0.5f, -0.5f, -0.5f,
-		 0.5f, -0.5f,  0.5f,
-		 0.5f, -0.5f,  0.5f,
-		-0.5f, -0.5f,  0.5f,
-		-0.5f, -0.5f, -0.5f,
+		 //Top Face
+		 -1.0f,  1.0f,  1.0f,
+		  1.0f,  1.0f,  1.0f,
+		  1.0f,  1.0f, -1.0f,
+		 -1.0f,  1.0f, -1.0f,
 
-		-0.5f,  0.5f, -0.5f,
-		 0.5f,  0.5f, -0.5f,
-		 0.5f,  0.5f,  0.5f,
-		 0.5f,  0.5f,  0.5f,
-		-0.5f,  0.5f,  0.5f,
-		-0.5f,  0.5f, -0.5f
+		 //Bottom Face
+		 -1.0f, -1.0f,  1.0f,
+		  1.0f, -1.0f,  1.0f,
+		  1.0f, -1.0f, -1.0f,
+		 -1.0f, -1.0f, -1.0f
 	};
 
-	float surfaceNormalValues[] =
-	{
-		0.0f,  0.0f, -1.0f,
-		0.0f,  0.0f, -1.0f,
-		0.0f,  0.0f, -1.0f,
-		0.0f,  0.0f, -1.0f,
-		0.0f,  0.0f, -1.0f,
-		0.0f,  0.0f, -1.0f,
+	float vertCubeNormData[] = {
+		 0.0f,  0.0f,  1.0f,
+		 0.0f,  0.0f,  1.0f,
+		 0.0f,  0.0f,  1.0f,
+		 0.0f,  0.0f,  1.0f,
 
-		0.0f,  0.0f,  1.0f,
-		0.0f,  0.0f,  1.0f,
-		0.0f,  0.0f,  1.0f,
-		0.0f,  0.0f,  1.0f,
-		0.0f,  0.0f,  1.0f,
-		0.0f,  0.0f,  1.0f,
+		 0.0f,  0.0f, -1.0f,
+		 0.0f,  0.0f, -1.0f,
+		 0.0f,  0.0f, -1.0f,
+		 0.0f,  0.0f, -1.0f,
 
-		1.0f,  0.0f,  0.0f,
-		1.0f,  0.0f,  0.0f,
-		1.0f,  0.0f,  0.0f,
-		1.0f,  0.0f,  0.0f,
-		1.0f,  0.0f,  0.0f,
-		1.0f,  0.0f,  0.0f,
+		 1.0f,  0.0f,  0.0f,
+		 1.0f,  0.0f,  0.0f,
+		 1.0f,  0.0f,  0.0f,
+		 1.0f,  0.0f,  0.0f,
 
-		1.0f,  0.0f,  0.0f,
-		1.0f,  0.0f,  0.0f,
-		1.0f,  0.0f,  0.0f,
-		1.0f,  0.0f,  0.0f,
-		1.0f,  0.0f,  0.0f,
-		1.0f,  0.0f,  0.0f,
+		-1.0f,  0.0f,  0.0f,
+		-1.0f,  0.0f,  0.0f,
+		-1.0f,  0.0f,  0.0f,
+		 1.0f,  0.0f,  0.0f,
 
-		0.0f, -1.0f,  0.0f,
-		0.0f, -1.0f,  0.0f,
-		0.0f, -1.0f,  0.0f,
-		0.0f, -1.0f,  0.0f,
-		0.0f, -1.0f,  0.0f,
-		0.0f, -1.0f,  0.0f,
+		 0.0f,  1.0f,  0.0f,
+		 0.0f,  1.0f,  0.0f,
+		 0.0f,  1.0f,  0.0f,
+		 0.0f,  1.0f,  0.0f,
 
-		0.0f,  1.0f,  0.0f,
-		0.0f,  1.0f,  0.0f,
-		0.0f,  1.0f,  0.0f,
-		0.0f,  1.0f,  0.0f,
-		0.0f,  1.0f,  0.0f,
-		0.0f,  1.0f,  0.0f
+		 0.0f, -1.0f,  0.0f,
+		 0.0f, -1.0f,  0.0f,
+		 0.0f, -1.0f,  0.0f,
+		 0.0f, -1.0f,  0.0f
 	};
 
-	float textureCoords[] =
+	float vertCubeTexCoordData[] =
 	{
-		 0.0f,  0.0f,
-		 1.0f,  0.0f,
-		 1.0f,  1.0f,
-		 1.0f,  1.0f,
-		 0.0f,  1.0f,
-		 0.0f,  0.0f,
+		 0.0f, 0.0f,
+		 1.0f, 0.0f,
+		 1.0f, 1.0f,
+		 0.0f, 1.0f,
 
-		 0.0f,  0.0f,
-		 1.0f,  0.0f,
-		 1.0f,  1.0f,
-		 1.0f,  1.0f,
-		 0.0f,  1.0f,
-		 0.0f,  0.0f,
+		 0.0f, 0.0f,
+		 1.0f, 0.0f,
+		 1.0f, 1.0f,
+		 0.0f, 1.0f,
 
-		 1.0f,  0.0f,
-		 1.0f,  1.0f,
-		 0.0f,  1.0f,
-		 0.0f,  1.0f,
-		 0.0f,  0.0f,
-		 1.0f,  0.0f,
+		 0.0f, 0.0f,
+		 1.0f, 0.0f,
+		 1.0f, 1.0f,
+		 0.0f, 1.0f,
 
-		 1.0f,  0.0f,
-		 1.0f,  1.0f,
-		 0.0f,  1.0f,
-		 0.0f,  1.0f,
-		 0.0f,  0.0f,
-		 1.0f,  0.0f,
+		 0.0f, 0.0f,
+		 1.0f, 0.0f,
+		 1.0f, 1.0f,
+		 0.0f, 1.0f,
 
-		 0.0f,  1.0f,
-		 1.0f,  1.0f,
-		 1.0f,  0.0f,
-		 1.0f,  0.0f,
-		 0.0f,  0.0f,
-		 0.0f,  1.0f,
+		 0.0f, 0.0f,
+		 1.0f, 0.0f,
+		 1.0f, 1.0f,
+		 0.0f, 1.0f,
 
-		 0.0f,  1.0f,
-		 1.0f,  1.0f,
-		 1.0f,  0.0f,
-		 1.0f,  0.0f,
-		 0.0f,  0.0f,
-		 0.0f,  1.0f
+		 0.0f, 0.0f,
+		 1.0f, 0.0f,
+		 1.0f, 1.0f,
+		 0.0f, 1.0f,
+	};
+
+	unsigned int indices[] =
+	{
+		//front face
+		0, 1, 2,
+		2, 3, 0,
+
+		//back face
+		4, 5, 6,
+		6, 7, 4,
+
+		//right face
+		8, 9, 10,
+		10, 11, 8,
+
+		//left face
+		12, 13, 14,
+		14, 15, 12,
+
+		//top face:
+		16, 17, 18,
+		18, 19, 16,
+
+		//bottom face
+		20, 21, 22,
+		22, 23, 20
+
 	};
 
 	float oddShapeVertexData[] = {
@@ -400,7 +397,6 @@ int main(void)
 	
 	entities[0] = COORD.CreateEntity();
 	entities[1] = COORD.CreateEntity();
-	entities[2] = COORD.CreateEntity();
 
 
 	unsigned short int containerTexUnit = COORD.GenerateTexUnit("res/textures/container2.png", "PNG");
@@ -409,7 +405,7 @@ int main(void)
 
 
 	c_Transform tr_0;
-	c_Transform tr_1;
+	
 	c_Transform tr_2;
 
 	glm::mat4 mm_tr0 = glm::mat4(1.0f);
@@ -418,13 +414,6 @@ int main(void)
 	mm_tr0 = glm::translate(mm_tr0, pos_tr0);
 	mm_tr0 = glm::scale(mm_tr0, scale_tr0);
 	tr_0.modelMat.push_back(mm_tr0);
-	
-	glm::mat4 mm_tr1 = glm::mat4(1.0f);
-	glm::vec3 pos_tr1(-2.0f, 0.0f, 3.0f);
-	glm::vec3 scale_tr1(1.0f, 1.0f, 1.0f);
-	mm_tr1 = glm::translate(mm_tr1, pos_tr1);
-	mm_tr1 = glm::scale(mm_tr1, scale_tr1);
-	tr_1.modelMat.push_back(mm_tr1);
 
 	glm::mat4 mm_tr2 = glm::mat4(1.0f);
 	glm::mat4 mm_tr2_1 = glm::mat4(1.0f);
@@ -451,22 +440,22 @@ int main(void)
 
 	c_Renderable rc_0;
 
-	for (int i = 0; i < sizeof(vertexDataValues) / sizeof(float); i = i + 3)
+	for (int i = 0; i < sizeof(vertCubePosData) / sizeof(float); i = i + 3)
 	{
 		Vertex vert;
 		glm::vec3 pos;
-		pos.x = vertexDataValues[i];
-		pos.y = vertexDataValues[i + 1];
-		pos.z = vertexDataValues[i + 2];
+		pos.x = vertCubePosData[i];
+		pos.y = vertCubePosData[i + 1];
+		pos.z = vertCubePosData[i + 2];
 
 		glm::vec3 norm;
-		norm.x = surfaceNormalValues[i];
-		norm.y = surfaceNormalValues[i + 1];
-		norm.z = surfaceNormalValues[i + 2];
+		norm.x = vertCubeNormData[i];
+		norm.y = vertCubeNormData[i + 1];
+		norm.z = vertCubeNormData[i + 2];
 
 		glm::vec2 texCoord;
-		texCoord.x = oddShapedTexCoordData[2*(i/3)];
-		texCoord.y = oddShapedTexCoordData[2*(i / 3) + 1];
+		texCoord.x = vertCubeTexCoordData[2*(i/3)];
+		texCoord.y = vertCubeTexCoordData[2*(i / 3) + 1];
 
 		vert.Position = pos;
 		vert.Normal = norm;
@@ -475,39 +464,13 @@ int main(void)
 		rc_0.vertices.push_back(vert);
 	}
 
-	//#YOU_FORGOT_TO_CREATE_AND_PUSH_BACK_THE_INDECES_FOR_THE_EBO
-	
-	c_Renderable rc_1;
-
-	for (int i = 0; i < sizeof(oddShapeVertexData) / sizeof(float); i = i + 3)
+	for (int i = 0; i < sizeof(indices) / sizeof(unsigned int); ++i)
 	{
-		Vertex vert;
-		glm::vec3 pos;
-		pos.x = oddShapeVertexData[i];
-		pos.y = oddShapeVertexData[i + 1];
-		pos.z = oddShapeVertexData[i + 2];
-
-		glm::vec3 norm;
-		norm.x = oddShapedVDataNormals[i];
-		norm.y = oddShapedVDataNormals[i + 1];
-		norm.z = oddShapedVDataNormals[i + 2];
-
-		glm::vec2 texCoord;
-		texCoord.x = textureCoords[2 * (i / 3)];
-		texCoord.y = textureCoords[2 * (i / 3) + 1];
-
-		vert.Position = pos;
-		vert.Normal = norm;
-		vert.TexCoords = texCoord;
-
-		rc_1.vertices.push_back(vert);
+		rc_0.indices.push_back(indices[i]);
 	}
 
 	c_Texture tx_0;
 	tx_0.texUnit = containerTexUnit;
-
-	c_Texture tx_1;
-	tx_1.texUnit = containerTexUnit;
 
 	c_Texture tx_2;
 	tx_2.texUnit = rockySurfaceTexUnit;
@@ -518,9 +481,6 @@ int main(void)
 
 	c_Modified md_0;
 	md_0.isModifed = true;
-
-	c_Modified md_1;
-	md_1.isModifed = true;
 
 	c_Modified md_2;
 	md_2.isModifed = true;
@@ -545,25 +505,18 @@ int main(void)
 	COORD.SetUpRenderData(entities[0]); //#NOTE: SetUpRenderData and setShaderForEntity will do nothing if the entity does no have a c_RenderableComponent
 	COORD.setShaderForEntity(entities[0], sh_basicWithTex); //#C_NOTE: Will need to set the map but not the DH, that needs to be done separatly by the renderer.
 	COORD.StoreShaderInEntityDataHandle(entities[0]);
-
-	COORD.AddComponentToEntity<c_Transform>(entities[1], tr_1);
-	COORD.AddComponentToEntity<c_Renderable>(entities[1], rc_1);
-	COORD.AddComponentToEntity<c_Texture>(entities[1], tx_1);
-	COORD.AddComponentToEntity<c_Modified>(entities[1], md_1);
 	
+	
+
+	COORD.AddComponentToEntity<c_Transform>(entities[1], tr_2);
+	COORD.AddComponentToEntity<c_Renderable>(entities[1], rc_0);
+	COORD.AddComponentToEntity<c_Texture>(entities[1], tx_2);
+	COORD.AddComponentToEntity<c_AABB>(entities[1], aabb_2);
+	COORD.AddComponentToEntity<c_Wall>(entities[1], wall_0);
+	COORD.AddComponentToEntity<c_Modified>(entities[1], md_2);
 	COORD.SetUpRenderData(entities[1]);
 	COORD.setShaderForEntity(entities[1], sh_basicWithTex);
 	COORD.StoreShaderInEntityDataHandle(entities[1]);
-
-	COORD.AddComponentToEntity<c_Transform>(entities[2], tr_2);
-	COORD.AddComponentToEntity<c_Renderable>(entities[2], rc_0);
-	COORD.AddComponentToEntity<c_Texture>(entities[2], tx_2);
-	COORD.AddComponentToEntity<c_AABB>(entities[2], aabb_2);
-	COORD.AddComponentToEntity<c_Wall>(entities[2], wall_0);
-	COORD.AddComponentToEntity<c_Modified>(entities[2], md_2);
-	COORD.SetUpRenderData(entities[2]);
-	COORD.setShaderForEntity(entities[2], sh_basicWithTex);
-	COORD.StoreShaderInEntityDataHandle(entities[2]);
 	
 	//std::cout << "\nc_AABB bitset position: " << static_cast<unsigned int>(COORD.GetComponentBitsetPos<c_AABB>());
 	//std::cout << "\nentities[2] bitset: " << COORD.GetEntitySignature(entities[2]) << std::endl;

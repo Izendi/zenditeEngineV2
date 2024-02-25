@@ -15,7 +15,8 @@ public:
 		No_texUnits = 0;
 	}
 
-	void SetupLightingRenderData(Entity EID, std::shared_ptr<ECSCoordinator> ECScoord) override{
+	void SetupLightingRenderData(Entity EID, std::shared_ptr<ECSCoordinator> ECScoord) override
+	{
 		R_DataHandle DH;
 
 		m_Map_ENTITYtoHANDLE[EID] = DH; //Insert modified DH into the map.
@@ -42,8 +43,9 @@ public:
 		GLCALL(glBufferData(GL_ARRAY_BUFFER, RData.vertices.size() * sizeof(Vertex), &(RData.vertices[0]), GL_STATIC_DRAW));
 
 		//Buffer EBO data:
-		GLCALL(GL_ELEMENT_ARRAY_BUFFER, DH.EBO);
-		GLCALL(GL_ELEMENT_ARRAY_BUFFER, RData.indices.size() * sizeof(unsigned int), &(RData.indices[0], GL_STATIC_DRAW));
+		GLCALL(glGenBuffers(1, &(DH.EBO)));
+		GLCALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, DH.EBO));
+		GLCALL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, RData.indices.size() * sizeof(unsigned int), &(RData.indices[0]), GL_STATIC_DRAW));
 
 		//setup position vertex attribute array
 		GLCALL(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0));
@@ -63,10 +65,10 @@ public:
 
 		if ((entitySig & textureBitset) == textureBitset) // If this entity has a texture component
 		{
-			GLCALL(glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords)));
+			GLCALL(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords)));
 			GLCALL(glEnableVertexAttribArray(2));
 
-			c_Texture texData = ECScoord->GetComponentDataFromEntity<c_Texture>(EID);
+			c_Texture& texData = ECScoord->GetComponentDataFromEntity<c_Texture>(EID);
 
 			DH.texUnit = texData.texUnit; //#TexUNIT_Set
 			//DH.texture = textures[texData.texUnit];
