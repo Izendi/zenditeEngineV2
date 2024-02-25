@@ -146,9 +146,6 @@
     <ClCompile Include="src\API_Rendering\OpenGl_Renderer.cpp" />
     <ClCompile Include="src\Coordinator.cpp" />
     <ClCompile Include="src\geometrySetup.cpp" />
-    <ClCompile Include="src\Helper\Mesh.cpp" />
-    <ClCompile Include="src\Helper\Model.cpp" />
-    <ClCompile Include="src\Helper\Node.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\TextureData.cpp" />
@@ -194,11 +191,11 @@
     <ClInclude Include="src\EventManager\I_Observer.h" />
     <ClInclude Include="src\EventManager\I_Subject.h" />
     <ClInclude Include="src\geometrySetup.h" />
-    <ClInclude Include="src\Helper\Mesh.h" />
-    <ClInclude Include="src\Helper\Model.h" />
-    <ClInclude Include="src\Helper\Node.h" />
-    <ClInclude Include="src\Helper\Texture.h" />
     <ClInclude Include="src\menu.h" />
+    <ClInclude Include="src\Model_Loading\I_SceneFactory.h" />
+    <ClInclude Include="src\Model_Loading\MinimalSceneFactory.h" />
+    <ClInclude Include="src\Model_Loading\Node.h" />
+    <ClInclude Include="src\Model_Loading\EntityScene.h" />
     <ClInclude Include="src\Object.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\TextureData.h" />
