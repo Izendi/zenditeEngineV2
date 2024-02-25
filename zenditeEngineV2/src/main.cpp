@@ -117,31 +117,30 @@ int main(void)
 		 0.5f,  0.5f, -0.5f,
 		 0.5f,  0.5f, -0.5f,
 		-0.5f,  0.5f, -0.5f,
-
 		-0.5f, -0.5f, -0.5f,
+
 		-0.5f, -0.5f,  0.5f,
 		 0.5f, -0.5f,  0.5f,
 		 0.5f,  0.5f,  0.5f,
 		 0.5f,  0.5f,  0.5f,
-
 		-0.5f,  0.5f,  0.5f,
 		-0.5f, -0.5f,  0.5f,
+
 		-0.5f,  0.5f,  0.5f,
 		-0.5f,  0.5f, -0.5f,
 		-0.5f, -0.5f, -0.5f,
-
 		-0.5f, -0.5f, -0.5f,
 		-0.5f, -0.5f,  0.5f,
 		-0.5f,  0.5f,  0.5f,
+
 		 0.5f,  0.5f,  0.5f,
 		 0.5f,  0.5f, -0.5f,
-
 		 0.5f, -0.5f, -0.5f,
 		 0.5f, -0.5f, -0.5f,
 		 0.5f, -0.5f,  0.5f,
 		 0.5f,  0.5f,  0.5f,
-		-0.5f, -0.5f, -0.5f,
 
+		-0.5f, -0.5f, -0.5f,
 		 0.5f, -0.5f, -0.5f,
 		 0.5f, -0.5f,  0.5f,
 		 0.5f, -0.5f,  0.5f,
@@ -153,7 +152,6 @@ int main(void)
 		 0.5f,  0.5f,  0.5f,
 		 0.5f,  0.5f,  0.5f,
 		-0.5f,  0.5f,  0.5f,
-
 		-0.5f,  0.5f, -0.5f
 	};
 
@@ -210,30 +208,35 @@ int main(void)
 		 1.0f,  1.0f,
 		 0.0f,  1.0f,
 		 0.0f,  0.0f,
+
 		 0.0f,  0.0f,
 		 1.0f,  0.0f,
 		 1.0f,  1.0f,
 		 1.0f,  1.0f,
 		 0.0f,  1.0f,
 		 0.0f,  0.0f,
+
 		 1.0f,  0.0f,
 		 1.0f,  1.0f,
 		 0.0f,  1.0f,
 		 0.0f,  1.0f,
 		 0.0f,  0.0f,
 		 1.0f,  0.0f,
+
 		 1.0f,  0.0f,
 		 1.0f,  1.0f,
 		 0.0f,  1.0f,
 		 0.0f,  1.0f,
 		 0.0f,  0.0f,
 		 1.0f,  0.0f,
+
 		 0.0f,  1.0f,
 		 1.0f,  1.0f,
 		 1.0f,  0.0f,
 		 1.0f,  0.0f,
 		 0.0f,  0.0f,
 		 0.0f,  1.0f,
+
 		 0.0f,  1.0f,
 		 1.0f,  1.0f,
 		 1.0f,  0.0f,
@@ -408,41 +411,105 @@ int main(void)
 	c_Transform tr_0;
 	c_Transform tr_1;
 	c_Transform tr_2;
-	tr_0.pos.push_back(glm::vec3(0.0f,0.0f,0.0f));
-	tr_0.scale = glm::vec3(1.0f, 1.0f, 1.0f);
-	tr_1.pos.push_back(glm::vec3(-2.0f, 0.0f, 3.0f));
-	tr_1.scale = glm::vec3(0.5f, 0.5f, 0.5f);
-	tr_2.pos.push_back(glm::vec3(-0.2f, 0.0f, -4.5f));
-	tr_2.pos.push_back(glm::vec3(-3.2f, 0.0f, -4.5f));
-	tr_2.pos.push_back(glm::vec3(-6.2f, 0.0f, -4.5f));
-	tr_2.pos.push_back(glm::vec3(-9.2f, 0.0f, -4.5f));
-	tr_2.pos.push_back(glm::vec3(-12.2f, 0.0f, -4.5f));
-	tr_2.pos.push_back(glm::vec3(-15.2f, 0.0f, -4.5f));
-	tr_2.pos.push_back(glm::vec3(-18.2f, 0.0f, -4.5f));
-	tr_2.pos.push_back(glm::vec3(-21.2f, 0.0f, -4.5f));
-	tr_2.pos.push_back(glm::vec3(-24.2f, 0.0f, -4.5f));
-	tr_2.scale = glm::vec3(1.0f, 1.0f, 1.0f);
 
-	c_RenderableComponent rc_0;
-	rc_0.setPosVertexArray(vertexDataValues, sizeof(vertexDataValues));
-	rc_0.setSurfaceNormalVertexArray(surfaceNormalValues, sizeof(surfaceNormalValues));
-	//rc_0.vertices = vertexDataValues;
+	glm::mat4 mm_tr0 = glm::mat4(1.0f);
+	glm::vec3 pos_tr0(0.0f, 0.0f, 0.0f);
+	glm::vec3 scale_tr0(1.0f, 1.0f, 1.0f);
+	mm_tr0 = glm::translate(mm_tr0, pos_tr0);
+	mm_tr0 = glm::scale(mm_tr0, scale_tr0);
+	tr_0.modelMat.push_back(mm_tr0);
+	
+	glm::mat4 mm_tr1 = glm::mat4(1.0f);
+	glm::vec3 pos_tr1(-2.0f, 0.0f, 3.0f);
+	glm::vec3 scale_tr1(1.0f, 1.0f, 1.0f);
+	mm_tr1 = glm::translate(mm_tr1, pos_tr1);
+	mm_tr1 = glm::scale(mm_tr1, scale_tr1);
+	tr_1.modelMat.push_back(mm_tr1);
 
-	c_RenderableComponent rc_1;
-	rc_1.setPosVertexArray(oddShapeVertexData, sizeof(oddShapeVertexData));
-	rc_0.setSurfaceNormalVertexArray(oddShapedVDataNormals, sizeof(oddShapedVDataNormals));
+	glm::mat4 mm_tr2 = glm::mat4(1.0f);
+	glm::mat4 mm_tr2_1 = glm::mat4(1.0f);
+	glm::mat4 mm_tr2_2 = glm::mat4(1.0f);
+
+	glm::vec3 pos_tr2(-0.2f, 0.0f, -4.5f);
+	glm::vec3 pos_tr2_1(-3.2f, 0.0f, -4.5f);
+	glm::vec3 pos_tr2_2(-6.2f, 0.0f, -4.5f);
+	glm::vec3 scale_tr2(1.0f, 1.0f, 1.0f);
+
+	mm_tr2 = glm::translate(mm_tr2, pos_tr2);
+	mm_tr2 = glm::scale(mm_tr2, scale_tr2);
+
+	mm_tr2_1 = glm::translate(mm_tr2_1, pos_tr2_1);
+	mm_tr2_1 = glm::scale(mm_tr2_1, scale_tr2);
+
+	mm_tr2_2 = glm::translate(mm_tr2_2, pos_tr2_2);
+	mm_tr2_2 = glm::scale(mm_tr2_2, scale_tr2);
+
+	tr_2.modelMat.push_back(mm_tr2);
+	tr_2.modelMat.push_back(mm_tr2_1);
+	tr_2.modelMat.push_back(mm_tr2_2);
+
+
+	c_Renderable rc_0;
+
+	for (int i = 0; i < sizeof(vertexDataValues) / sizeof(float); i = i + 3)
+	{
+		Vertex vert;
+		glm::vec3 pos;
+		pos.x = vertexDataValues[i];
+		pos.y = vertexDataValues[i + 1];
+		pos.z = vertexDataValues[i + 2];
+
+		glm::vec3 norm;
+		norm.x = surfaceNormalValues[i];
+		norm.y = surfaceNormalValues[i + 1];
+		norm.z = surfaceNormalValues[i + 2];
+
+		glm::vec2 texCoord;
+		texCoord.x = oddShapedTexCoordData[2*(i/3)];
+		texCoord.y = oddShapedTexCoordData[2*(i / 3) + 1];
+
+		vert.Position = pos;
+		vert.Normal = norm;
+		vert.TexCoords = texCoord;
+
+		rc_0.vertices.push_back(vert);
+	}
+
+	//#YOU_FORGOT_TO_CREATE_AND_PUSH_BACK_THE_INDECES_FOR_THE_EBO
+	
+	c_Renderable rc_1;
+
+	for (int i = 0; i < sizeof(oddShapeVertexData) / sizeof(float); i = i + 3)
+	{
+		Vertex vert;
+		glm::vec3 pos;
+		pos.x = oddShapeVertexData[i];
+		pos.y = oddShapeVertexData[i + 1];
+		pos.z = oddShapeVertexData[i + 2];
+
+		glm::vec3 norm;
+		norm.x = oddShapedVDataNormals[i];
+		norm.y = oddShapedVDataNormals[i + 1];
+		norm.z = oddShapedVDataNormals[i + 2];
+
+		glm::vec2 texCoord;
+		texCoord.x = textureCoords[2 * (i / 3)];
+		texCoord.y = textureCoords[2 * (i / 3) + 1];
+
+		vert.Position = pos;
+		vert.Normal = norm;
+		vert.TexCoords = texCoord;
+
+		rc_1.vertices.push_back(vert);
+	}
 
 	c_Texture tx_0;
-	tx_0.setTexCoordsVertexArray(textureCoords, sizeof(textureCoords));
-
 	tx_0.texUnit = containerTexUnit;
 
 	c_Texture tx_1;
-	tx_1.setTexCoordsVertexArray(oddShapedTexCoordData, sizeof(oddShapedTexCoordData));
 	tx_1.texUnit = containerTexUnit;
 
 	c_Texture tx_2;
-	tx_2.setTexCoordsVertexArray(oddShapedTexCoordData, sizeof(oddShapedTexCoordData));
 	tx_2.texUnit = rockySurfaceTexUnit;
 
 	//c_Texture tex_3;
@@ -469,15 +536,8 @@ int main(void)
 	c_Wall wall_0;
 	c_WallCollider wallCollider_2;
 
-	c_Transform tr_3;
-	c_AABB aabb_3;
-	c_Wall wall_3;
-	c_Modified md_3;
-
-	c_SpotLightEmitter spl_3;
-
 	COORD.AddComponentToEntity<c_Transform>(entities[0], tr_0);
-	COORD.AddComponentToEntity<c_RenderableComponent>(entities[0], rc_0);
+	COORD.AddComponentToEntity<c_Renderable>(entities[0], rc_0);
 	COORD.AddComponentToEntity<c_Texture>(entities[0], tx_0);
 	COORD.AddComponentToEntity<c_AABB>(entities[0], aabb_0);
 	COORD.AddComponentToEntity<c_WallCollider>(entities[0], wallCollider_2);
@@ -487,7 +547,7 @@ int main(void)
 	COORD.StoreShaderInEntityDataHandle(entities[0]);
 
 	COORD.AddComponentToEntity<c_Transform>(entities[1], tr_1);
-	COORD.AddComponentToEntity<c_RenderableComponent>(entities[1], rc_1);
+	COORD.AddComponentToEntity<c_Renderable>(entities[1], rc_1);
 	COORD.AddComponentToEntity<c_Texture>(entities[1], tx_1);
 	COORD.AddComponentToEntity<c_Modified>(entities[1], md_1);
 	
@@ -496,7 +556,7 @@ int main(void)
 	COORD.StoreShaderInEntityDataHandle(entities[1]);
 
 	COORD.AddComponentToEntity<c_Transform>(entities[2], tr_2);
-	COORD.AddComponentToEntity<c_RenderableComponent>(entities[2], rc_0);
+	COORD.AddComponentToEntity<c_Renderable>(entities[2], rc_0);
 	COORD.AddComponentToEntity<c_Texture>(entities[2], tx_2);
 	COORD.AddComponentToEntity<c_AABB>(entities[2], aabb_2);
 	COORD.AddComponentToEntity<c_Wall>(entities[2], wall_0);
@@ -578,6 +638,7 @@ int main(void)
 
 void moveEntityBackAndFourth(c_Transform& entTrans, float DT)
 {
+	/*
 	if(entTrans.pos[0].z > (-4.0f))
 	{
 		entTrans.pos[0].z = entTrans.pos[0].z + (DT * (-0.4f));
@@ -586,6 +647,7 @@ void moveEntityBackAndFourth(c_Transform& entTrans, float DT)
 	{
 		entTrans.pos[0].z = entTrans.pos[0].z + (DT * 0.4f);
 	}
+	*/
 }
 
 void processInput(GLFWwindow* window)

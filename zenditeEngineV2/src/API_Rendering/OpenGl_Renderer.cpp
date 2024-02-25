@@ -14,6 +14,7 @@ OpenGL_Renderer::OpenGL_Renderer(std::shared_ptr<Camera> cam) : I_Renderer(cam)
 void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECScoord, Entity EID)
 {
 	c_Transform& trans = ECScoord.GetComponentDataFromEntity<c_Transform>(EID);
+	c_Renderable& rendData = ECScoord.GetComponentDataFromEntity<c_Renderable>(EID);
 
 	(DataHandle.shader)->bindProgram();
 	bindVao(DataHandle.VAO);
@@ -39,14 +40,11 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 
 	(DataHandle.shader)->setUniformTextureUnit("colorTexture", DataHandle.texUnit);
 
-	for (int i = 0; i < trans.pos.size(); ++i)
+	for (int i = 0; i < trans.modelMat.size(); ++i)
 	{
-		glm::mat4 cubeModel = glm::mat4(1.0f);
-		cubeModel = glm::translate(cubeModel, trans.pos[i]);
-		cubeModel = glm::scale(cubeModel, trans.scale);
-		(DataHandle.shader)->setUniformMat4("model", GL_FALSE, glm::value_ptr(cubeModel));
+		(DataHandle.shader)->setUniformMat4("model", GL_FALSE, glm::value_ptr((trans.modelMat)[i]));
 
-		GLCALL(glDrawArrays(GL_TRIANGLES, 0, 36));
+		GLCALL(glDrawElements(GL_TRIANGLES, (rendData.indices).size(), GL_UNSIGNED_INT, 0));
 	}
 }
 
@@ -63,8 +61,15 @@ void OpenGL_Renderer::RenderAABB(const R_DataHandle& DataHandle,
 	AABBShader.setUniformMat4("projection", GL_FALSE, glm::value_ptr(cubeProjection));
 	AABBShader.setUniformMat4("view", GL_FALSE, glm::value_ptr(cubeView));
 
+	glm::vec3 AABBpos;
+
+	// Always use position 0 in the first []
+	AABBpos.x = trans.modelMat[0][3][0];
+	AABBpos.y = trans.modelMat[0][3][1];
+	AABBpos.z = trans.modelMat[0][3][2];
+
 	glm::mat4 cubeModel = glm::mat4(1.0f);
-	cubeModel = glm::translate(cubeModel, trans.pos[0]); // Always use position 0
+	cubeModel = glm::translate(cubeModel, AABBpos); 
 	cubeModel = glm::scale(cubeModel, AABB_Data.scale);
 	AABBShader.setUniformMat4("model", GL_FALSE, glm::value_ptr(cubeModel));
 

@@ -4,11 +4,17 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+//Helper Data Types:
+
 struct Vertex {
 	glm::vec3 Position;
 	glm::vec3 Normal;
-	//glm::vec2 TexCoords;
+	glm::vec2 TexCoords;
 };
+
+
+
+//COMPONENTS:
 
 struct c_Transform
 {
@@ -16,7 +22,8 @@ struct c_Transform
 	//glm::vec3 prevPos;
 	//glm::vec3 scale;
 
-	glm::mat4 modelMat;
+	glm::mat4 prevModelMat;
+	std::vector<glm::mat4> modelMat;
 };
 
 struct c_AABB
@@ -67,6 +74,8 @@ struct c_RenderableComponent
 	float* surfaceNormalVertices; //#HERE
 	size_t posArraySize;
 	size_t snArraySize;
+
+	std::vector<unsigned int> indices;
 };
 
 struct c_Renderable
@@ -77,21 +86,8 @@ struct c_Renderable
 
 struct c_Texture
 {
-	void setTexCoordsVertexArray(float* verts, size_t size)
-	{
-		texCoords = new float[size]; //#EXCEPTION_THROWN_RANDOMLY_HERE
-
-		for (int i = 0; i < size; ++i)
-		{
-			texCoords[i] = verts[i];
-		}
-
-		arraySize = size;
-	}
-
 	unsigned short int texUnit;
-	float* texCoords;
-	size_t arraySize;
+	std::string type;
 };
 
 struct c_SpotLightEmitter

@@ -28,14 +28,29 @@ private:
 	//Will return true if a collision is occurring, false if not
 	bool testCollision(Entity E0, Entity E1, std::shared_ptr<ECSCoordinator> ECScoord)
 	{
+		glm::vec3 AABBpos_0;
+		glm::vec3 AABBpos_1;
+		c_Transform& trans0 = ECScoord->GetComponentDataFromEntity<c_Transform>(E0);
+		c_Transform& trans1 = ECScoord->GetComponentDataFromEntity<c_Transform>(E1);
+
+		// Always use position 0 in the first []
+		AABBpos_0.x = trans0.modelMat[0][3][0];
+		AABBpos_0.y = trans0.modelMat[0][3][1];
+		AABBpos_0.z = trans0.modelMat[0][3][2];
+
+		AABBpos_1.x = trans1.modelMat[0][3][0];
+		AABBpos_1.y = trans1.modelMat[0][3][1];
+		AABBpos_1.z = trans1.modelMat[0][3][2];
+
 		//#CONTINUE_HERE
 		glm::mat4 E0_Model = glm::mat4(1.0f);
 		glm::mat4 E1_Model = glm::mat4(1.0f);
-		E0_Model = glm::translate(E0_Model, ECScoord->GetComponentDataFromEntity<c_Transform>(E0).pos[0]);
+		E0_Model = glm::translate(E0_Model, AABBpos_0);
 		E0_Model = glm::scale(E0_Model, ECScoord->GetComponentDataFromEntity<c_AABB>(E0).scale);
 
-		E1_Model = glm::translate(E1_Model, ECScoord->GetComponentDataFromEntity<c_Transform>(E1).pos[0]);
+		E1_Model = glm::translate(E1_Model, AABBpos_1);
 		E1_Model = glm::scale(E1_Model, ECScoord->GetComponentDataFromEntity<c_AABB>(E1).scale);
+
 
 		float* E0_AABBVertices = ECScoord->GetComponentDataFromEntity<c_AABB>(E0).vertices;
 		float* E1_AABBVertices = ECScoord->GetComponentDataFromEntity<c_AABB>(E1).vertices;
@@ -206,7 +221,9 @@ public:
 						ECScoord->GetComponentDataFromEntity<c_AABB>(*iit).isWallColliding = true;
 
 						c_Transform& CollidingObjTransData = (ECScoord->GetComponentDataFromEntity<c_Transform>(*iit));
-						CollidingObjTransData.pos[0] = (CollidingObjTransData.prevPos);
+
+
+						CollidingObjTransData.modelMat[0] = (CollidingObjTransData.prevModelMat);
 
 						NotifyObservers(ECScoord, collidingEnts);
 					}

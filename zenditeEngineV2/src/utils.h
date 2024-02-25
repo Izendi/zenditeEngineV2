@@ -49,23 +49,24 @@ static bool GLLogCall(const char* function, const char* file, int line)
 
 struct R_DataHandle
 {
-
 	unsigned VAO;
-	unsigned posVBO;
-	unsigned surfaceNormalVBO;
-	unsigned texCoordVBO;
+	unsigned VBO;
 	unsigned EBO;
 	std::shared_ptr<Shader> shader;
-	std::shared_ptr<TextureData> texture;
+	//std::shared_ptr<TextureData> texture; //(No need to contain a textureData object, only the tex unit is needed as it does not change)
 	uint32_t texUnit;
 
-	std::bitset<32> signature;
+
+	//std::bitset<32> signature;
 
 	std::string name;
 
 	//EXTRA:
 	unsigned AABB_VAO;
 	unsigned AABB_posVBO;
+
+	unsigned Primative_VAO;
+	unsigned Primative_VBO;
 };
 
 struct transform

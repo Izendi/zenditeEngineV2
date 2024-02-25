@@ -12,8 +12,6 @@ class RenderableSystem : public I_System, public I_Subject
 private:
 	//std::shared_ptr<ECSCoordinator> ECScoord;
 
-
-
 public:
 	RenderableSystem()
 	{
