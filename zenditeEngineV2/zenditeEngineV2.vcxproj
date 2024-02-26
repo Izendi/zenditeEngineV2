@@ -147,6 +147,10 @@
     <ClCompile Include="src\Coordinator.cpp" />
     <ClCompile Include="src\geometrySetup.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Model_Loading\EntityNode.cpp" />
+    <ClCompile Include="src\Model_Loading\EntityScene.cpp" />
+    <ClCompile Include="src\Model_Loading\I_SceneFactory.cpp" />
+    <ClCompile Include="src\Model_Loading\MinimalSceneFactory.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\TextureData.cpp" />
     <ClCompile Include="src\Texture2D.cpp" />
@@ -194,7 +198,7 @@
     <ClInclude Include="src\menu.h" />
     <ClInclude Include="src\Model_Loading\I_SceneFactory.h" />
     <ClInclude Include="src\Model_Loading\MinimalSceneFactory.h" />
-    <ClInclude Include="src\Model_Loading\Node.h" />
+    <ClInclude Include="src\Model_Loading\EntityNode.h" />
     <ClInclude Include="src\Model_Loading\EntityScene.h" />
     <ClInclude Include="src\Object.h" />
     <ClInclude Include="src\Shader.h" />

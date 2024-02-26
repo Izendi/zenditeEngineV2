@@ -505,8 +505,6 @@ int main(void)
 	COORD.SetUpRenderData(entities[0]); //#NOTE: SetUpRenderData and setShaderForEntity will do nothing if the entity does no have a c_RenderableComponent
 	COORD.setShaderForEntity(entities[0], sh_basicWithTex); //#C_NOTE: Will need to set the map but not the DH, that needs to be done separatly by the renderer.
 	COORD.StoreShaderInEntityDataHandle(entities[0]);
-	
-	
 
 	COORD.AddComponentToEntity<c_Transform>(entities[1], tr_2);
 	COORD.AddComponentToEntity<c_Renderable>(entities[1], rc_0);

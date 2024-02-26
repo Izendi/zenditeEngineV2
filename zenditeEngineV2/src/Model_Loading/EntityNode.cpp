@@ -1,0 +1,40 @@
+#include "EntityNode.h"
+
+EntityNode::EntityNode()
+{
+
+}
+
+void EntityNode::SetLocalModelMat(glm::mat4 modelMat)
+{
+	m_localModelMat = modelMat;
+}
+
+void EntityNode::SetAllTransformCompoennts(glm::mat4 ParentModelMat, Coordinator& COORD)
+{
+	glm::mat4 UniversalModelMat = m_localModelMat * ParentModelMat; //This will create a model matrix that is the local model matrixc moved relative to the parents model matrix
+
+	for(int i = 0; i < m_vec_Entites.size(); ++i)
+	{
+		c_Transform& transData = COORD.GetComponentDataFromEntity<c_Transform>(m_vec_Entites[i]);
+		transData.modelMat[0] = UniversalModelMat;
+	}
+
+	for(int i = 0; i < m_vec_children.size(); ++i)
+	{
+		SetAllTransformCompoennts(UniversalModelMat, COORD);
+	}
+
+}
+
+void EntityNode::AddEntity(Entity EID)
+{
+	m_vec_Entites.push_back(EID);
+}
+
+std::vector<Entity> EntityNode::GetAllEntitesDownward()
+{
+	std::vector<Entity> entities;
+
+
+}
