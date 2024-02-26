@@ -11,8 +11,6 @@
 #include "menu.h"
 #include "Camera.h"
 
-#include "Helper/Model.h"
-
 #include <filesystem>
 
 #include "Coordinator.h"
@@ -393,10 +391,10 @@ int main(void)
 	-1.0f,  1.0f, -1.0f, -1.0f,  1.0f,  1.0f   // Edge 12
 	};
 
-	std::vector<Entity> entities(MAX_ENTITIES);
+	std::vector<Entity> entities;
 	
-	entities[0] = COORD.CreateEntity();
-	entities[1] = COORD.CreateEntity();
+	entities.push_back(COORD.CreateEntity());
+	entities.push_back(COORD.CreateEntity());
 
 
 	unsigned short int containerTexUnit = COORD.GenerateTexUnit("res/textures/container2.png", "PNG");

@@ -32,9 +32,30 @@ void EntityNode::AddEntity(Entity EID)
 	m_vec_Entites.push_back(EID);
 }
 
-std::vector<Entity> EntityNode::GetAllEntitesDownward()
+void EntityNode::GetAllEntitesDownward(std::vector<Entity>& entities)
 {
-	std::vector<Entity> entities;
 
+	for(int i = 0; i < m_vec_Entites.size(); ++i)
+	{
+		entities.push_back(m_vec_Entites[i]);
+	}
 
+	for(int i = 0; i < m_vec_children.size(); ++i)
+	{
+		m_vec_children[i].GetAllEntitesDownward(entities);
+	}
+
+}
+
+EntityNode& EntityNode::CreateNewChild()
+{
+	m_vec_children.emplace_back(EntityNode());
+	return m_vec_children.back();
+}
+
+Entity EntityNode::GetFirstEntity()
+{
+	DEBUG_ASSERT(!m_vec_Entites.empty(), "Attempting to retrive data from an empty vector in EntityNode.");
+
+	return m_vec_Entites[0];
 }

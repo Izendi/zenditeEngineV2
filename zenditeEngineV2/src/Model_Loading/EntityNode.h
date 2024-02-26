@@ -13,8 +13,6 @@ private:
 	std::vector<EntityNode> m_vec_children;
 	glm::mat4 m_localModelMat;
 
-	void getAllEntites(std::vector<Entity>& entities);
-
 public:
 	EntityNode();
 
@@ -23,6 +21,9 @@ public:
 
 	void AddEntity(Entity EID); //Entity must be created beforehand using COORD.CreateEntity();
 
-	std::vector<Entity> GetAllEntitesDownward();
+	void GetAllEntitesDownward(std::vector<Entity>& entities);
 
+	EntityNode& CreateNewChild();
+	
+	Entity GetFirstEntity();
 };
