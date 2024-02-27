@@ -17,7 +17,11 @@ void EntityNode::SetAllTransformCompoennts(glm::mat4 ParentModelMat, Coordinator
 	for(int i = 0; i < m_vec_Entites.size(); ++i)
 	{
 		c_Transform& transData = COORD.GetComponentDataFromEntity<c_Transform>(m_vec_Entites[i]);
-		transData.modelMat[0] = UniversalModelMat;
+
+		for (int j = 0; j < transData.modelMat.size(); ++j)
+		{
+			transData.modelMat[j] = UniversalModelMat;
+		}
 	}
 
 	for(int i = 0; i < m_vec_children.size(); ++i)

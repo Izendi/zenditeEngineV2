@@ -28,6 +28,11 @@ void EntityScene::SetShaderForAllSceneEntities(Coordinator& COORD, std::shared_p
 	}
 }
 
+void EntityScene::SetSceneEntities()
+{
+
+}
+
 std::vector<Entity> EntityScene::GetSceneEntities() const
 {
 	return m_vec_SceneEntities;

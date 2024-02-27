@@ -9,6 +9,10 @@
 #define MAX_BONE_INFLUENCE 4
 
 struct Vertex {
+	Vertex()
+	{
+
+	}
 
 	Vertex(glm::vec3 pos, 
 		glm::vec3 norm, 

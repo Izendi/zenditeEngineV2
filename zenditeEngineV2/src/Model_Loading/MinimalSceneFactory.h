@@ -13,6 +13,6 @@ protected:
 
 public:
 
-	EntityScene CreateEntityScene(std::string path, glm::mat4 worldModelMatrix, unsigned int NumRenderables) override;
+	EntityScene CreateEntityScene(std::string path, glm::mat4 worldModelMatrix, std::shared_ptr<Shader> shader, unsigned int NumRenderables) override;
 	void DestroyEntityScene(EntityScene& ES) override;
 };

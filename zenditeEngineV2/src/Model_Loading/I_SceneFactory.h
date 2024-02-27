@@ -30,7 +30,7 @@ private:
 
 
 public:
-	virtual EntityScene CreateEntityScene(std::string path, glm::mat4 worldModelMatrix, unsigned int NumRenderables) = 0;
+	virtual EntityScene CreateEntityScene(std::string path, glm::mat4 worldModelMatrix, std::shared_ptr<Shader> shader, unsigned int NumRenderables) = 0;
 	virtual void DestroyEntityScene(EntityScene& ES) = 0;
 
 };

@@ -15,6 +15,11 @@ void MinimalSceneFactory::ProcessAssimpNode(aiNode* node, const aiScene* scene, 
 		c_Texture c_tx;
 		c_Modified c_md;
 
+		for (int i = 0; i < NumRenderables; ++i)
+		{
+			c_tr.modelMat.push_back(glm::mat4(1.0f));
+		}
+
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 
 		ProcessMesh(mesh, scene, c_rend, c_tx);
@@ -31,7 +36,7 @@ void MinimalSceneFactory::ProcessAssimpNode(aiNode* node, const aiScene* scene, 
 	for(int i = 0; i < node->mNumChildren; ++i)
 	{
 		EntityNode& childNode = entNode.CreateNewChild();
-		ProcessAssimpNode(node->mChildren[i], scene, childNode);
+		ProcessAssimpNode(node->mChildren[i], scene, childNode, NumRenderables);
 	}
 
 }
@@ -97,12 +102,51 @@ void MinimalSceneFactory::ProcessMesh(aiMesh* mesh, const aiScene* scene, c_Rend
 
 
 	//Process Materials/Textures:
-	//#CONTINUE_HERE: Process textures using https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/model.h process mesh implmemtation as an example.
+	//#Improve_THIS_IS_A_BASIC_VERSION_FOR_TESTING: Process textures using https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/model.h process mesh implmemtation as an example.
+	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+	std::string texFilePath = "res/textures/rockySurface.png"; //default tex filepath.
+	//Only load diffuse for now:
+	if (material->GetTextureCount(aiTextureType_DIFFUSE) > 0) 
+	{
+		aiString path; // Path to the texture
+
+		// Get the path of the first diffuse texture
+		if (material->GetTexture(aiTextureType_DIFFUSE, 0, &path) == AI_SUCCESS)
+		{
+			std::cout << "path = " << texFilePath << std::endl;
+			texFilePath = path.C_Str();
+		}
+	}
+
+	unsigned int texUnit = COORD.GenerateTexUnit(texFilePath, "JPG"); //Assume jpg but will need to make dynamic in future.
+	
+	c_tx.texUnit = texUnit;
+	c_tx.type = "JPG";
 
 }
 
-EntityScene MinimalSceneFactory::CreateEntityScene(std::string path, glm::mat4 worldModelMatrix, unsigned int NumRenderables)
+EntityScene MinimalSceneFactory::CreateEntityScene(std::string path, glm::mat4 worldModelMatrix, std::shared_ptr<Shader> shader, unsigned int NumRenderables)
 {
+	EntityNode RootNode;
+
+	Assimp::Importer importer;
+
+	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+
+	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
+	{
+		std::cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << std::endl;
+		DEBUG_ASSERT(false, "Unable to load assimp file");
+	}
+
+	ProcessAssimpNode(scene->mRootNode, scene, RootNode, NumRenderables);
+	RootNode.SetAllTransformCompoennts(worldModelMatrix, COORD);
+
+	EntityScene SceneObj(RootNode, worldModelMatrix);
+
+	SceneObj.SetShaderForAllSceneEntities(COORD, shader);
+
+	return SceneObj;
 
 }
 
