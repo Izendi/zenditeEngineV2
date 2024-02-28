@@ -1,6 +1,7 @@
+#include "../Coordinator.h"
 #include "MinimalSceneFactory.h"
 
-void MinimalSceneFactory::ProcessAssimpNode(aiNode* node, const aiScene* scene, EntityNode& entNode, unsigned int NumRenderables)
+void MinimalSceneFactory::ProcessAssimpNode(std::string dir, aiNode* node, const aiScene* scene, EntityNode& entNode, unsigned int NumRenderables)
 {
 	entNode.SetLocalModelMat(ConvertAssimpMMtoGlmMM(node->mTransformation));
 
@@ -22,7 +23,7 @@ void MinimalSceneFactory::ProcessAssimpNode(aiNode* node, const aiScene* scene, 
 
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 
-		ProcessMesh(mesh, scene, c_rend, c_tx);
+		ProcessMesh(dir, mesh, scene, c_rend, c_tx);
 
 		c_md.isModifed = true;
 
@@ -33,16 +34,17 @@ void MinimalSceneFactory::ProcessAssimpNode(aiNode* node, const aiScene* scene, 
 
 	}
 
+	std::cout << node->mNumChildren << std::endl;
 	for(int i = 0; i < node->mNumChildren; ++i)
 	{
 		EntityNode& childNode = entNode.CreateNewChild();
-		ProcessAssimpNode(node->mChildren[i], scene, childNode, NumRenderables);
+		ProcessAssimpNode(dir, node->mChildren[i], scene, childNode, NumRenderables);
 	}
 
 }
 
 //#REFERENCE: large parts of this function were taken from the leanopengl processMesh function example code: https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/model.h
-void MinimalSceneFactory::ProcessMesh(aiMesh* mesh, const aiScene* scene, c_Renderable& c_Rd, c_Texture& c_tx)
+void MinimalSceneFactory::ProcessMesh(std::string dir, aiMesh* mesh, const aiScene* scene, c_Renderable& c_Rd, c_Texture& c_tx)
 {
 	for(unsigned int i = 0; i < mesh->mNumVertices; i++)
 	{
@@ -100,7 +102,6 @@ void MinimalSceneFactory::ProcessMesh(aiMesh* mesh, const aiScene* scene, c_Rend
 		}
 	}
 
-
 	//Process Materials/Textures:
 	//#Improve_THIS_IS_A_BASIC_VERSION_FOR_TESTING: Process textures using https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/model.h process mesh implmemtation as an example.
 	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
@@ -113,8 +114,9 @@ void MinimalSceneFactory::ProcessMesh(aiMesh* mesh, const aiScene* scene, c_Rend
 		// Get the path of the first diffuse texture
 		if (material->GetTexture(aiTextureType_DIFFUSE, 0, &path) == AI_SUCCESS)
 		{
+			std::string std_path = path.C_Str();
+			texFilePath = dir + std_path;
 			std::cout << "path = " << texFilePath << std::endl;
-			texFilePath = path.C_Str();
 		}
 	}
 
@@ -125,13 +127,18 @@ void MinimalSceneFactory::ProcessMesh(aiMesh* mesh, const aiScene* scene, c_Rend
 
 }
 
-EntityScene MinimalSceneFactory::CreateEntityScene(std::string path, glm::mat4 worldModelMatrix, std::shared_ptr<Shader> shader, unsigned int NumRenderables)
+MinimalSceneFactory::MinimalSceneFactory(Coordinator& coorinator) : I_SceneFactory(coorinator)
+{
+
+}
+
+EntityScene MinimalSceneFactory::CreateEntityScene(std::string dir, std::string objFile, glm::mat4 worldModelMatrix, std::shared_ptr<Shader> shader, unsigned int NumRenderables)
 {
 	EntityNode RootNode;
 
 	Assimp::Importer importer;
-
-	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+	std::string dir_objFile = dir + objFile;
+	const aiScene* scene = importer.ReadFile(dir_objFile, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
 	{
@@ -139,7 +146,7 @@ EntityScene MinimalSceneFactory::CreateEntityScene(std::string path, glm::mat4 w
 		DEBUG_ASSERT(false, "Unable to load assimp file");
 	}
 
-	ProcessAssimpNode(scene->mRootNode, scene, RootNode, NumRenderables);
+	ProcessAssimpNode(dir, scene->mRootNode, scene, RootNode, NumRenderables);
 	RootNode.SetAllTransformCompoennts(worldModelMatrix, COORD);
 
 	EntityScene SceneObj(RootNode, worldModelMatrix);

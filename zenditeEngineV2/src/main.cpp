@@ -16,6 +16,8 @@
 #include "Coordinator.h"
 #include "ECS/Components.h"
 
+#include "Model_Loading/MinimalSceneFactory.h"
+
 //ECS implementation ver 3.0
 const unsigned int SHADOW_WIDTH = 8192, SHADOW_HEIGHT = 8192;
 
@@ -106,6 +108,7 @@ int main(void)
 	std::shared_ptr<Shader> sh_basicWithTex = std::make_shared<Shader>("res/shaders/BasicShaders/vs_cubeWnormANDtex.glsl",
 		"res/shaders/BasicShaders/fs_cubeWnormANDtex.glsl"); //#Shaders have not yet been abstracted into the API_Manger
 
+	std::unique_ptr<I_SceneFactory> sceneFactory = std::make_unique<MinimalSceneFactory>(COORD);
 
 	//#TODO Need to pass data read in from the model loader to the ECS system for rendering.
 	float vertCubePosData[] = {
@@ -520,6 +523,14 @@ int main(void)
 	auto& posData = COORD.GetComponentDataFromEntity<c_Transform>(entities[0]);
 	auto& texData = COORD.GetComponentDataFromEntity<c_Texture>(entities[0]);
 	auto& modifiedData = COORD.GetComponentDataFromEntity<c_Modified>(entities[0]);
+
+	glm::mat4 mm_tr3 = glm::mat4(1.0f);
+	glm::vec3 pos_tr3(4.0f, -1.0f, 2.5f);
+	glm::vec3 scale_tr3(0.5f, 0.5f, 0.5f);
+	mm_tr3 = glm::translate(mm_tr3, pos_tr3);
+	mm_tr3 = glm::scale(mm_tr3, scale_tr3);
+	
+	EntityScene ES_0 = sceneFactory->CreateEntityScene("res/models/backpack/", "backpack.obj", mm_tr3, sh_basicWithTex, 1);
 
 	std::cout << "\nImGui Version: " << IMGUI_VERSION << std::endl;
 

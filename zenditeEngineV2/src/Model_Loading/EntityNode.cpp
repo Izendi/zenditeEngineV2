@@ -1,4 +1,7 @@
 #include "EntityNode.h"
+#include "../Coordinator.h"
+//#include "../ECS/Components.h"
+
 
 EntityNode::EntityNode()
 {
@@ -46,14 +49,14 @@ void EntityNode::GetAllEntitesDownward(std::vector<Entity>& entities)
 
 	for(int i = 0; i < m_vec_children.size(); ++i)
 	{
-		m_vec_children[i].GetAllEntitesDownward(entities);
+		m_vec_children[i]->GetAllEntitesDownward(entities);
 	}
 
 }
 
-EntityNode& EntityNode::CreateNewChild()
+std::shared_ptr<EntityNode> EntityNode::CreateNewChild()
 {
-	m_vec_children.emplace_back(EntityNode());
+	m_vec_children.emplace_back(std::make_shared<EntityNode()>);
 	return m_vec_children.back();
 }
 

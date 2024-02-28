@@ -1,16 +1,20 @@
 #pragma once
 
-#include "../Coordinator.h"
+//#include "../Coordinator.h"
+#include "../ECS/ECSUtils.h"
+#include "../utils.h"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include "../vendor/stb_image/stb_image.h"
 
+class Coordinator;
+
 class EntityNode
 {
 private:
 	std::vector<Entity> m_vec_Entites;
-	std::vector<EntityNode> m_vec_children;
+	std::vector<std::shared_ptr<EntityNode>> m_vec_children;
 	glm::mat4 m_localModelMat;
 
 public:
@@ -23,7 +27,7 @@ public:
 
 	void GetAllEntitesDownward(std::vector<Entity>& entities);
 
-	EntityNode& CreateNewChild();
+	std::shared_ptr<EntityNode> CreateNewChild();
 	
 	Entity GetFirstEntity();
 };

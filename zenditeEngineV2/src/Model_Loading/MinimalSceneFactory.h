@@ -5,14 +5,16 @@ class MinimalSceneFactory : public I_SceneFactory
 {
 
 protected:
-	void ProcessAssimpNode(aiNode* node, const aiScene* scene, EntityNode& entNode, unsigned int NumRenderables) override;
+	void ProcessAssimpNode(std::string dir, aiNode* node, const aiScene* scene, EntityNode& entNode, unsigned int NumRenderables) override;
 
 
-	void ProcessMesh(aiMesh* mesh, const aiScene* scene, c_Renderable& c_Rd, c_Texture& c_tx) override;
+	void ProcessMesh(std::string dir, aiMesh* mesh, const aiScene* scene, c_Renderable& c_Rd, c_Texture& c_tx) override;
 
 
 public:
 
-	EntityScene CreateEntityScene(std::string path, glm::mat4 worldModelMatrix, std::shared_ptr<Shader> shader, unsigned int NumRenderables) override;
+	MinimalSceneFactory(Coordinator& coorinator);
+
+	EntityScene CreateEntityScene(std::string dir, std::string objFile, glm::mat4 worldModelMatrix, std::shared_ptr<Shader> shader, unsigned int NumRenderables) override;
 	void DestroyEntityScene(EntityScene& ES) override;
 };
