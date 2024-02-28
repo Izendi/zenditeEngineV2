@@ -103,10 +103,9 @@ void genMenu_1(std::vector<Entity>& entities, Coordinator& COORD, short int cont
                         ImGui::TextColored(ImVec4(1.0f, 0.0f, 1.0f, 1.0f), "Entity is not renderable");
                     }
                     
+                    ImGui::NewLine();
 
                     ImGui::SeparatorText("Transform:");
-
-                    ImGui::Separator;
 
 
                     if (ImGui::InputFloat3("Position XYZ", & posData.pos[0]))  //Position
@@ -122,6 +121,7 @@ void genMenu_1(std::vector<Entity>& entities, Coordinator& COORD, short int cont
                         // You can handle the change here if needed.
                     }
 
+                    ImGui::NewLine();
                     ImGui::SeparatorText("Collider box:");
 
                     if (ImGui::InputFloat3("AABB scale", &aabb.scale[0]))
@@ -134,8 +134,26 @@ void genMenu_1(std::vector<Entity>& entities, Coordinator& COORD, short int cont
 
                     ImGui::NewLine();
 
-                    // We were trying to add custom texture here via openLocalRepository() but it didn't work
+                    ImGui::SeparatorText("Light");
+                    static int e = 0;
+                    ImGui::RadioButton("Spot", &e, 0); ImGui::SameLine();
+                    ImGui::RadioButton("Directional", &e, 1); ImGui::SameLine();
+                    ImGui::RadioButton("Area", &e, 2);
+                    ImGui::NewLine();
+                    static float f0 = 0.5f;
+                    ImGui::SliderFloat("Intensity", &f0, 0.0f, 1.0f);
+                    static float vec4a[4] = { 0.10f, 0.20f, 0.30f, 0.44f };
+                    ImGui::InputFloat3("Position XYZ", vec4a);  //Position
+                    ImGui::InputFloat3("Scale XYZ", vec4a);  //Scale
 
+
+
+
+                  
+   
+
+                    // We were trying to add custom texture here via openLocalRepository() but it didn't work
+                    ImGui::NewLine();
                     ImGui::SeparatorText("Texture:");
 
                     // Simple selection popup (if you want to show the current selection inside the Button itself,
