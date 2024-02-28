@@ -29,5 +29,5 @@ public:
 
 	std::shared_ptr<EntityNode> CreateNewChild();
 	
-	Entity GetFirstEntity();
+	//Entity GetFirstEntity();
 };

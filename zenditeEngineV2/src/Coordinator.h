@@ -46,6 +46,8 @@ public:
 
 	void SetUpSystemBitsets();
 
+	uint32_t GetActiveEntities() const;
+
 	template<typename T>
 	Signature GetSystemBitset()
 	{

@@ -55,4 +55,9 @@ public:
 		return m_entitySignatures[EID];
 	}
 
+	uint32_t GetActiveEntites() const
+	{
+		return m_activeEntities;
+	}
+
 };

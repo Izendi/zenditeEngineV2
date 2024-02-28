@@ -23,6 +23,11 @@ public:
 		m_SystemManager = std::make_shared<SystemManager>();
 	}
 
+	uint32_t GetActiveEntities() const
+	{
+		return m_EntityManager->GetActiveEntites();
+	}
+
 	std::set<Entity>* GetWallAABBEntitiesSetPtr()
 	{
 		return m_set_WallAABBEntities;

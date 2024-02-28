@@ -61,9 +61,11 @@ std::shared_ptr<EntityNode> EntityNode::CreateNewChild()
 	return m_vec_children.back();
 }
 
+/*
 Entity EntityNode::GetFirstEntity()
 {
 	DEBUG_ASSERT(!m_vec_Entites.empty(), "Attempting to retrive data from an empty vector in EntityNode.");
 
 	return m_vec_Entites[0];
 }
+*/

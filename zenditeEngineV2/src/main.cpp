@@ -28,8 +28,6 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
 
-void moveEntityBackAndFourth(c_Transform& entTrans, float DT);
-
 // camera
 std::shared_ptr<Camera> camera = std::make_shared<Camera>(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = SCR_WIDTH / 2.0f;
@@ -400,7 +398,7 @@ int main(void)
 	entities.push_back(COORD.CreateEntity());
 
 
-	unsigned short int containerTexUnit = COORD.GenerateTexUnit("res/textures/container2.png", "PNG");
+	unsigned short int containerTexUnit = COORD.GenerateTexUnit("res/textures/wall.jpg", "JPG");
 	unsigned short int rockySurfaceTexUnit = COORD.GenerateTexUnit("res/textures/rockySurface.png", "PNG");
 	//unsigned short int heightMapTex = COORD.GenerateTexUnit("res/textures/heightmap.png", "PNG");
 
@@ -525,12 +523,42 @@ int main(void)
 	auto& modifiedData = COORD.GetComponentDataFromEntity<c_Modified>(entities[0]);
 
 	glm::mat4 mm_tr3 = glm::mat4(1.0f);
-	glm::vec3 pos_tr3(4.0f, -1.0f, 2.5f);
-	glm::vec3 scale_tr3(0.5f, 0.5f, 0.5f);
+	glm::vec3 pos_tr3(3.0f, 0.0f, 0.0f);
+	glm::vec3 scale_tr3(1.0f, 1.0f, 1.0f);
 	mm_tr3 = glm::translate(mm_tr3, pos_tr3);
 	mm_tr3 = glm::scale(mm_tr3, scale_tr3);
 	
 	EntityScene ES_0 = sceneFactory->CreateEntityScene("res/models/backpack/", "backpack.obj", mm_tr3, sh_basicWithTex, 1);
+	std::vector<Entity> tmpEntStorage = ES_0.GetSceneEntities();
+	for(int i = 0; i < tmpEntStorage.size(); ++i)
+	{
+		entities.push_back(tmpEntStorage[i]);
+	}
+	pos_tr3.x = 2.0f;
+	mm_tr3 = glm::translate(mm_tr3, pos_tr3);
+
+	ES_0.SetSceneModelMat(mm_tr3, COORD);
+	Entity RootEntity = ES_0.GetRootNodeRootEntity();
+	auto& REpos = COORD.GetComponentDataFromEntity<c_Transform>(RootEntity);
+
+	// -----------------
+
+	glm::mat4 mm_tr4 = glm::mat4(1.0f);
+	glm::vec3 pos_tr4(-3.0f, 0.0f, 0.0f);
+	glm::vec3 scale_tr4(1.0f, 1.0f, 1.0f);
+	mm_tr4 = glm::translate(mm_tr4, pos_tr4);
+	mm_tr4 = glm::scale(mm_tr4, scale_tr4);
+
+	EntityScene ES_1 = sceneFactory->CreateEntityScene("res/models/testObj/", "testObj.obj", mm_tr4, sh_basicWithTex, 1);
+	std::vector<Entity> tmpEntStorage2 = ES_1.GetSceneEntities();
+	for (int i = 0; i < tmpEntStorage2.size(); ++i)
+	{
+		entities.push_back(tmpEntStorage2[i]);
+	}
+	pos_tr4.x = 2.0f;
+	mm_tr4 = glm::translate(mm_tr4, pos_tr4);
+
+	std::cout << "\nEntities size = " << COORD.GetActiveEntities() << std::endl;
 
 	std::cout << "\nImGui Version: " << IMGUI_VERSION << std::endl;
 
@@ -551,7 +579,27 @@ int main(void)
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		moveEntityBackAndFourth(COORD.GetComponentDataFromEntity<c_Transform>(entities[0]), deltaTime);
+		/*
+		if (REpos.modelMat[0][3][0] < (0.0f))
+		{
+			pos_tr3.x = 0.4f * deltaTime;
+			mm_tr3 = glm::translate(mm_tr3, pos_tr3);
+
+			ES_0.SetSceneModelMat(mm_tr3, COORD);
+		}
+		else if(REpos.modelMat[0][3][0] > (8.0f))
+		{
+			pos_tr3.x = -0.4f * deltaTime;
+			mm_tr3 = glm::translate(mm_tr3, pos_tr3);
+
+			ES_0.SetSceneModelMat(mm_tr3, COORD);
+		}
+		*/
+
+		//pos_tr3.x = 0.4f * deltaTime;
+		//mm_tr3 = glm::translate(mm_tr3, pos_tr3);
+		//REpos.modelMat[0][3][0] = REpos.modelMat[0][3][0] + 0.4f * deltaTime; //move a single node
+		//ES_0.SetSceneModelMat(mm_tr3, COORD);
 
 		COORD.runAllSystems(2.0f, &entities); //#ECS_RENDERING
 
@@ -594,20 +642,6 @@ int main(void)
 	//std::cin.get();
 
 	return 0;
-}
-
-void moveEntityBackAndFourth(c_Transform& entTrans, float DT)
-{
-	/*
-	if(entTrans.pos[0].z > (-4.0f))
-	{
-		entTrans.pos[0].z = entTrans.pos[0].z + (DT * (-0.4f));
-	}
-	else
-	{
-		entTrans.pos[0].z = entTrans.pos[0].z + (DT * 0.4f);
-	}
-	*/
 }
 
 void processInput(GLFWwindow* window)

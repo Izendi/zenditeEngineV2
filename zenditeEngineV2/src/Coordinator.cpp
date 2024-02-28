@@ -122,6 +122,11 @@ void Coordinator::SetUpSystemBitsets()
 	m_ECSCoord->SetSystemBitsetSignature<WallCollisionHandlingSystem>(WallCollisionHandlingSystemSig);
 }
 
+uint32_t Coordinator::GetActiveEntities() const
+{
+	return m_ECSCoord->GetActiveEntities();
+}
+
 Signature Coordinator::GetEntitySignature(Entity EID)
 {
 	return m_ECSCoord->GetEntitySignature(EID);

@@ -14,7 +14,7 @@ private:
 public:
 	EntityScene(EntityNode EN, glm::mat4 sceneMM);
 
-	void SetSceneModelMat(glm::mat4 ModelMat);
+	void SetSceneModelMat(glm::mat4 ModelMat, Coordinator& COORD);
 	void SetScenePos(glm::vec3 pos); //Sets the transform components of the model matrix (will make it easier to work with in certain situations)
 	void SetShaderForAllSceneEntities(Coordinator& COORD, std::shared_ptr<Shader> shaderPtr); //Loop through m_vec_SceneEntities and assign this shader.
 	void SetSceneEntities();

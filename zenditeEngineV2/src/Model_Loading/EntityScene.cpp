@@ -7,9 +7,10 @@ EntityScene::EntityScene(EntityNode EN, glm::mat4 sceneMM)
 	m_RootNode.GetAllEntitesDownward(m_vec_SceneEntities);
 }
 
-void EntityScene::SetSceneModelMat(glm::mat4 ModelMat)
+void EntityScene::SetSceneModelMat(glm::mat4 ModelMat, Coordinator& COORD)
 {
 	m_EntitySceneModelMatrix = ModelMat;
+	m_RootNode.SetAllTransformCompoennts(m_EntitySceneModelMatrix, COORD);
 }
 
 void EntityScene::SetScenePos(glm::vec3 pos)
@@ -40,5 +41,5 @@ std::vector<Entity> EntityScene::GetSceneEntities() const
 
 Entity EntityScene::GetRootNodeRootEntity()
 {
-	return m_RootNode.GetFirstEntity();
+	return m_vec_SceneEntities[0];
 }

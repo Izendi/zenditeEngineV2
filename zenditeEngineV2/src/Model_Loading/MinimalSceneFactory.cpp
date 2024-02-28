@@ -33,7 +33,7 @@ void MinimalSceneFactory::ProcessAssimpNode(std::string dir, aiNode* node, const
 		COORD.AddComponentToEntity<c_Renderable>(ent, c_rend);
 		COORD.AddComponentToEntity<c_Texture>(ent, c_tx);
 		COORD.AddComponentToEntity<c_Modified>(ent, c_md);
-
+		COORD.SetUpRenderData(ent);
 	}
 
 	std::cout << node->mNumChildren << std::endl;
@@ -58,8 +58,8 @@ void MinimalSceneFactory::ProcessMesh(std::string dir, aiMesh* mesh, const aiSce
 		glm::vec3 btan(0.0f, 0.0f, 0.0f);
 
 		posData.x = mesh->mVertices[i].x;
-		posData.x = mesh->mVertices[i].y;
-		posData.x = mesh->mVertices[i].z;
+		posData.y = mesh->mVertices[i].y;
+		posData.z = mesh->mVertices[i].z;
 
 		if(mesh->HasNormals())
 		{
@@ -71,7 +71,7 @@ void MinimalSceneFactory::ProcessMesh(std::string dir, aiMesh* mesh, const aiSce
 		if(mesh->mTextureCoords[0]) //check if mesh has texture coordinates.
 		{
 			txCoord.x = mesh->mTextureCoords[0][i].x;
-			txCoord.x = mesh->mTextureCoords[0][i].y;
+			txCoord.y = mesh->mTextureCoords[0][i].y;
 
 			//#probably_will_not_use_these, but saw them in the learnopengl implementation, they might be useful in the future:
 			tang.x = mesh->mTangents[i].x;
@@ -118,7 +118,7 @@ void MinimalSceneFactory::ProcessMesh(std::string dir, aiMesh* mesh, const aiSce
 		{
 			std::string std_path = path.C_Str();
 			texFilePath = dir + std_path;
-			std::cout << "path = " << texFilePath << std::endl;
+			
 		}
 	}
 
