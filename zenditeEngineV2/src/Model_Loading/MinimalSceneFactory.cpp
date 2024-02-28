@@ -36,7 +36,6 @@ void MinimalSceneFactory::ProcessAssimpNode(std::string dir, aiNode* node, const
 		COORD.SetUpRenderData(ent);
 	}
 
-	std::cout << node->mNumChildren << std::endl;
 	for(int i = 0; i < node->mNumChildren; ++i)
 	{
 		std::shared_ptr<EntityNode> childNode = entNode.CreateNewChild();
