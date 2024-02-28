@@ -5,8 +5,8 @@
 #include "EntityScene.h"
 
 class Coordinator;
-class c_Renderable;
-class c_Texture;
+struct c_Renderable;
+struct c_Texture;
 
 class I_SceneFactory
 {

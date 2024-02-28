@@ -1,6 +1,6 @@
 #include "EntityNode.h"
 #include "../Coordinator.h"
-//#include "../ECS/Components.h"
+#include "../ECS/Components.h"
 
 
 EntityNode::EntityNode()
@@ -29,7 +29,7 @@ void EntityNode::SetAllTransformCompoennts(glm::mat4 ParentModelMat, Coordinator
 
 	for(int i = 0; i < m_vec_children.size(); ++i)
 	{
-		SetAllTransformCompoennts(UniversalModelMat, COORD);
+		m_vec_children[i]->SetAllTransformCompoennts(UniversalModelMat, COORD);
 	}
 
 }
@@ -56,7 +56,8 @@ void EntityNode::GetAllEntitesDownward(std::vector<Entity>& entities)
 
 std::shared_ptr<EntityNode> EntityNode::CreateNewChild()
 {
-	m_vec_children.emplace_back(std::make_shared<EntityNode()>);
+
+	m_vec_children.emplace_back(std::make_shared<EntityNode>());
 	return m_vec_children.back();
 }
 

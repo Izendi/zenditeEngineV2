@@ -3,9 +3,9 @@
 #include "../utils.h"
 #include "../ECS/ECSUtils.h"
 
-class ECSCoordinator;
-class c_Transform;
-class c_AABB;
+struct ECSCoordinator;
+struct c_Transform;
+struct c_AABB;
 
 class I_Renderer
 {

@@ -1,5 +1,7 @@
-#include "../Coordinator.h"
 #include "MinimalSceneFactory.h"
+#include "../Coordinator.h"
+#include "../ECS/Components.h"
+
 
 void MinimalSceneFactory::ProcessAssimpNode(std::string dir, aiNode* node, const aiScene* scene, EntityNode& entNode, unsigned int NumRenderables)
 {
@@ -37,8 +39,8 @@ void MinimalSceneFactory::ProcessAssimpNode(std::string dir, aiNode* node, const
 	std::cout << node->mNumChildren << std::endl;
 	for(int i = 0; i < node->mNumChildren; ++i)
 	{
-		EntityNode& childNode = entNode.CreateNewChild();
-		ProcessAssimpNode(dir, node->mChildren[i], scene, childNode, NumRenderables);
+		std::shared_ptr<EntityNode> childNode = entNode.CreateNewChild();
+		ProcessAssimpNode(dir, node->mChildren[i], scene, *childNode, NumRenderables);
 	}
 
 }
