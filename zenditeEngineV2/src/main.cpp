@@ -662,7 +662,6 @@ void processInput(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
 		camera->ProcessKeyboard(DOWN, deltaTime);
 
-	
 	if(glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
 	{
 
