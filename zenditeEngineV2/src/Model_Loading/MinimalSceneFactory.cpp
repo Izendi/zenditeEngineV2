@@ -104,27 +104,33 @@ void MinimalSceneFactory::ProcessMesh(std::string dir, aiMesh* mesh, const aiSce
 	}
 
 	//Process Materials/Textures:
-	//#Improve_THIS_IS_A_BASIC_VERSION_FOR_TESTING: Process textures using https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/model.h process mesh implmemtation as an example.
+	//#Improve_THIS_IS_A_BASIC_VERSION_FOR_TESTING: Process textures using https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/model.h process mesh implementation as an example:
 	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 	std::string texFilePath = "res/textures/rockySurface.png"; //default tex filepath.
+	std::string fileExtension = "png";
+
 	//Only load diffuse for now:
 	if (material->GetTextureCount(aiTextureType_DIFFUSE) > 0) 
 	{
 		aiString path; // Path to the texture
-
+		std::string std_path;
+		
 		// Get the path of the first diffuse texture
 		if (material->GetTexture(aiTextureType_DIFFUSE, 0, &path) == AI_SUCCESS)
 		{
-			std::string std_path = path.C_Str();
+			std_path = path.C_Str();
 			texFilePath = dir + std_path;
-			
 		}
+
+		size_t dotPosition = std_path.find_last_of(".");
+		fileExtension = std_path.substr(dotPosition + 1);
+		
 	}
 
-	unsigned int texUnit = COORD.GenerateTexUnit(texFilePath, "JPG"); //Assume jpg but will need to make dynamic in future.
+	unsigned int texUnit = COORD.GenerateTexUnit(texFilePath, fileExtension); //Assume jpg but will need to make dynamic in future.
 	
 	c_tx.texUnit = texUnit;
-	c_tx.type = "JPG";
+	c_tx.type = fileExtension;
 
 }
 

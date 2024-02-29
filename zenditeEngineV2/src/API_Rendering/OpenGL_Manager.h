@@ -169,7 +169,7 @@ public:
 		{
 			textures.push_back(std::make_shared<TextureData>(texFilePath));
 
-			if(fileType == "JPG")
+			if(fileType == "jpg")
 			{
 				(textures[No_texUnits])->setupTextureJPG(No_texUnits, texFilePath);
 			}

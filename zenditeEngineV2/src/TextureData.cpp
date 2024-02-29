@@ -65,8 +65,8 @@ void TextureData::setupTexturePNG(unsigned int unit, std::string texfilepath)
 	setTexParameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	setTexParameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imgWidth, imgHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, imgData);
-	glGenerateMipmap(GL_TEXTURE_2D); //#FIX_URGENT Throws Exceptions randomly.
+	GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imgWidth, imgHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, imgData));
+	GLCALL(glGenerateMipmap(GL_TEXTURE_2D)); //#FIX_URGENT Throws Exceptions randomly.
 	stbi_image_free(imgData);
 }
 

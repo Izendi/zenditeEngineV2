@@ -398,8 +398,8 @@ int main(void)
 	entities.push_back(COORD.CreateEntity());
 
 
-	unsigned short int containerTexUnit = COORD.GenerateTexUnit("res/textures/wall.jpg", "JPG");
-	unsigned short int rockySurfaceTexUnit = COORD.GenerateTexUnit("res/textures/rockySurface.png", "PNG");
+	unsigned short int containerTexUnit = COORD.GenerateTexUnit("res/textures/wall.jpg", "jpg");
+	unsigned short int rockySurfaceTexUnit = COORD.GenerateTexUnit("res/textures/rockySurface.png", "png");
 	//unsigned short int heightMapTex = COORD.GenerateTexUnit("res/textures/heightmap.png", "PNG");
 
 
@@ -596,10 +596,10 @@ int main(void)
 		}
 		*/
 
-		//pos_tr3.x = 0.4f * deltaTime;
-		//mm_tr3 = glm::translate(mm_tr3, pos_tr3);
+		pos_tr3.x = 0.4f * deltaTime;
+		mm_tr3 = glm::translate(mm_tr3, pos_tr3);
 		//REpos.modelMat[0][3][0] = REpos.modelMat[0][3][0] + 0.4f * deltaTime; //move a single node
-		//ES_0.SetSceneModelMat(mm_tr3, COORD);
+		ES_0.SetSceneModelMat(mm_tr3, COORD);
 
 		COORD.runAllSystems(2.0f, &entities); //#ECS_RENDERING
 
