@@ -733,7 +733,6 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 
 		camera->ProcessMouseMovement(xoffset, yoffset);
 	}
-	
 }
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
