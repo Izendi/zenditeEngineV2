@@ -502,6 +502,7 @@ int main(void)
 		bindVao(VAO_LightCube);
 
 		glm::mat4 LC_modelMat = glm::mat4(1.0f);
+		glm::vec3 LC_ColorRGB = glm::vec3(0.7f, 0.0f, 0.0f);
 
 		LC_modelMat = glm::translate(LC_modelMat, lightPos);
 		LC_modelMat = glm::scale(LC_modelMat, glm::vec3(0.2f));
@@ -510,6 +511,8 @@ int main(void)
 		shader_LightSource.setUniformMat4("projMat", GL_FALSE, glm::value_ptr(projMat));
 		shader_LightSource.setUniformMat4("modelMat", GL_FALSE, glm::value_ptr(LC_modelMat));
 
+		//lightRGB
+		shader_LightSource.setUniform3fv("lightRGB", LC_ColorRGB.x, LC_ColorRGB.y, LC_ColorRGB.z);
 
 		GLCALL(glDrawArrays(GL_TRIANGLES, 0, 36));
 	
