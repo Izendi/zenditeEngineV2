@@ -37,11 +37,6 @@ void genMenu_1(std::vector<Entity>& entities, Coordinator& COORD, short int cont
 
     // Here, you can start using ImGui to create interfaces
 
-
-
-
-
-
     if (ImGui::Begin("Entities", nullptr))
     {
         ImGui::SetNextWindowSize(ImVec2(500, 440), ImGuiCond_FirstUseEver);
@@ -49,16 +44,56 @@ void genMenu_1(std::vector<Entity>& entities, Coordinator& COORD, short int cont
         static int selected = 0;
         {
             ImGui::BeginChild("left pane", ImVec2(150, 0), ImGuiChildFlags_Border | ImGuiChildFlags_ResizeX);
-            for (int i = 0; i < entities.size(); i++)
+            
+            for (int i = 0; i < 1; i++)
             {
                 // FIXME: Good candidate to use ImGuiSelectableFlags_SelectOnNav
                 char label[50];
                 std::string name = COORD.GetComponentDataFromEntity<c_EntityInfo>(entities[i]).name;
+                sprintf_s(label, " %s", name.c_str());
+                if (ImGui::Selectable(label, selected == i))
+                        selected = i;
+            }               
 
+            if (int i = 1)
+            {
+                // FIXME: Good candidate to use ImGuiSelectableFlags_SelectOnNav
+                char label[50];
+                std::string name = COORD.GetComponentDataFromEntity<c_EntityInfo>(entities[i]).name;
                 sprintf_s(label, " %s", name.c_str());
                 if (ImGui::Selectable(label, selected == i))
                     selected = i;
             }
+            
+            if (ImGui::TreeNode(" ")) {               
+                for (int i = 2; i < 3; i++)
+                {
+                    // FIXME: Good candidate to use ImGuiSelectableFlags_SelectOnNav
+                    char label[50];
+                    std::string name = COORD.GetComponentDataFromEntity<c_EntityInfo>(entities[i]).name;
+                    sprintf_s(label, " %s", name.c_str());
+                    if (ImGui::Selectable(label, selected == i))
+                        selected = i;
+                }
+
+                for (int i = 3; i < 4; i++)
+                {
+                    // FIXME: Good candidate to use ImGuiSelectableFlags_SelectOnNav
+                    char label[50];
+                    std::string name = COORD.GetComponentDataFromEntity<c_EntityInfo>(entities[1]).name;
+                    sprintf_s(label, " %s", name.c_str());
+                    if (ImGui::Selectable(label, selected == i))
+                        selected = i;
+                }
+                ImGui::TreePop();
+            }         
+
+            ImGui::BeginChild("item view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()));
+            {
+                ImGui::EndChild();
+            }
+            if (ImGui::Button("Load Model")) {}
+            ImGui::SameLine();                      
             ImGui::EndChild();
 
         }
@@ -69,33 +104,47 @@ void genMenu_1(std::vector<Entity>& entities, Coordinator& COORD, short int cont
             auto& posData = COORD.GetComponentDataFromEntity<c_Transform>(entities[selected]);
             auto& texData = COORD.GetComponentDataFromEntity<c_Texture>(entities[selected]);
             auto& modified = COORD.GetComponentDataFromEntity<c_Modified>(entities[selected]);
-
             auto& infoData = COORD.GetComponentDataFromEntity<c_EntityInfo>(entities[selected]);
 
-            const char* names[] = { "Moving cube", "Long cube", "Wall cube", "Test cube" };
+            const char* names[] = { "Cube 1", "Cube 2", "Object 1", "Object 2" };
 
             ImGui::BeginGroup();
             ImGui::BeginChild("item view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
             ImGui::Text("%s", names[selected]);
             ImGui::Separator();
+
             if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
             {
                 if (ImGui::BeginTabItem("Description"))
-                {
+                {  
                     ImGui::TextUnformatted("Transform:");
-                    if (ImGui::SliderFloat3("Position XYZ", &posData.pos[0], -10.0f, 5.0f));  //Position
+
+                    ImGui::Text("Details of %s", COORD.GetComponentDataFromEntity<c_EntityInfo>(entities[selected]).name.c_str());
+                  
+                    if (selected == 1) // If cube 2 is selected
+                    {
+                        auto& posData = COORD.GetComponentDataFromEntity<c_Transform>(entities[2]); // Assuming entity 2 is cube 2
+                        ImGui::SliderFloat3("Position XYZ", &posData.pos[0], -10.0f, 5.0f);                                               
+                         // Assuming range is from -10 to 10
+                    }                    
+                    if (selected == 3) // If object 1 is selected
+                    {
+                        auto& posData1 = COORD.GetComponentDataFromEntity<c_Transform>(entities[1]); // Assuming entity 1 is cube 3
+                        ImGui::SliderFloat3("Position XYZ", &posData1.pos[0], -10.0f, 5.0f);
+                        // Assuming range is from -10 to 10
+                    }
+                    if (selected != 3)
                     {
                         // The slider was used; myVec3 has been updated.
                         // You can handle the change here if needed.
+                        ImGui::SliderFloat3("Position XYZ", &posData.pos[0], -10.0f, 5.0f);  //Position
                     }
-
                     if (ImGui::SliderFloat3("Scale XYZ", &posData.scale[0], -5.0f, 5.0f));  //Scale
                     {
                         // The slider was used; myVec3 has been updated.
                         // You can handle the change here if needed.
                     }
                     ImGui::EndTabItem();
-
                     ImGui::NewLine();
 
                     // We were trying to add custom texture here via openLocalRepository() but it didn't work
@@ -110,7 +159,7 @@ void genMenu_1(std::vector<Entity>& entities, Coordinator& COORD, short int cont
                     static bool toggles[] = { true, false };
 
                     if (ImGui::Button("Select texture"))
-                        ImGui::OpenPopup("my_select_popup");
+                    ImGui::OpenPopup("my_select_popup");
                     ImGui::SameLine();
                     ImGui::TextUnformatted(selected_fish == -1 ? "<None>" : names[selected_fish]);
                     if (ImGui::BeginPopup("my_select_popup"))

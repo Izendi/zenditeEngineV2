@@ -522,16 +522,16 @@ int main(void)
 	c_SpotLightEmitter spl_3;
 
 	c_EntityInfo ei_0;
-	ei_0.name = "Moving cube";
+	ei_0.name = "Cube 1";
 
 	c_EntityInfo ei_1;
-	ei_1.name = "Long cube";
+	ei_1.name = "Cube 2";
 
 	c_EntityInfo ei_2;
-	ei_2.name = "Wall cube";
+	ei_2.name = "Object 1";
 
 	c_EntityInfo ei_3;
-	ei_3.name = "Test cube";
+	ei_3.name = "Object 2";
 
 
 	COORD.AddComponentToEntity<c_Transform>(entities[0], tr_0);
