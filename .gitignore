@@ -3,7 +3,6 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
-!zenditeEngineV2/res/models/
 # User-specific files
 *.rsuser
 *.suo
@@ -362,3 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+!zenditeEngineV2/res/models/
