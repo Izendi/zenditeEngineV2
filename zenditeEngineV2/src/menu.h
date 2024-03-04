@@ -133,6 +133,7 @@ void genMenu_1(std::vector<Entity>& entities,
 
 			auto& modified = COORD.GetComponentDataFromEntity<c_Modified>(entities[selected]);
 			auto& infoData = COORD.GetComponentDataFromEntity<c_EntityInfo>(entities[selected]);
+			
 
 			//auto& aabb = COORD.GetComponentDataFromEntity<c_AABB>(entities[selected]);
 
@@ -271,6 +272,41 @@ void genMenu_1(std::vector<Entity>& entities,
 
 
 					ImGui::NewLine();
+
+					ImGui::NewLine();
+
+					ImGui::SeparatorText("Light");
+					static int e = 0;
+					ImGui::RadioButton("Spot", &e, 0); ImGui::SameLine();
+					ImGui::RadioButton("Directional", &e, 1); ImGui::SameLine();
+					ImGui::RadioButton("Point", &e, 2);
+					ImGui::NewLine();
+
+					static float vec4a[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+					static float vec4b[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+					//ImGui::InputFloat3("Position XYZ", &Poi);  //Position empty, change to lights
+					ImGui::InputFloat3("Scale XYZ", vec4b);  //Scale empty, change to lights
+
+					ImGui::NewLine();
+
+					ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "Intensity");
+					ImGui::Separator();
+					ImGui::SliderFloat("Constant", &pointLightTransform.constant, 1.0f, 0.0f);   //constant
+					ImGui::SliderFloat("Linear", &pointLightTransform.linear, 1.0f, 0.0f);              //Linear
+					ImGui::SliderFloat("Quadratic", &pointLightTransform.quadratic, 1.0f, 0.0f);        //Quadratic
+
+					ImGui::NewLine();
+					ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "Colour");
+					ImGui::Separator();
+					ImGui::ColorEdit3("Ambient", &pointLightTransform.ambient[0]);      //ambient
+					ImGui::ColorEdit3("Specular", &pointLightTransform.specular[0]);     //Specular
+					ImGui::ColorEdit3("Diffuse", &pointLightTransform.diffuse[0]);     // Diffuse
+
+					ImGui::NewLine();
+
+					ImGui::NewLine();
+
+					ImGui::SeparatorText("Texture:");
 
 
 					short int bitSetPos2 = COORD.GetComponentBitsetPos<c_Texture>();
