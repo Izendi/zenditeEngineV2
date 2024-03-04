@@ -133,6 +133,9 @@ void genMenu_1(std::vector<Entity>& entities,
 
 			auto& modified = COORD.GetComponentDataFromEntity<c_Modified>(entities[selected]);
 			auto& infoData = COORD.GetComponentDataFromEntity<c_EntityInfo>(entities[selected]);
+			auto& flashLightTransform = COORD.GetComponentDataFromEntity<c_Transform>(entities[selected]);
+			auto& flashLightData = COORD.GetComponentDataFromEntity<c_SpotLightEmitter>(entities[selected]);
+			auto& pointLightTransform = COORD.GetComponentDataFromEntity<c_PointLightEmitter>(entities[selected]);
 			
 
 			//auto& aabb = COORD.GetComponentDataFromEntity<c_AABB>(entities[selected]);
@@ -284,8 +287,8 @@ void genMenu_1(std::vector<Entity>& entities,
 
 					static float vec4a[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 					static float vec4b[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-					//ImGui::InputFloat3("Position XYZ", &Poi);  //Position empty, change to lights
-					ImGui::InputFloat3("Scale XYZ", vec4b);  //Scale empty, change to lights
+					ImGui::InputFloat3("Position XYZ", vec4a);  //FIXME doesn't work
+					ImGui::InputFloat3("Scale XYZ", vec4b);  //FIXME doesn't work
 
 					ImGui::NewLine();
 
@@ -303,11 +306,6 @@ void genMenu_1(std::vector<Entity>& entities,
 					ImGui::ColorEdit3("Diffuse", &pointLightTransform.diffuse[0]);     // Diffuse
 
 					ImGui::NewLine();
-
-					ImGui::NewLine();
-
-					ImGui::SeparatorText("Texture:");
-
 
 					short int bitSetPos2 = COORD.GetComponentBitsetPos<c_Texture>();
 					std::bitset<32> texBitset; // Create a bitset of size 32
