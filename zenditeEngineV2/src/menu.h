@@ -457,26 +457,26 @@ void genMenu_1(std::vector<Entity>& entities,
 							specular_Data = &COORD.GetComponentDataFromEntity<c_DirLightEmitter>(entities[selected]).specular;
 						}
 
-						ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "Intensity");
+						ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "Colour");
 						ImGui::Separator();
 
 						glm::vec3 amVec3 = *ambient_Data;
 						glm::vec3 spVec3 = *specular_Data;
 						glm::vec3 dfVec3 = *diffuse_Data;
 
-						if (ImGui::DragFloat3("Ambient", &amVec3[0], v_speed, v_min, v_max, format))
+						if (ImGui::ColorEdit3("Ambient", &amVec3[0]))
 						{
 							ambient_Data->x = amVec3.x;
 							ambient_Data->y = amVec3.y;
 							ambient_Data->z = amVec3.z;
 						}
-						if (ImGui::DragFloat3("diffuse", &dfVec3[0], v_speed, v_min, v_max, format))
+						if (ImGui::ColorEdit3("diffuse", &dfVec3[0]))
 						{
 							diffuse_Data->x = dfVec3.x;
 							diffuse_Data->y = dfVec3.y;
 							diffuse_Data->z = dfVec3.z;
 						}
-						if (ImGui::DragFloat3("specular", &spVec3[0], v_speed, v_min, v_max, format))
+						if (ImGui::ColorEdit3("specular", &spVec3[0]))
 						{
 							specular_Data->x = spVec3.x;
 							specular_Data->y = spVec3.y;
@@ -484,7 +484,7 @@ void genMenu_1(std::vector<Entity>& entities,
 						}
 
 						ImGui::NewLine();
-						ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "Color");
+						ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "Intensity");
 						ImGui::Separator();
 
 						
