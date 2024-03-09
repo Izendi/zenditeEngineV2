@@ -16,7 +16,6 @@
 #include "Coordinator.h"
 #include "ECS/Components.h"
 
-//ECS implementation ver 3.0
 namespace fs = std::filesystem;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
