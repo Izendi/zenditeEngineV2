@@ -1,6 +1,8 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
+//#REF: This camera class was taken from https://learnopengl.com/Getting-started/Camera
+
 #include "utils.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
