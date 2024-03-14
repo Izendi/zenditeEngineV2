@@ -39,18 +39,6 @@
     <ClCompile Include="src\geometrySetup.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Texture2D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Helper\Model.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Helper\Node.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Helper\Mesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Coordinator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -70,6 +58,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\vendor\imgui\imgui_widgets.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Model_Loading\EntityNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Model_Loading\EntityScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Model_Loading\I_SceneFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Model_Loading\MinimalSceneFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -956,9 +956,6 @@
     <ClInclude Include="src\menu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Texture2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -966,18 +963,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="res\shaders\LightingShaders\fs_blMaterial.glsl">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Helper\Model.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Helper\Node.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Helper\Mesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Helper\Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Coordinator.h">
@@ -1052,12 +1037,6 @@
     <ClInclude Include="src\ECS\Systems\PositionTrackerSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\ECS\Systems\SetupPointLightSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ECS\Systems\SetupSpotLightSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\ECS\Systems\SetUpWallAABBSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1067,7 +1046,16 @@
     <ClInclude Include="src\ECS\Systems\WallCollisionHandlingSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\ECS\Systems\SetupDirLightSystem.h">
+    <ClInclude Include="src\Model_Loading\EntityNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Model_Loading\EntityScene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Model_Loading\I_SceneFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Model_Loading\MinimalSceneFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1492,20 +1480,12 @@
     <None Include="res\shaders\LightingShaders\fs_lightSource.glsl" />
     <None Include="res\shaders\LightingShaders\vs_DirLight.glsl" />
     <None Include="res\shaders\LightingShaders\fs_DirLight.glsl" />
-    <None Include="res\shaders\multiLightShaders\fs_multiLight.glsl" />
-    <None Include="res\shaders\multiLightShaders\vs_multiLight.glsl" />
     <None Include="res\shaders\modelLoading\vs_model_loading.glsl" />
     <None Include="res\shaders\modelLoading\fs_model_loading.glsl" />
     <None Include="res\shaders\BasicShaders\vs_cubeWnormANDtex.glsl" />
     <None Include="res\shaders\BasicShaders\fs_cubeWnormANDtex.glsl" />
     <None Include="res\shaders\HeightMap\fs_basicHeightMap.glsl" />
     <None Include="res\shaders\HeightMap\vs_basicHeightMap.glsl" />
-    <None Include="res\shaders\Shadows\vs_multiLightShadow.glsl" />
-    <None Include="res\shaders\Shadows\fs_multilightShadow.glsl" />
-    <None Include="res\shaders\Shadows\fs_multiLightShadowNoSpecular.glsl" />
-    <None Include="res\shaders\Shadows\vs_multiLightShadowNoSpecular.glsl" />
-    <None Include="res\shaders\Shadows\fs_shadowMap.glsl" />
-    <None Include="res\shaders\Shadows\vs_shadowMap.glsl" />
     <None Include="res\shaders\AABB\vs_BasicAABB.glsl" />
     <None Include="res\shaders\AABB\fs_BasicAABB.glsl" />
   </ItemGroup>

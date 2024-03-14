@@ -2,19 +2,12 @@
 #include "ECS/ECSCoordinator.h"
 #include "ECS/Systems/RenderableSystem.h"
 #include "ECS/Systems/RenderAABBSystem.h"
-#include "ECS/Systems/SetupPointLightSystem.h"
-#include "ECS/Systems/SetupSpotLightSystem.h"
-#include "ECS/Systems/SetupDirLightSystem.h"
 #include "ECS/Systems/CollisionDetectionAABBSystem.h"
 #include "ECS/Systems/PositionTrackerSystem.h"
 
 #include "ECS/Systems/SetUpWallAABBSystem.h"
 #include "ECS/Systems/SetUpWallColliderAABBSystem.h"
 #include "ECS/Systems/WallCollisionHandlingSystem.h"
-
-#include "ECS/Systems/RenderDirLightSourceSystem.h"
-#include "ECS/Systems/RenderPointLightSourceSystem.h"
-#include "ECS/Systems/RenderSpotLightSourceSystem.h"
 
 #include "API_Rendering/OpenGL_Manager.h"
 
@@ -33,17 +26,12 @@ private:
 	std::shared_ptr<RenderableSystem> m_RenderableSystem;
 	std::shared_ptr<CollisionDetectionAABBSystem> m_CollisionDetectionAABBSystem;
 	std::shared_ptr<RenderAABBSystem> m_RenderAABBSystem;
-	std::shared_ptr<SetupPointLightSystem> m_SetupPointLightSystem;
-	std::shared_ptr<SetupSpotLightSystem> m_SetupSpotLightSystem;
-	std::shared_ptr<SetupDirLightSystem> m_SetupDirLightSystem;
 	std::shared_ptr<SetUpWallAABBSystem> m_SetUpWallAABBSystem;
 	std::shared_ptr<SetUpWallColliderAABBSystem> m_SetUpWallColliderAABBSystem;
 	std::shared_ptr<WallCollisionHandlingSystem> m_WallCollisionHandlingSystem;
 	std::shared_ptr<PositionTrackerSystem> m_PositionTrackerSystem;
 
-	std::shared_ptr<RenderDirLightSourceSystem> m_RenderDirLightSourceSystem;
-	std::shared_ptr<RenderPointLightSourceSystem> m_RenderPointLightSourceSystem;
-	std::shared_ptr<RenderSpotLightSourceSystem> m_RenderSpotLightSourceSystem;
+
 	
 public:
 	Coordinator(std::string API_Type, std::string Render_Type, std::shared_ptr<Camera> camera);

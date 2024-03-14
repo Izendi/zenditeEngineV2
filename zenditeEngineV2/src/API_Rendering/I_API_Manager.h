@@ -16,7 +16,6 @@ protected:
 
 public:
 	virtual void SetupRenderData(Entity EID, std::shared_ptr<ECSCoordinator> ECScoord) = 0;
-	virtual void SetupLightSourceRenderData(Entity EID, std::shared_ptr<ECSCoordinator> ECScoord) = 0;
 	virtual void SetupAABBRenderData(Entity EID, std::shared_ptr<ECSCoordinator> ECScoord) = 0;
 	virtual R_DataHandle const& GetEntityDataHandle(Entity EID) const = 0;
 	virtual std::shared_ptr<Shader> GetEntityShader(Entity EID) const = 0;
@@ -24,7 +23,6 @@ public:
 	virtual void SetShaderForEntity(Entity EID, std::shared_ptr<Shader> shader) = 0;
 
 	virtual unsigned short int GenerateTexUnit(std::string texFilePath, std::string fileType) = 0;
-	virtual void GenerateDepthMap(unsigned int& depthMapFBO, unsigned int& depthMap) = 0;
 
 
 };

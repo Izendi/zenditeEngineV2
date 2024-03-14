@@ -184,12 +184,6 @@
     <ClInclude Include="src\ECS\Systems\PositionTrackerSystem.h" />
     <ClInclude Include="src\ECS\Systems\RenderAABBSystem.h" />
     <ClInclude Include="src\ECS\Systems\RenderableSystem.h" />
-    <ClInclude Include="src\ECS\Systems\RenderDirLightSourceSystem.h" />
-    <ClInclude Include="src\ECS\Systems\RenderPointLightSourceSystem.h" />
-    <ClInclude Include="src\ECS\Systems\RenderSpotLightSourceSystem.h" />
-    <ClInclude Include="src\ECS\Systems\SetupDirLightSystem.h" />
-    <ClInclude Include="src\ECS\Systems\SetupPointLightSystem.h" />
-    <ClInclude Include="src\ECS\Systems\SetupSpotLightSystem.h" />
     <ClInclude Include="src\ECS\Systems\SetUpWallAABBSystem.h" />
     <ClInclude Include="src\ECS\Systems\SetUpWallColliderAABBSystem.h" />
     <ClInclude Include="src\ECS\Systems\WallCollisionHandlingSystem.h" />
@@ -520,14 +514,6 @@
     <None Include="res\shaders\LightingShaders\vs_lightSource.glsl" />
     <None Include="res\shaders\modelLoading\fs_model_loading.glsl" />
     <None Include="res\shaders\modelLoading\vs_model_loading.glsl" />
-    <None Include="res\shaders\multiLightShaders\fs_multiLight.glsl" />
-    <None Include="res\shaders\Shadows\fs_multilightShadow.glsl" />
-    <None Include="res\shaders\Shadows\fs_multiLightShadowNoSpecular.glsl" />
-    <None Include="res\shaders\multiLightShaders\vs_multiLight.glsl" />
-    <None Include="res\shaders\Shadows\fs_shadowMap.glsl" />
-    <None Include="res\shaders\Shadows\vs_multiLightShadow.glsl" />
-    <None Include="res\shaders\Shadows\vs_multiLightShadowNoSpecular.glsl" />
-    <None Include="res\shaders\Shadows\vs_shadowMap.glsl" />
     <None Include="src\vendor\glm\detail\func_common.inl" />
     <None Include="src\vendor\glm\detail\func_common_simd.inl" />
     <None Include="src\vendor\glm\detail\func_exponential.inl" />

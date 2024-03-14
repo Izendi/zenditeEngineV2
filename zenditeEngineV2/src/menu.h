@@ -28,6 +28,7 @@ void imGuiSetup(GLFWwindow* window)
 	ImGui::StyleColorsDark();
 }
 
+/*
 void genMenu_1(std::vector<Entity>& entities, 
 	std::vector<Entity>& nonSceneEntities, 
 	std::unordered_map<std::string, std::vector<Entity>> map_sceneNameToEntitiesVec, 
@@ -535,6 +536,24 @@ void genMenu_1(std::vector<Entity>& entities,
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
+
+}
+
+*/
+
+void genMenu_1(std::vector<Entity>& entities,
+	std::vector<Entity>& nonSceneEntities,
+	std::unordered_map<std::string, std::vector<Entity>> map_sceneNameToEntitiesVec,
+	std::unordered_map<std::string, std::shared_ptr<EntityScene>>& map_SceneNameToEntitiyScene,
+	Coordinator& COORD,
+	short int containerTexUnit,
+	unsigned short int rockySurfaceTexUnit,
+	unsigned short int grassTexUnit,
+	unsigned short int waterTexUnit,
+	unsigned short int lavaTexUnit,
+	unsigned short int brickWallTexUnit
+)
+{
 
 }
 

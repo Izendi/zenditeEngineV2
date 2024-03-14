@@ -67,6 +67,7 @@ public:
 		}
 		else
 		{
+			DH.texUnit = 0;
 			//#Give_a_default tex unit value perhaps. then remove the system requirement for renderables to have a texture.
 		}
 
@@ -75,50 +76,6 @@ public:
 		GLCALL(glBindVertexArray(0)); //Unbind the VAO
 	}
 
-	void SetupLightSourceRenderData(Entity EID, std::shared_ptr<ECSCoordinator> ECScoord) override
-	{
-		R_DataHandle DH;
-
-		//std::vector<Vertex>& vertexData = 
-
-		c_LightRenderable& RData = ECScoord->GetComponentDataFromEntity<c_LightRenderable>(EID);
-
-		//#NOTE Use the DH.bitset value to determine what data to setup for the vertex data passed in
-		// (For this version do a simple set up for testing purposes.)
-
-		GLCALL(glGenVertexArrays(1, &(DH.Light_VAO)));
-		GLCALL(glBindVertexArray(DH.Light_VAO));
-
-		GLCALL(glGenBuffers(1, &(DH.Light_VBO)));
-		GLCALL(glBindBuffer(GL_ARRAY_BUFFER, DH.Light_VBO));
-
-		//Buffer VBO data (Which includes position, normal and texCoord data):
-		GLCALL(glBufferData(GL_ARRAY_BUFFER, RData.vertices.size() * sizeof(LightweightVertex), &(RData.vertices[0]), GL_STATIC_DRAW));
-
-		//Buffer EBO data:
-		GLCALL(glGenBuffers(1, &(DH.light_EBO)));
-		GLCALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, DH.light_EBO));
-		GLCALL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, RData.indices.size() * sizeof(unsigned int), &(RData.indices[0]), GL_STATIC_DRAW));
-
-		//setup position vertex attribute array
-		GLCALL(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(LightweightVertex), (void*)0));
-		GLCALL(glEnableVertexAttribArray(0));
-
-		
-		//Insert modified DH into the map:
-		if (m_Map_ENTITYtoHANDLE.find(EID) == m_Map_ENTITYtoHANDLE.end()) //If EID is not in the map
-		{
-			m_Map_ENTITYtoHANDLE[EID] = DH;
-		}
-		else
-		{
-			m_Map_ENTITYtoHANDLE[EID].Light_VAO = DH.Light_VAO;
-			m_Map_ENTITYtoHANDLE[EID].Light_VBO = DH.Light_VBO;
-			m_Map_ENTITYtoHANDLE[EID].light_EBO = DH.light_EBO;
-		}
-
-		GLCALL(glBindVertexArray(0)); //Unbind the VAO
-	}
 
 	void SetupAABBRenderData(Entity EID, std::shared_ptr<ECSCoordinator> ECScoord)
 	{
@@ -225,25 +182,4 @@ public:
 
 	}
 
-	void GenerateDepthMap(unsigned int& depthMapFBO, unsigned int& depthMapUnit) override
-	{
-		float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-
-		glGenFramebuffers(1, &depthMapFBO);
-		glGenTextures(1, &depthMapUnit);
-
-		glBindTexture(GL_TEXTURE_2D, depthMapUnit);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOWMAP_WIDTH, SHADOWMAP_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-
-		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMapUnit, 0);
-		glDrawBuffer(GL_NONE);
-		glReadBuffer(GL_NONE);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	}
 };

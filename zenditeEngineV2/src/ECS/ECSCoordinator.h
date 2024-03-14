@@ -9,9 +9,6 @@ private:
 	std::shared_ptr<EntityManager> m_EntityManager;
 	std::shared_ptr<ComponentManager> m_ComponentManager;
 	std::shared_ptr<SystemManager> m_SystemManager;
-	std::set<Entity>* m_PointLightEntities;
-	std::set<Entity>* m_SpotLightEntities;
-	std::set<Entity>* m_DirLightEntities;
 
 	std::set<Entity>* m_set_WallAABBEntities;
 	std::set<Entity>* m_set_WallColliderAABBEntities;
@@ -39,31 +36,6 @@ public:
 	void SetWallCollidableAABBEntitiesSetPtr(std::set<Entity>* set_WallColliderAABBEntities)
 	{
 		m_set_WallColliderAABBEntities = set_WallColliderAABBEntities;
-	}
-
-	std::set<Entity>* GetPointLightEntitiesPtr()
-	{
-		return m_PointLightEntities;
-	}
-	std::set<Entity>* GetSpotLightEntitiesPtr()
-	{
-		return m_SpotLightEntities;
-	}
-	std::set<Entity>* GetDirLightEntitiesPtr()
-	{
-		return m_DirLightEntities;
-	}
-	void SetPointLightEntitiesPtr(std::set<Entity>* set)
-	{
-		m_PointLightEntities = set;
-	}
-	void SetSpotLightEntitiesPtr(std::set<Entity>* set)
-	{
-		m_SpotLightEntities = set;
-	}
-	void SetDirLightEntitiesPtr(std::set<Entity>* set)
-	{
-		m_DirLightEntities = set;
 	}
 
 

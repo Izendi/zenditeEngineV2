@@ -12,8 +12,7 @@ public:
 		Shader& AABBShader,
 		const c_AABB& AABB_Data, 
 		const c_Transform& trans) override;
-	void RenderShadowMap(const R_DataHandle& DataHandle, ECSCoordinator& ECScoord, Shader& shader, Entity EID) override;
-	void RenderLightSource(const R_DataHandle& DataHandle, ECSCoordinator& ECScoord, Entity EID, Shader& shader, glm::vec3 lightColor) override;
+	
 
 private:
 	

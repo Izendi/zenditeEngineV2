@@ -91,60 +91,6 @@ struct c_Texture
 	//std::string type;
 };
 
-struct c_LightRenderable
-{
-	std::vector<LightweightVertex> vertices;
-	std::vector<unsigned int> indices;
-	bool active;
-};
-
-struct c_DirLightEmitter
-{
-    glm::vec3 direction;
-
-    glm::vec3 ambient;
-    glm::vec3 diffuse;
-    glm::vec3 specular;
-
-	unsigned int depthMapFBO;
-	unsigned int depthMapUnit;
-
-	bool active;
-};
-
-struct c_PointLightEmitter
-{
-    float constant;
-    float linear;
-    float quadratic;
-	
-    glm::vec3 ambient;
-    glm::vec3 diffuse;
-    glm::vec3 specular;
-
-	bool active;
-};
-
-struct c_SpotLightEmitter
-{
-    glm::vec3 direction;
-    float cutOff;
-    float outerCutOff;
-  
-    float constant;
-    float linear;
-    float quadratic;
-  
-    glm::vec3 ambient;
-    glm::vec3 diffuse;
-    glm::vec3 specular;       
-
-	unsigned int depthMapFBO;
-	unsigned int depthMapUnit;
-
-	bool active;
-};
-
 struct c_EntityInfo
 {
 	std::string name;
