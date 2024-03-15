@@ -476,7 +476,7 @@ int main(void)
 
 		COORD.runAllSystems(2.0f, allEntites); //#ECS_RENDERING
 
-		genMenu_1(allEntites,
+		genMenu_2(allEntites,
 			entities,
 			map_SceneEntites,
 			map_SceneNameToEntitiyScene,

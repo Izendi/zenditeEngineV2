@@ -541,7 +541,7 @@ void genMenu_1(std::vector<Entity>& entities,
 
 */
 
-void genMenu_1(std::vector<Entity>& entities,
+void genMenu_2(std::vector<Entity>& entities,
 	std::vector<Entity>& nonSceneEntities,
 	std::unordered_map<std::string, std::vector<Entity>> map_sceneNameToEntitiesVec,
 	std::unordered_map<std::string, std::shared_ptr<EntityScene>>& map_SceneNameToEntitiyScene,
@@ -554,7 +554,29 @@ void genMenu_1(std::vector<Entity>& entities,
 	unsigned short int brickWallTexUnit
 )
 {
+	// Start the Dear ImGui frame
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
 
+	// Here, you can start using ImGui to create interfaces
+
+	if (ImGui::Begin("Entities", nullptr))
+	{
+
+		ImGui::Text("Testing");
+
+		
+
+		
+
+	}
+	ImGui::End();
+	// Rendering
+
+
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 void openLocalRepository(const std::string& repositoryPath)
