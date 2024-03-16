@@ -7,13 +7,15 @@
 
 OpenGL_Renderer::OpenGL_Renderer(std::shared_ptr<Camera> cam) : I_Renderer(cam)
 {
-	
+	m_sh_SingleColor = std::make_shared<Shader>("res/shaders/simple/vs_shaderSingleColor.glsl",
+		"res/shaders/simple/fs_shaderSingleColor.glsl");
 }
 
 void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECScoord, Entity EID)
 {
 	c_Transform& trans = ECScoord.GetComponentDataFromEntity<c_Transform>(EID);
 	c_Renderable& rendData = ECScoord.GetComponentDataFromEntity<c_Renderable>(EID);
+
 
 	std::shared_ptr<Shader> shader = DataHandle.shader;
 
@@ -32,6 +34,18 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 
 	shader->setUniformTextureUnit("colorTexture", DataHandle.texUnit);
 
+	if (rendData.outline == false)
+	{
+		//glStencilFunc(GL_ALWAYS, 1, 0xFF); // all fragments should pass the stencil test	
+		//glStencilMask(0xFF); // enable writing to the stencil buffer
+		glStencilMask(0x00);
+	}
+	else
+	{
+		glStencilFunc(GL_ALWAYS, 1, 0xFF);
+		glStencilMask(0xFF);
+	}
+	
 
 	for (int i = 0; i < trans.modelMat.size(); ++i)
 	{
@@ -39,6 +53,32 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 
 		GLCALL(glDrawElements(GL_TRIANGLES, (rendData.indices).size(), GL_UNSIGNED_INT, 0));
 	}
+
+	if (rendData.outline == true)
+	{
+		m_sh_SingleColor->bindProgram();
+		//glDisable(GL_STENCIL_TEST);
+
+		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+		glStencilMask(0x00); // disable writing to the stencil buffer
+		glDisable(GL_DEPTH_TEST);
+
+		float scaleFactor = 1.1;
+		glm::mat4 outlineMM;
+		outlineMM = glm::scale(trans.modelMat[0], glm::vec3(scaleFactor, scaleFactor, scaleFactor));
+
+		m_sh_SingleColor->setUniformMat4("projection", GL_FALSE, glm::value_ptr(cubeProjection));
+		m_sh_SingleColor->setUniformMat4("view", GL_FALSE, glm::value_ptr(cubeView));
+		(m_sh_SingleColor)->setUniformMat4("model", GL_FALSE, glm::value_ptr(outlineMM));
+
+		GLCALL(glDrawElements(GL_TRIANGLES, (rendData.indices).size(), GL_UNSIGNED_INT, 0));
+
+		//glDisable(GL_STENCIL_TEST);
+		glStencilMask(0xFF);
+		glStencilFunc(GL_ALWAYS, 1, 0xFF);
+		glEnable(GL_DEPTH_TEST);
+	}
+	
 }
 
 void OpenGL_Renderer::RenderAABB(const R_DataHandle& DataHandle, 

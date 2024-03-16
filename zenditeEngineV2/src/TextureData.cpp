@@ -35,7 +35,7 @@ void TextureData::setupTextureJPG(unsigned int unit, std::string texfilepath)
 	setTexParameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	setTexParameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imgWidth, imgHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, imgData);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imgWidth, imgHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, imgData); // upload tex data to the GPU
 	glGenerateMipmap(GL_TEXTURE_2D);
 	stbi_image_free(imgData);
 }
@@ -60,10 +60,10 @@ void TextureData::setupTexturePNG(unsigned int unit, std::string texfilepath)
 	//changeTexUnit(unit);
 
 	//Set default texture parameters.
-	setTexParameteri(GL_TEXTURE_WRAP_S, GL_REPEAT);
-	setTexParameteri(GL_TEXTURE_WRAP_T, GL_REPEAT);
-	setTexParameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	setTexParameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	setTexParameteri(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	setTexParameteri(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	setTexParameteri(GL_TEXTURE_MIN_FILTER, GL_CLAMP_TO_EDGE);
+	setTexParameteri(GL_TEXTURE_MAG_FILTER, GL_CLAMP_TO_EDGE);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imgWidth, imgHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, imgData);
 	glGenerateMipmap(GL_TEXTURE_2D); //#FIX_URGENT Throws Exceptions randomly.

@@ -81,8 +81,8 @@ struct c_Renderable
 {
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
-
-	bool active;
+	bool outline = false;
+	bool active = true;
 };
 
 struct c_Texture

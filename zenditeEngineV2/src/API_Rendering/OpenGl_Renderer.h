@@ -15,5 +15,7 @@ public:
 	
 
 private:
+	std::shared_ptr<Shader> m_sh_SingleColor;
 	
+
 };

@@ -111,6 +111,32 @@ int main(void)
 		
 	std::unique_ptr<I_SceneFactory> sceneFactory = std::make_unique<MinimalSceneFactory>(COORD);
 
+	float verticalQuad[] = {
+		-1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f
+	};
+
+	float vertQuadVertNorms[] = {
+		0.0f,  0.0f,  1.0f,
+		0.0f,  0.0f,  1.0f,
+		0.0f,  0.0f,  1.0f,
+		0.0f,  0.0f,  1.0f
+	};
+
+	float vertQuadTexCoord[] = {
+		0.0f, 0.0f,
+		1.0f, 0.0f,
+		1.0f, 1.0f,
+		0.0f, 1.0f
+	};
+
+	unsigned int vertQuadIndices[] = {
+		0, 1, 2,
+		2, 3, 0
+	};
+
 	//#TODO Need to pass data read in from the model loader to the ECS system for rendering.
 	float vertCubePosData[] = {
 		// Positions        
@@ -213,7 +239,7 @@ int main(void)
 		 0.0f, 0.0f,
 		 1.0f, 0.0f,
 		 1.0f, 1.0f,
-		 0.0f, 1.0f,
+		 0.0f, 1.0f
 	};
 
 	unsigned int indices[] =
@@ -268,6 +294,8 @@ int main(void)
 	entities.push_back(COORD.CreateEntity());
 	entities.push_back(COORD.CreateEntity());
 	entities.push_back(COORD.CreateEntity());
+	entities.push_back(COORD.CreateEntity());
+	entities.push_back(COORD.CreateEntity());
 
 	for(int i = 0; i < entities.size(); ++i)
 	{
@@ -277,7 +305,7 @@ int main(void)
 	unsigned short int containerTexUnit = COORD.GenerateTexUnit("res/textures/container2.png", "png");		 // tx Unit = 0
 	unsigned short int rockySurfaceTexUnit = COORD.GenerateTexUnit("res/textures/rockySurface.png", "png");	 // tx Unit = 1
 	unsigned short int waterTexUnit = COORD.GenerateTexUnit("res/textures/water.jpg", "jpg");				 // tx Unit = 2
-	unsigned short int grassTexUnit = COORD.GenerateTexUnit("res/textures/grass.jpg", "jpg");				 // tx Unit = 3
+	unsigned short int grassTexUnit = COORD.GenerateTexUnit("res/textures/grass.png", "png");				 // tx Unit = 3
 	unsigned short int lavaTexUnit = COORD.GenerateTexUnit("res/textures/lava.jpg", "jpg");					 // tx Unit = 4
 	unsigned short int brickWallTexUnit = COORD.GenerateTexUnit("res/textures/wall.jpg", "jpg");			 // tx Unit = 5
 
@@ -286,6 +314,8 @@ int main(void)
 	c_Transform tr_0;
 	c_Transform tr_1;
 	c_Transform tr_2;
+	c_Transform tr_3;
+	c_Transform tr_4;
 
 	//tr_0
 	glm::mat4 mm_tr0 = glm::mat4(1.0f);
@@ -311,19 +341,49 @@ int main(void)
 	mm_tr2 = glm::scale(mm_tr2, scale_tr2);
 	tr_2.modelMat.push_back(mm_tr2);
 
+	//tr_3
+	glm::mat4 mm_tr3 = glm::mat4(1.0f);
+	glm::vec3 pos_tr3(-2.5f, -2.3f, -0.48f);
+	glm::vec3 scale_tr3(1.0f, 1.0f, 1.0f);
+	mm_tr3 = glm::translate(mm_tr3, pos_tr3);
+	mm_tr3 = glm::scale(mm_tr3, scale_tr3);
+	tr_3.modelMat.push_back(mm_tr3);
+
+	//tr_4
+	glm::mat4 mm_tr4 = glm::mat4(1.0f);
+	glm::vec3 pos_tr4(-4.5f, -2.3f, -0.48f);
+	glm::vec3 scale_tr4(1.0f, 1.0f, 1.0f);
+	mm_tr4 = glm::translate(mm_tr4, pos_tr4);
+	mm_tr4 = glm::scale(mm_tr4, scale_tr4);
+	tr_4.modelMat.push_back(mm_tr4);
 
 	size_t sizeOfVertCubePosData = sizeof(vertCubePosData) / sizeof(float);
 	size_t sizeOfIndices = sizeof(indices) / sizeof(unsigned int);
 
+	size_t sizeOfVerticalQuad = sizeof(verticalQuad) / sizeof(float);
+	size_t sizeOfVQIndices = sizeof(vertQuadIndices) / sizeof(unsigned int);
+
 	c_Renderable rc_0;
 	addDataToRenderable(rc_0, vertCubePosData, vertCubeNormData, vertCubeTexCoordData, indices, sizeOfVertCubePosData, sizeOfIndices);
+	rc_0.outline = false;
 
 	std::cout << "\nsize of vertCubePosData = " << sizeOfVertCubePosData << std::endl;
 	std::cout << "\nsize of Indices         = " << sizeOfIndices << std::endl;
 
-	c_Renderable rc_3;
-	addDataToRenderable(rc_3, vertCubePosData, vertCubeNormData, vertCubeTexCoordData, indices, sizeOfVertCubePosData, sizeOfIndices);
+	c_Renderable rc_1;
+	addDataToRenderable(rc_1, vertCubePosData, vertCubeNormData, vertCubeTexCoordData, indices, sizeOfVertCubePosData, sizeOfIndices);
+	rc_1.outline = false;
 
+	//verticalQuad
+	//vertQuadTexCoord
+	//vertQuadIndices
+
+	//Grass Billboard renderable
+	c_Renderable rc_3;
+	addDataToRenderable(rc_3, verticalQuad, vertQuadVertNorms, vertQuadTexCoord, vertQuadIndices, sizeOfVerticalQuad, sizeOfVQIndices);
+	rc_3.outline = false;
+
+	//c_Renderable rc_grass;
 
 	c_Texture tx_0;
 	tx_0.texUnit = containerTexUnit;
@@ -356,6 +416,12 @@ int main(void)
 	c_Modified md_2;
 	md_2.isModifed = true;
 
+	c_Modified md_3;
+	md_3.isModifed = true;
+
+	c_Modified md_4;
+	md_4.isModifed = true;
+
 
 	c_AABB aabb_0;
 	aabb_0.scale = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -365,10 +431,8 @@ int main(void)
 	aabb_2.scale = glm::vec3(1.0f, 1.0f, 1.0f);
 	aabb_2.vertices = AABBvertices;
 
-
 	c_Wall wall_0;
 	c_WallCollider wallCollider_2;
-
 
 	c_EntityInfo ei_0;
 	ei_0.name = "Wall Col Cube";
@@ -378,6 +442,12 @@ int main(void)
 
 	c_EntityInfo ei_2;
 	ei_2.name = "Wall cube";
+
+	c_EntityInfo ei_3;
+	ei_3.name = "Grass Billboard 1";
+
+	c_EntityInfo ei_4;
+	ei_4.name = "Grass Billboard 2";
 
 	//C:/Code/Chalmers/myGraphicsCode/zenditeEngineV2/zenditeEngineV2/res/models/OakTree/OakTree.obj
 
@@ -392,40 +462,58 @@ int main(void)
 	map_SceneEntites["OakTree_1"] = map_SceneNameToEntitiyScene["OakTree_1"]->GetSceneEntities();
 	*/
 
-	COORD.AddComponentToEntity<c_Transform>(entities[0], tr_0);
-	COORD.AddComponentToEntity<c_Renderable>(entities[0], rc_0);
-	COORD.AddComponentToEntity<c_Texture>(entities[0], tx_0);
-	COORD.AddComponentToEntity<c_AABB>(entities[0], aabb_0);
-	COORD.AddComponentToEntity<c_WallCollider>(entities[0], wallCollider_2);
-	COORD.AddComponentToEntity<c_EntityInfo>(entities[0], ei_0);
-	COORD.AddComponentToEntity<c_Modified>(entities[0], md_0);
-	COORD.SetUpRenderData(entities[0]); //#NOTE: SetUpRenderData and setShaderForEntity will do nothing if the entity does no have a c_RenderableComponent
-	COORD.setShaderForEntity(entities[0], sh_basicWithTex); //#C_NOTE: Will need to set the map but not the DH, that needs to be done separatly by the renderer.
-	COORD.StoreShaderInEntityDataHandle(entities[0]);
-
-	COORD.AddComponentToEntity<c_Transform>(entities[1], tr_1);
-	COORD.AddComponentToEntity<c_Renderable>(entities[1], rc_0);
-	COORD.AddComponentToEntity<c_Texture>(entities[1], tx_1);
+	COORD.AddComponentToEntity<c_Transform>(entities[0], tr_1);
+	COORD.AddComponentToEntity<c_Renderable>(entities[0], rc_1);
+	COORD.AddComponentToEntity<c_Texture>(entities[0], tx_1);
 	//COORD.AddComponentToEntity<c_AABB>(entities[1], aabb_0);
 	//COORD.AddComponentToEntity<c_WallCollider>(entities[1], wallCollider_2);
-	COORD.AddComponentToEntity<c_EntityInfo>(entities[1], ei_1);
-	COORD.AddComponentToEntity<c_Modified>(entities[1], md_1);
+	COORD.AddComponentToEntity<c_EntityInfo>(entities[0], ei_1);
+	COORD.AddComponentToEntity<c_Modified>(entities[0], md_1);
+	COORD.SetUpRenderData(entities[0]);
+	COORD.setShaderForEntity(entities[0], sh_basicWithTex);
+	COORD.StoreShaderInEntityDataHandle(entities[0]);
+
+	COORD.AddComponentToEntity<c_Transform>(entities[1], tr_2);
+	COORD.AddComponentToEntity<c_Renderable>(entities[1], rc_0);
+	COORD.AddComponentToEntity<c_Texture>(entities[1], tx_2);
+	COORD.AddComponentToEntity<c_AABB>(entities[1], aabb_2);
+	COORD.AddComponentToEntity<c_Wall>(entities[1], wall_0);
+	COORD.AddComponentToEntity<c_Modified>(entities[1], md_2);
+	COORD.AddComponentToEntity<c_EntityInfo>(entities[1], ei_2);
 	COORD.SetUpRenderData(entities[1]);
 	COORD.setShaderForEntity(entities[1], sh_basicWithTex);
 	COORD.StoreShaderInEntityDataHandle(entities[1]);
 
-	COORD.AddComponentToEntity<c_Transform>(entities[2], tr_2);
+	COORD.AddComponentToEntity<c_Transform>(entities[2], tr_0);
 	COORD.AddComponentToEntity<c_Renderable>(entities[2], rc_0);
-	COORD.AddComponentToEntity<c_Texture>(entities[2], tx_2);
-	COORD.AddComponentToEntity<c_AABB>(entities[2], aabb_2);
-	COORD.AddComponentToEntity<c_Wall>(entities[2], wall_0);
-	COORD.AddComponentToEntity<c_Modified>(entities[2], md_2);
-	COORD.AddComponentToEntity<c_EntityInfo>(entities[2], ei_2);
-	COORD.SetUpRenderData(entities[2]);
-	COORD.setShaderForEntity(entities[2], sh_basicWithTex);
+	COORD.AddComponentToEntity<c_Texture>(entities[2], tx_0);
+	COORD.AddComponentToEntity<c_AABB>(entities[2], aabb_0);
+	COORD.AddComponentToEntity<c_WallCollider>(entities[2], wallCollider_2);
+	COORD.AddComponentToEntity<c_EntityInfo>(entities[2], ei_0);
+	COORD.AddComponentToEntity<c_Modified>(entities[2], md_0);
+	COORD.SetUpRenderData(entities[2]); //#NOTE: SetUpRenderData and setShaderForEntity will do nothing if the entity does no have a c_RenderableComponent
+	COORD.setShaderForEntity(entities[2], sh_basicWithTex); //#C_NOTE: Will need to set the map but not the DH, that needs to be done separatly by the renderer.
 	COORD.StoreShaderInEntityDataHandle(entities[2]);
 
-	
+	COORD.AddComponentToEntity<c_Transform>(entities[3], tr_3);
+	COORD.AddComponentToEntity<c_Renderable>(entities[3], rc_3);
+	COORD.AddComponentToEntity<c_Texture>(entities[3], tx_3);
+	COORD.AddComponentToEntity<c_EntityInfo>(entities[3], ei_3);
+	COORD.AddComponentToEntity<c_Modified>(entities[3], md_3);
+	COORD.SetUpRenderData(entities[3]); //#NOTE: SetUpRenderData and setShaderForEntity will do nothing if the entity does no have a c_RenderableComponent
+	COORD.setShaderForEntity(entities[3], sh_basicWithTex); //#C_NOTE: Will need to set the map but not the DH, that needs to be done separatly by the renderer.
+	COORD.StoreShaderInEntityDataHandle(entities[3]);
+
+	COORD.AddComponentToEntity<c_Transform>(entities[4], tr_4);
+	COORD.AddComponentToEntity<c_Renderable>(entities[4], rc_3);
+	COORD.AddComponentToEntity<c_Texture>(entities[4], tx_3);
+	COORD.AddComponentToEntity<c_EntityInfo>(entities[4], ei_4);
+	COORD.AddComponentToEntity<c_Modified>(entities[4], md_4);
+	COORD.SetUpRenderData(entities[4]); //#NOTE: SetUpRenderData and setShaderForEntity will do nothing if the entity does no have a c_RenderableComponent
+	COORD.setShaderForEntity(entities[4], sh_basicWithTex); //#C_NOTE: Will need to set the map but not the DH, that needs to be done separatly by the renderer.
+	COORD.StoreShaderInEntityDataHandle(entities[4]);
+
+		
 
 	//std::cout << "\nc_AABB bitset position: " << static_cast<unsigned int>(COORD.GetComponentBitsetPos<c_AABB>());
 	//std::cout << "\nentities[2] bitset: " << COORD.GetEntitySignature(entities[2]) << std::endl;
@@ -449,10 +537,16 @@ int main(void)
 
 	//bool wireframe = false;
 
+	glEnable(GL_STENCIL_TEST);
+	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
 	while (!glfwWindowShouldClose(window))
 	{
 		//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // <== #HERE
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); // <== #HERE
+
+		//glDepthFunc(GL_ALWAYS);
 
 		if(wireframe == true)
 		{
@@ -462,7 +556,6 @@ int main(void)
 		{
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
-
 
 		float currentFrame = static_cast<float>(glfwGetTime());
 		deltaTime = currentFrame - lastFrame;

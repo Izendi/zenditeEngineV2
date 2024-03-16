@@ -514,6 +514,8 @@
     <None Include="res\shaders\LightingShaders\vs_lightSource.glsl" />
     <None Include="res\shaders\modelLoading\fs_model_loading.glsl" />
     <None Include="res\shaders\modelLoading\vs_model_loading.glsl" />
+    <None Include="res\shaders\simple\fs_shaderSingleColor.glsl" />
+    <None Include="res\shaders\simple\vs_shaderSingleColor.glsl" />
     <None Include="src\vendor\glm\detail\func_common.inl" />
     <None Include="src\vendor\glm\detail\func_common_simd.inl" />
     <None Include="src\vendor\glm\detail\func_exponential.inl" />
