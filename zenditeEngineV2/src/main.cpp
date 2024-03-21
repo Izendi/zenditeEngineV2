@@ -307,7 +307,7 @@ int main(void)
 	unsigned short int waterTexUnit = COORD.GenerateTexUnit("res/textures/water.jpg", "jpg");				 // tx Unit = 2
 	unsigned short int grassTexUnit = COORD.GenerateTexUnit("res/textures/grass.png", "png");				 // tx Unit = 3
 	unsigned short int lavaTexUnit = COORD.GenerateTexUnit("res/textures/lava.jpg", "jpg");					 // tx Unit = 4
-	unsigned short int brickWallTexUnit = COORD.GenerateTexUnit("res/textures/wall.jpg", "jpg");			 // tx Unit = 5
+	unsigned short int redWindowTexUnit = COORD.GenerateTexUnit("res/textures/redWindow.png", "png");		 // tx Unit = 5
 
 	//unsigned short int heightMapTex = COORD.GenerateTexUnit("res/textures/heightmap.png", "PNG");
 
@@ -404,7 +404,7 @@ int main(void)
 	tx_5.texUnit = lavaTexUnit;
 
 	c_Texture tx_6;
-	tx_6.texUnit = brickWallTexUnit;
+	tx_6.texUnit = redWindowTexUnit;
 
 
 	c_Modified md_0;
@@ -447,7 +447,7 @@ int main(void)
 	ei_3.name = "Grass Billboard 1";
 
 	c_EntityInfo ei_4;
-	ei_4.name = "Grass Billboard 2";
+	ei_4.name = "red Window";
 
 	//C:/Code/Chalmers/myGraphicsCode/zenditeEngineV2/zenditeEngineV2/res/models/OakTree/OakTree.obj
 
@@ -506,7 +506,7 @@ int main(void)
 
 	COORD.AddComponentToEntity<c_Transform>(entities[4], tr_4);
 	COORD.AddComponentToEntity<c_Renderable>(entities[4], rc_3);
-	COORD.AddComponentToEntity<c_Texture>(entities[4], tx_3);
+	COORD.AddComponentToEntity<c_Texture>(entities[4], tx_6);
 	COORD.AddComponentToEntity<c_EntityInfo>(entities[4], ei_4);
 	COORD.AddComponentToEntity<c_Modified>(entities[4], md_4);
 	COORD.SetUpRenderData(entities[4]); //#NOTE: SetUpRenderData and setShaderForEntity will do nothing if the entity does no have a c_RenderableComponent
@@ -540,6 +540,11 @@ int main(void)
 	glEnable(GL_STENCIL_TEST);
 	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	//glEnable(GL_CULL_FACE);
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -579,7 +584,7 @@ int main(void)
 			waterTexUnit,
 			grassTexUnit,
 			lavaTexUnit,
-			brickWallTexUnit
+			redWindowTexUnit
 		);
 
 		glfwPollEvents();

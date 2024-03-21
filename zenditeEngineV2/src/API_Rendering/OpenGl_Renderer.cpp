@@ -45,6 +45,11 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 		glStencilFunc(GL_ALWAYS, 1, 0xFF);
 		glStencilMask(0xFF);
 	}
+
+	if(rendData.blending == true)
+	{
+
+	}
 	
 
 	for (int i = 0; i < trans.modelMat.size(); ++i)

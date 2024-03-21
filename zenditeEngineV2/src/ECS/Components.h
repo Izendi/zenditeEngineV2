@@ -82,6 +82,7 @@ struct c_Renderable
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
 	bool outline = false;
+	bool blending = false;
 	bool active = true;
 };
 
