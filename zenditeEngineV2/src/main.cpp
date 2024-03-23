@@ -108,6 +108,9 @@ int main(void)
 
 	std::shared_ptr<Shader> sh_basicWithTex = std::make_shared<Shader>("res/shaders/BasicShaders/vs_cubeWnormANDtex.glsl",
 		"res/shaders/BasicShaders/fs_cubeWnormANDtex.glsl"); //#Shaders have not yet been abstracted into the API_Manger
+
+	std::shared_ptr<Shader> sh_fboRender = std::make_shared<Shader>("",
+		"");
 		
 	std::unique_ptr<I_SceneFactory> sceneFactory = std::make_unique<MinimalSceneFactory>(COORD);
 
@@ -374,9 +377,9 @@ int main(void)
 	addDataToRenderable(rc_1, vertCubePosData, vertCubeNormData, vertCubeTexCoordData, indices, sizeOfVertCubePosData, sizeOfIndices);
 	rc_1.outline = false;
 
-	//verticalQuad
-	//vertQuadTexCoord
-	//vertQuadIndices
+	// verticalQuad
+	// vertQuadTexCoord
+	// vertQuadIndices
 
 	//Grass Billboard renderable
 	c_Renderable rc_3;
@@ -512,7 +515,6 @@ int main(void)
 	COORD.SetUpRenderData(entities[4]); //#NOTE: SetUpRenderData and setShaderForEntity will do nothing if the entity does no have a c_RenderableComponent
 	COORD.setShaderForEntity(entities[4], sh_basicWithTex); //#C_NOTE: Will need to set the map but not the DH, that needs to be done separatly by the renderer.
 	COORD.StoreShaderInEntityDataHandle(entities[4]);
-
 		
 
 	//std::cout << "\nc_AABB bitset position: " << static_cast<unsigned int>(COORD.GetComponentBitsetPos<c_AABB>());
@@ -546,8 +548,48 @@ int main(void)
 
 	//glEnable(GL_CULL_FACE);
 
+	//Framebuffer Code:
+	unsigned int FBO;
+	glGenFramebuffers(1, &FBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+
+	unsigned int color_buf_texture;
+	unsigned int depthAndStencil_buf_texture;
+
+	GLCALL(glGenTextures(1, &color_buf_texture));
+	GLCALL(glBindTexture(GL_TEXTURE_2D, color_buf_texture));
+
+	GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1600, 1000, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
+
+	GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+	GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, color_buf_texture, 0);
+
+	GLCALL(glGenTextures(1, &depthAndStencil_buf_texture));
+	GLCALL(glBindTexture(GL_TEXTURE_2D, depthAndStencil_buf_texture));
+
+	GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, 1600, 1000, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL));
+
+	GLCALL(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depthAndStencil_buf_texture, 0));
+
+	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
+	{
+
+	}
+	else
+	{
+		DEBUG_ASSERT(false, "Framebuffer was not complete :(");
+	}
+
+
+
+	//set framebuffer back to default:
+	
+
 	while (!glfwWindowShouldClose(window))
 	{
+		glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 		//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); // <== #HERE
 
@@ -573,6 +615,13 @@ int main(void)
 		//moveEntityBackAndFourth(COORD.GetComponentDataFromEntity<c_Transform>(entities[0]), deltaTime);
 
 		COORD.runAllSystems(2.0f, allEntites); //#ECS_RENDERING
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+
+
 
 		genMenu_2(allEntites,
 			entities,
