@@ -109,8 +109,8 @@ int main(void)
 	std::shared_ptr<Shader> sh_basicWithTex = std::make_shared<Shader>("res/shaders/BasicShaders/vs_cubeWnormANDtex.glsl",
 		"res/shaders/BasicShaders/fs_cubeWnormANDtex.glsl"); //#Shaders have not yet been abstracted into the API_Manger
 
-	std::shared_ptr<Shader> sh_fboRender = std::make_shared<Shader>("",
-		"");
+	std::shared_ptr<Shader> sh_fboRender = std::make_shared<Shader>("C:/Code/Chalmers/myGraphicsCode/zenditeEngineV2/zenditeEngineV2/res/shaders/FBO/vs_fbo.glsl",
+		"C:/Code/Chalmers/myGraphicsCode/zenditeEngineV2/zenditeEngineV2/res/shaders/FBO/fs_fbo.glsl");
 		
 	std::unique_ptr<I_SceneFactory> sceneFactory = std::make_unique<MinimalSceneFactory>(COORD);
 
@@ -553,42 +553,61 @@ int main(void)
 	glGenFramebuffers(1, &FBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 
-	unsigned int color_buf_texture;
-	unsigned int depthAndStencil_buf_texture;
+	//
+	unsigned int textureColorbuffer;
+	glGenTextures(1, &textureColorbuffer);
+	glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
 
-	GLCALL(glGenTextures(1, &color_buf_texture));
-	GLCALL(glBindTexture(GL_TEXTURE_2D, color_buf_texture));
+	//
 
-	GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1600, 1000, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
+	unsigned int rbo;
+	glGenRenderbuffers(1, &rbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT); // use a single renderbuffer object for both a depth AND stencil buffer.
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); // now actually attach it
+	// now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-	GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+	//Setup render data for the quad to render the FBO to:
 
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, color_buf_texture, 0);
+	unsigned int quadVAO;
+	unsigned int quadVBO;
+	unsigned int quadEBO;
 
-	GLCALL(glGenTextures(1, &depthAndStencil_buf_texture));
-	GLCALL(glBindTexture(GL_TEXTURE_2D, depthAndStencil_buf_texture));
+	GLCALL(glGenVertexArrays(1, &quadVAO));
+	GLCALL(glBindVertexArray(quadVAO));
 
-	GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, 1600, 1000, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL));
+	GLCALL(glGenBuffers(1, &quadVBO));
+	GLCALL(glBindBuffer(GL_ARRAY_BUFFER, quadVBO));
 
-	GLCALL(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depthAndStencil_buf_texture, 0));
+	GLCALL(glBufferData(GL_ARRAY_BUFFER, sizeof(verticalQuad), verticalQuad, GL_STATIC_DRAW));
 
-	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
-	{
-
-	}
-	else
-	{
-		DEBUG_ASSERT(false, "Framebuffer was not complete :(");
-	}
-
-
-
-	//set framebuffer back to default:
+	GLCALL(glGenBuffers(1, &quadEBO));
+	GLCALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, quadEBO));
+	GLCALL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(vertQuadIndices), vertQuadIndices, GL_STATIC_DRAW));
 	
+	GLCALL(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0));
+	GLCALL(glEnableVertexAttribArray(0));
+
+	GLCALL(glBindVertexArray(0));
+
+
+	glActiveTexture(GL_TEXTURE6);
+	glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+	//glUniform1i(glGetUniformLocation(shaderProgram, "screenTexture"), 0);
+	sh_fboRender->bindProgram();
+	sh_fboRender->setUniformTextureUnit("screenTexture", 6);
 
 	while (!glfwWindowShouldClose(window))
 	{
+		sh_basicWithTex->bindProgram();
+
 		glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 		//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); // <== #HERE
@@ -620,7 +639,11 @@ int main(void)
 		
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-
+		sh_fboRender->bindProgram();
+		sh_fboRender->setUniformTextureUnit("screenTexture", 6);
+		GLCALL(glBindVertexArray(quadVAO));
+		glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+		GLCALL(glDrawElements(GL_TRIANGLES, sizeof(vertQuadIndices) / sizeof(unsigned int), GL_UNSIGNED_INT, 0));
 
 
 		genMenu_2(allEntites,
