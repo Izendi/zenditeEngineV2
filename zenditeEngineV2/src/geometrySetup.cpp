@@ -1,4 +1,11 @@
 #include "geometrySetup.h"
+#include "Coordinator.h"
+#include "ECS/Components.h"
+
+void setupSceneECS(Coordinator& COORD, std::vector<std::shared_ptr<Shader>>& shaders)
+{
+
+}
 
 void GenerateBasicSquareVAO(unsigned int& VAO_Square, unsigned int& VBO_Square, unsigned int& EBO_Square)
 {

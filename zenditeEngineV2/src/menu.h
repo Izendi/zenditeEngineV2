@@ -545,13 +545,7 @@ void genMenu_2(std::vector<Entity>& entities,
 	std::vector<Entity>& nonSceneEntities,
 	std::unordered_map<std::string, std::vector<Entity>> map_sceneNameToEntitiesVec,
 	std::unordered_map<std::string, std::shared_ptr<EntityScene>>& map_SceneNameToEntitiyScene,
-	Coordinator& COORD,
-	short int containerTexUnit,
-	unsigned short int rockySurfaceTexUnit,
-	unsigned short int grassTexUnit,
-	unsigned short int waterTexUnit,
-	unsigned short int lavaTexUnit,
-	unsigned short int brickWallTexUnit
+	Coordinator& COORD
 )
 {
 	// Start the Dear ImGui frame

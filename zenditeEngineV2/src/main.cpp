@@ -113,6 +113,9 @@ int main(void)
 		
 	std::unique_ptr<I_SceneFactory> sceneFactory = std::make_unique<MinimalSceneFactory>(COORD);
 
+	std::vector<std::shared_ptr<Shader>> shaders;
+	shaders.push_back(sh_basicWithTex);
+
 	float verticalQuad[] = {
 		-1.0f, -1.0f,  1.0f,
 		 1.0f, -1.0f,  1.0f,
@@ -472,7 +475,7 @@ int main(void)
 	COORD.AddComponentToEntity<c_EntityInfo>(entities[0], ei_1);
 	COORD.AddComponentToEntity<c_Modified>(entities[0], md_1);
 	COORD.SetUpRenderData(entities[0]);
-	COORD.setShaderForEntity(entities[0], sh_basicWithTex);
+	COORD.setShaderForEntity(entities[0], shaders[0]);
 	COORD.StoreShaderInEntityDataHandle(entities[0]);
 
 	COORD.AddComponentToEntity<c_Transform>(entities[1], tr_2);
@@ -483,7 +486,7 @@ int main(void)
 	COORD.AddComponentToEntity<c_Modified>(entities[1], md_2);
 	COORD.AddComponentToEntity<c_EntityInfo>(entities[1], ei_2);
 	COORD.SetUpRenderData(entities[1]);
-	COORD.setShaderForEntity(entities[1], sh_basicWithTex);
+	COORD.setShaderForEntity(entities[1], shaders[0]);
 	COORD.StoreShaderInEntityDataHandle(entities[1]);
 
 	COORD.AddComponentToEntity<c_Transform>(entities[2], tr_0);
@@ -494,7 +497,7 @@ int main(void)
 	COORD.AddComponentToEntity<c_EntityInfo>(entities[2], ei_0);
 	COORD.AddComponentToEntity<c_Modified>(entities[2], md_0);
 	COORD.SetUpRenderData(entities[2]); //#NOTE: SetUpRenderData and setShaderForEntity will do nothing if the entity does no have a c_RenderableComponent
-	COORD.setShaderForEntity(entities[2], sh_basicWithTex); //#C_NOTE: Will need to set the map but not the DH, that needs to be done separatly by the renderer.
+	COORD.setShaderForEntity(entities[2], shaders[0]); //#C_NOTE: Will need to set the map but not the DH, that needs to be done separatly by the renderer.
 	COORD.StoreShaderInEntityDataHandle(entities[2]);
 
 	COORD.AddComponentToEntity<c_Transform>(entities[3], tr_3);
@@ -503,7 +506,7 @@ int main(void)
 	COORD.AddComponentToEntity<c_EntityInfo>(entities[3], ei_3);
 	COORD.AddComponentToEntity<c_Modified>(entities[3], md_3);
 	COORD.SetUpRenderData(entities[3]); //#NOTE: SetUpRenderData and setShaderForEntity will do nothing if the entity does no have a c_RenderableComponent
-	COORD.setShaderForEntity(entities[3], sh_basicWithTex); //#C_NOTE: Will need to set the map but not the DH, that needs to be done separatly by the renderer.
+	COORD.setShaderForEntity(entities[3], shaders[0]); //#C_NOTE: Will need to set the map but not the DH, that needs to be done separatly by the renderer.
 	COORD.StoreShaderInEntityDataHandle(entities[3]);
 
 	COORD.AddComponentToEntity<c_Transform>(entities[4], tr_4);
@@ -512,11 +515,10 @@ int main(void)
 	COORD.AddComponentToEntity<c_EntityInfo>(entities[4], ei_4);
 	COORD.AddComponentToEntity<c_Modified>(entities[4], md_4);
 	COORD.SetUpRenderData(entities[4]); //#NOTE: SetUpRenderData and setShaderForEntity will do nothing if the entity does no have a c_RenderableComponent
-	COORD.setShaderForEntity(entities[4], sh_basicWithTex); //#C_NOTE: Will need to set the map but not the DH, that needs to be done separatly by the renderer.
+	COORD.setShaderForEntity(entities[4], shaders[0]); //#C_NOTE: Will need to set the map but not the DH, that needs to be done separatly by the renderer.
 	COORD.StoreShaderInEntityDataHandle(entities[4]);
 
 		
-
 	//std::cout << "\nc_AABB bitset position: " << static_cast<unsigned int>(COORD.GetComponentBitsetPos<c_AABB>());
 	//std::cout << "\nentities[2] bitset: " << COORD.GetEntitySignature(entities[2]) << std::endl;
 
@@ -545,6 +547,10 @@ int main(void)
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+
+	//Frame buffer Code:
+
 
 	//glEnable(GL_CULL_FACE);
 
@@ -580,13 +586,7 @@ int main(void)
 			entities,
 			map_SceneEntites,
 			map_SceneNameToEntitiyScene,
-			COORD,
-			containerTexUnit,
-			rockySurfaceTexUnit,
-			waterTexUnit,
-			grassTexUnit,
-			lavaTexUnit,
-			redWindowTexUnit
+			COORD
 		);
 
 		glfwPollEvents();
