@@ -1,9 +1,17 @@
 #pragma once
 #include "utils.h"
+#include "ECS/ECSUtils.h"
 
 class Coordinator;
+class c_Renderable;
 
-void setupSceneECS(Coordinator& COORD, std::vector<std::shared_ptr<Shader>>& shaders);
+namespace util
+{
+	void setupSceneECS(Coordinator& COORD,
+		std::vector<std::shared_ptr<Shader>>& shaders,
+		std::vector<Entity>& entities,
+		std::vector<Entity>& allEntites);
+}
 
 void GenerateBasicSquareVAO(unsigned int &VAO_Square, unsigned int &VBO_Square, unsigned int &EBO_Square);
 
@@ -28,3 +36,5 @@ void GenerateHeightmapPlane(unsigned int& heightMapVAO,
 void bindVao(unsigned int VAO);
 
 void unbindVao();
+
+void addDataToRenderable(c_Renderable& rc, float* vertCubePosData, float* vertCubeNormData, float* vertCubeTexCoordData, unsigned int* indices, size_t sizeofVertCubePosData, size_t sizeofIndices);
