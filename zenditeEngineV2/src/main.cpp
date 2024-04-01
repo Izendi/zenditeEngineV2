@@ -100,6 +100,34 @@ int main(void)
 	std::cout << "Maximum texture units available: " << maxTextureUnits << std::endl;
 
 	//Testing ECS: Start ECS - $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+	
+	float QuadPos[] = {
+		-1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f
+	};
+
+	float QuadNorm[] = {
+		0.0f,  0.0f,  1.0f,
+		0.0f,  0.0f,  1.0f,
+		0.0f,  0.0f,  1.0f,
+		0.0f,  0.0f,  1.0f
+	};
+
+	float QuadTexCoord[] = {
+		0.0f, 0.0f,
+		1.0f, 0.0f,
+		1.0f, 1.0f,
+		0.0f, 1.0f
+	};
+
+	unsigned int QuadIndices[] = {
+		0, 1, 2,
+		2, 3, 0
+	};
+	
+	
 	Coordinator COORD("opengl", "opengl", camera); //std::string API_Type, std::string Render_Type, std::shared_ptr<Camera> camera
 	COORD.RegisterComponents();
 	COORD.RegisterSystems();
@@ -162,8 +190,39 @@ int main(void)
 
 	//Frame buffer Code:
 
+	
+	unsigned int fbo;
+	glGenFramebuffers(1, &fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-	//glEnable(GL_CULL_FACE);
+	//Creating framebuffer Texture:
+	unsigned int texture;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture); //#HERE_Binding_this_casuses_problems_with_rendering
+
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
+	{
+		std::cout << "\nFramebuffer Complete :) \n" << std::endl;
+	}
+	else
+	{
+		std::cout << "\nFramebuffer Incomplete :( \n" << std::endl;
+	}
+	
+
+	//End Frame buffer Code ---
+
+	//set default frame buffer back to active:
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -208,6 +267,8 @@ int main(void)
 
 
 	}
+
+	glDeleteFramebuffers(1, &fbo);
 
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();

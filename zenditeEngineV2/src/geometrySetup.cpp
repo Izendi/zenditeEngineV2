@@ -10,9 +10,6 @@ namespace util
 		std::vector<Entity>& allEntites)
 	{
 
-		// -----
-
-
 		float verticalQuad[] = {
 				-1.0f, -1.0f,  1.0f,
 				 1.0f, -1.0f,  1.0f,
