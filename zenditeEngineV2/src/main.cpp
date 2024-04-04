@@ -147,6 +147,7 @@ int main(void)
 
 	std::vector<Entity> entities;
 	std::vector<Entity> allEntites;
+	std::vector<unsigned short int> allTexUnits;
 	std::unordered_map<std::string, std::shared_ptr<EntityScene>> map_SceneNameToEntitiyScene;
 	std::unordered_map<std::string, std::vector<Entity>> map_SceneEntites;
 
@@ -154,7 +155,8 @@ int main(void)
 		COORD,
 		shaders,
 		entities,
-		allEntites
+		allEntites,
+		allTexUnits
 	);
 
 		
@@ -189,7 +191,8 @@ int main(void)
 
 
 	//Frame buffer Code:
-
+	/*
+	unsigned short int fbo_tex_attachment = COORD.GenerateTexUnit("res/textures/awesomeface.png", "png");
 	
 	unsigned int fbo;
 	glGenFramebuffers(1, &fbo);
@@ -198,7 +201,8 @@ int main(void)
 	//Creating framebuffer Texture:
 	unsigned int texture;
 	glGenTextures(1, &texture);
-	//glBindTexture(GL_TEXTURE_2D, texture); //#HERE_Binding_this_casuses_problems_with_rendering
+	*/
+	//glBindTexture(GL_TEXTURE_2D, texture); //#HERE_Binding_this_casuses_problems_with_rendering (Fixed, it was overiding last created tex unit texture)
 
 	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 
@@ -252,12 +256,26 @@ int main(void)
 
 		COORD.runAllSystems(2.0f, allEntites); //#ECS_RENDERING
 
+		/*
 		genMenu_2(allEntites,
 			entities,
 			map_SceneEntites,
 			map_SceneNameToEntitiyScene,
 			COORD
 		);
+		*/
+
+		genMenu_1(allEntites,
+			entities,
+			map_SceneEntites,
+			map_SceneNameToEntitiyScene,
+			COORD,
+			allTexUnits[0],
+			allTexUnits[1],
+			allTexUnits[2],
+			allTexUnits[3],
+			allTexUnits[4],
+			allTexUnits[5]);
 
 		glfwPollEvents();
 
@@ -268,7 +286,7 @@ int main(void)
 
 	}
 
-	glDeleteFramebuffers(1, &fbo);
+	//glDeleteFramebuffers(1, &fbo);
 
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();

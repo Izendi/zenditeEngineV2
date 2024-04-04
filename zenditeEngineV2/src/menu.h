@@ -29,6 +29,7 @@ void imGuiSetup(GLFWwindow* window)
 }
 
 /*
+
 void genMenu_1(std::vector<Entity>& entities, 
 	std::vector<Entity>& nonSceneEntities, 
 	std::unordered_map<std::string, std::vector<Entity>> map_sceneNameToEntitiesVec, 

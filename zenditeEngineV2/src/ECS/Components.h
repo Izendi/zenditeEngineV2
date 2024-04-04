@@ -60,7 +60,8 @@ struct c_Transform
 struct c_AABB
 {
 	glm::vec3 scale;
-	float *vertices; //Data to go in the VBO that stores the vertices of the AABB
+	//std::shared_ptr<float[]> vertices;
+	float vertices[72]; //Data to go in the VBO that stores the vertices of the AABB
 	bool isColliding;
 	bool isWallColliding;
 
