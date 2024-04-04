@@ -198,7 +198,7 @@ int main(void)
 	//Creating framebuffer Texture:
 	unsigned int texture;
 	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture); //#HERE_Binding_this_casuses_problems_with_rendering
+	//glBindTexture(GL_TEXTURE_2D, texture); //#HERE_Binding_this_casuses_problems_with_rendering
 
 	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 
