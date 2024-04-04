@@ -127,6 +127,16 @@ int main(void)
 		2, 3, 0
 	};
 	
+	float ScreenQuadVertData[] = {
+		//Pos				  //Tex Coords
+		-1.0f, -1.0f,  1.0f,  0.0f, 0.0f,
+		 1.0f, -1.0f,  1.0f,  1.0f, 0.0f,
+		-1.0f,  1.0f,  1.0f,  0.0f, 1.0f,
+
+		-1.0f,  1.0f,  1.0f,  0.0f, 1.0f,
+		 1.0f, -1.0f,  1.0f,  1.0f, 0.0f,
+		 1.0f,  1.0f,  1.0f,  1.0f, 1.0f
+	};
 	
 	Coordinator COORD("opengl", "opengl", camera); //std::string API_Type, std::string Render_Type, std::shared_ptr<Camera> camera
 	COORD.RegisterComponents();
@@ -135,6 +145,9 @@ int main(void)
 
 	std::cout << "\nRenderableSystem bitset: " << COORD.GetSystemBitset<RenderableSystem>() << std::endl;
 	//std::cout << "\Rigid_CollisionDetectionSystem bitset: " << COORD.GetSystemBitset<Rigid_CollisionDetectionSystem>() << std::endl;
+
+	std::shared_ptr<Shader> sh_fboShader = std::make_shared<Shader>("res/shaders/fbo/vs_BasicFbo.glsl",
+		"res/shaders/fbo/fs_BasicFbo.glsl");
 
 	std::shared_ptr<Shader> sh_basicWithTex = std::make_shared<Shader>("res/shaders/BasicShaders/vs_cubeWnormANDtex.glsl",
 		"res/shaders/BasicShaders/fs_cubeWnormANDtex.glsl"); //#Shaders have not yet been abstracted into the API_Manger
@@ -191,7 +204,7 @@ int main(void)
 
 
 	//Frame buffer Code:
-	/*
+	
 	unsigned short int fbo_tex_attachment = COORD.GenerateTexUnit("res/textures/awesomeface.png", "png");
 	
 	unsigned int fbo;
@@ -201,15 +214,26 @@ int main(void)
 	//Creating framebuffer Texture:
 	unsigned int texture;
 	glGenTextures(1, &texture);
-	*/
-	//glBindTexture(GL_TEXTURE_2D, texture); //#HERE_Binding_this_casuses_problems_with_rendering (Fixed, it was overiding last created tex unit texture)
+	
+	glBindTexture(GL_TEXTURE_2D, texture); //#HERE_Binding_this_casuses_problems_with_rendering (Fixed, it was overiding last created tex unit texture)
 
-	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
+
+
+	// create a renderbuffer object
+	unsigned int rbo; //#RBO_Created_Here
+
+	glGenRenderbuffers(1, &rbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT);
+
+	//Attach the rbo to the framebuffer:
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
 
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
 	{
@@ -226,12 +250,29 @@ int main(void)
 	//set default frame buffer back to active:
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+	unsigned int screenQuadVAO;
+	unsigned int screenQuadVBO;
 	
+	glGenVertexArrays(1, &screenQuadVAO);
+	glBindVertexArray(screenQuadVAO);
+	glGenBuffers(1, &screenQuadVBO);
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(ScreenQuadVertData), ScreenQuadVertData, GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+
+	glBindVertexArray(0);
 
 	while (!glfwWindowShouldClose(window))
 	{
-		//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); // <== #HERE
+		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // <== #HERE
+		glEnable(GL_DEPTH_TEST);
 
 		//glDepthFunc(GL_ALWAYS);
 
@@ -248,22 +289,20 @@ int main(void)
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		/* Render here */
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		//glClearDepth(1.0f);
-
-		//moveEntityBackAndFourth(COORD.GetComponentDataFromEntity<c_Transform>(entities[0]), deltaTime);
-
 		COORD.runAllSystems(2.0f, allEntites); //#ECS_RENDERING
 
-		/*
-		genMenu_2(allEntites,
-			entities,
-			map_SceneEntites,
-			map_SceneNameToEntitiyScene,
-			COORD
-		);
-		*/
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+		sh_fboShader->bindProgram();
+
+		sh_fboShader->setUniformTextureUnit("screenTexture", fbo_tex_attachment);
+
+		GLCALL(glBindVertexArray(screenQuadVAO));
+		glDisable(GL_DEPTH_TEST);
+
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+
 
 		genMenu_1(allEntites,
 			entities,
@@ -286,7 +325,7 @@ int main(void)
 
 	}
 
-	//glDeleteFramebuffers(1, &fbo);
+	glDeleteFramebuffers(1, &fbo);
 
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();

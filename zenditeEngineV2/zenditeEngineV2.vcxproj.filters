@@ -1490,5 +1490,7 @@
     <None Include="res\shaders\AABB\fs_BasicAABB.glsl" />
     <None Include="res\shaders\simple\fs_shaderSingleColor.glsl" />
     <None Include="res\shaders\simple\vs_shaderSingleColor.glsl" />
+    <None Include="res\shaders\fbo\vs_BasicFbo.glsl" />
+    <None Include="res\shaders\fbo\fs_BasicFbo.glsl" />
   </ItemGroup>
 </Project>
