@@ -8,9 +8,9 @@ uniform sampler2D screenTexture;
 void main()
 {
     //Default output:
-    /*
+    
     FragColor = texture(screenTexture, TexCoords);
-    */
+    
 
     //Color Inversion:
     /*
@@ -32,8 +32,6 @@ void main()
     average = average * 2; //doubled the average as the scene can be quite dim by default.
     FragColor = vec4(average, average, average, 1.0);
     */
-
-    //Kernal Effects:
 
 
 }

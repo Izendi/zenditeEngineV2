@@ -149,6 +149,9 @@ int main(void)
 	std::shared_ptr<Shader> sh_fboShader = std::make_shared<Shader>("res/shaders/fbo/vs_BasicFbo.glsl",
 		"res/shaders/fbo/fs_BasicFbo.glsl");
 
+	std::shared_ptr<Shader> sh_fboKernalEffect = std::make_shared<Shader>("res/shaders/fbo/vs_KernalEffect.glsl",
+		"res/shaders/fbo/fs_KernalEffect.glsl");
+
 	std::shared_ptr<Shader> sh_basicWithTex = std::make_shared<Shader>("res/shaders/BasicShaders/vs_cubeWnormANDtex.glsl",
 		"res/shaders/BasicShaders/fs_cubeWnormANDtex.glsl"); //#Shaders have not yet been abstracted into the API_Manger
 		
@@ -294,9 +297,11 @@ int main(void)
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
-		sh_fboShader->bindProgram();
 
-		sh_fboShader->setUniformTextureUnit("screenTexture", fbo_tex_attachment);
+		//sh_fboShader->bindProgram();
+
+		sh_fboKernalEffect->bindProgram();
+		sh_fboKernalEffect->setUniformTextureUnit("screenTexture", fbo_tex_attachment);
 
 		GLCALL(glBindVertexArray(screenQuadVAO));
 		glDisable(GL_DEPTH_TEST);

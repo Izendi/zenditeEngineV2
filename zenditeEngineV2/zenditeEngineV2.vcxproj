@@ -504,7 +504,9 @@
     <None Include="res\shaders\BasicShaders\vs_cubeWnormANDtex.glsl" />
     <None Include="res\shaders\BasicShaders\vs_Texture.glsl" />
     <None Include="res\shaders\BasicShaders\vs_Transform.glsl" />
+    <None Include="res\shaders\fbo\fs_KernalEffect.glsl" />
     <None Include="res\shaders\fbo\fs_BasicFbo.glsl" />
+    <None Include="res\shaders\fbo\vs_KernalEffect.glsl" />
     <None Include="res\shaders\fbo\vs_BasicFbo.glsl" />
     <None Include="res\shaders\HeightMap\fs_basicHeightMap.glsl" />
     <None Include="res\shaders\HeightMap\vs_basicHeightMap.glsl" />
