@@ -196,6 +196,23 @@ int main(void)
 		}
 	}
 
+	//Cube Map Start - - - - - - - - - - - - - - - - - - - - - - -
+
+	//A cube map is just a texture, as such it is created using a texture ID handle:
+	unsigned int cubeMapHandle;
+	glGenTextures(1, &cubeMapHandle);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapHandle);
+	
+	int width, height, nrChannels;
+	unsigned char* cubeMapData;
+
+	for(unsigned int i = 0; i < textures_faces.size(); i++)
+	{
+
+	}
+
+	//Cube Map End - - - - - - - - - - - - - - - - - - - - - - - -
+
 	//bool wireframe = false;
 
 	glEnable(GL_STENCIL_TEST);
