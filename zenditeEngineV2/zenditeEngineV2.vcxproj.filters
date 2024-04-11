@@ -1494,5 +1494,7 @@
     <None Include="res\shaders\fbo\fs_BasicFbo.glsl" />
     <None Include="res\shaders\fbo\fs_KernalEffect.glsl" />
     <None Include="res\shaders\fbo\vs_KernalEffect.glsl" />
+    <None Include="res\shaders\cubeMaps\vs_basicCM.glsl" />
+    <None Include="res\shaders\cubeMaps\fs_basicCM.glsl" />
   </ItemGroup>
 </Project>

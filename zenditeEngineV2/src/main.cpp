@@ -160,7 +160,6 @@ int main(void)
 	std::vector<std::shared_ptr<Shader>> shaders;
 	shaders.push_back(sh_basicWithTex);
 
-
 	std::vector<Entity> entities;
 	std::vector<Entity> allEntites;
 	std::vector<unsigned short int> allTexUnits;
@@ -198,7 +197,18 @@ int main(void)
 
 	//Cube Map Start - - - - - - - - - - - - - - - - - - - - - - -
 
+	std::vector<std::string> cm_faces; //Contains the file path to the faces:
+	cm_faces.push_back("C:/Code/Chalmers/myGraphicsCode/zenditeEngineV2/zenditeEngineV2/res/textures/skybox/right.jpg");
+	cm_faces.push_back("C:/Code/Chalmers/myGraphicsCode/zenditeEngineV2/zenditeEngineV2/res/textures/skybox/left.jpg");
+	cm_faces.push_back("C:/Code/Chalmers/myGraphicsCode/zenditeEngineV2/zenditeEngineV2/res/textures/skybox/top.jpg");
+	cm_faces.push_back("C:/Code/Chalmers/myGraphicsCode/zenditeEngineV2/zenditeEngineV2/res/textures/skybox/bottom.jpg");
+	cm_faces.push_back("C:/Code/Chalmers/myGraphicsCode/zenditeEngineV2/zenditeEngineV2/res/textures/skybox/front.jpg");
+	cm_faces.push_back("C:/Code/Chalmers/myGraphicsCode/zenditeEngineV2/zenditeEngineV2/res/textures/skybox/back.jpg");
+
 	//A cube map is just a texture, as such it is created using a texture ID handle:
+	unsigned short int cubeMapTexUnit = COORD.GenerateTexUnit("res/textures/awesomeface.png", "png"); // even though I pass in awesome face here, the calls to glBindTexture will overide this.
+	allTexUnits.push_back(cubeMapTexUnit);
+
 	unsigned int cubeMapHandle;
 	glGenTextures(1, &cubeMapHandle);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapHandle);
@@ -206,10 +216,27 @@ int main(void)
 	int width, height, nrChannels;
 	unsigned char* cubeMapData;
 
-	for(unsigned int i = 0; i < textures_faces.size(); i++)
+	for(unsigned int i = 0; i < cm_faces.size(); i++)
 	{
-
+		unsigned char* data = stbi_load(cm_faces[i].c_str(), &width, &height, &nrChannels, 0);
+		
+		if(data)
+		{
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+			stbi_image_free(data);
+		}
+		else
+		{
+			std::cout << "Cubemap tex failed to load :( " << std::endl;
+		}
 	}
+
+	//set the texture parameters (which specify how a texture should be sampled):
+	GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+	GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+	GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+	GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+	GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
 
 	//Cube Map End - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -235,7 +262,7 @@ int main(void)
 	unsigned int texture;
 	glGenTextures(1, &texture);
 	
-	glBindTexture(GL_TEXTURE_2D, texture); //#HERE_Binding_this_casuses_problems_with_rendering (Fixed, it was overiding last created tex unit texture)
+	glBindTexture(GL_TEXTURE_2D, texture); //#HERE_Binding_this_casuses_problems_with_rendering (Fixed, it was overriding last created tex unit texture)
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 
