@@ -137,6 +137,51 @@ int main(void)
 		 1.0f, -1.0f,  1.0f,  1.0f, 0.0f,
 		 1.0f,  1.0f,  1.0f,  1.0f, 1.0f
 	};
+
+	float skyboxVertices[] = {
+		// positions          
+		-1.0f,  1.0f, -1.0f,
+		-1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+
+		-1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+
+		-1.0f, -1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		-1.0f,  1.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f, -1.0f,
+
+		-1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f
+	};
 	
 	Coordinator COORD("opengl", "opengl", camera); //std::string API_Type, std::string Render_Type, std::shared_ptr<Camera> camera
 	COORD.RegisterComponents();
@@ -149,7 +194,7 @@ int main(void)
 	std::shared_ptr<Shader> sh_fboShader = std::make_shared<Shader>("res/shaders/fbo/vs_BasicFbo.glsl",
 		"res/shaders/fbo/fs_BasicFbo.glsl");
 
-	std::shared_ptr<Shader> sh_fboKernalEffect = std::make_shared<Shader>("res/shaders/vs_KernalEffect.glsl",
+	std::shared_ptr<Shader> sh_fboKernalEffect = std::make_shared<Shader>("res/shaders/fbo/vs_KernalEffect.glsl",
 		"res/shaders/fbo/fs_KernalEffect.glsl");
 
 	std::shared_ptr<Shader> sh_CubeMap = std::make_shared<Shader>("res/shaders/cubeMaps/vs_basicCM.glsl",
@@ -240,6 +285,22 @@ int main(void)
 	GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
 	GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 	GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
+
+	//Set up cube map VAO
+	unsigned int cubeMapVAO;
+	unsigned int cubeMapVBO;
+
+	//skyboxVertices
+
+	glGenVertexArrays(1, &cubeMapVAO);
+	glGenBuffers(1, &cubeMapVBO);
+
+	glBindVertexArray(cubeMapVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, cubeMapVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
 
 	//Cube Map End - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -355,6 +416,22 @@ int main(void)
 
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
+		//Render Skybox:
+		glDepthFunc(GL_LEQUAL);
+		
+		glm::mat4 cm_viewMat = glm::mat4(glm::mat3(camera->GetViewMatrix()));
+		glm::mat4 projectionMat = glm::perspective(glm::radians(camera->Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+
+		sh_CubeMap->bindProgram();
+		sh_CubeMap->setUniformTextureUnit("skybox", cubeMapTexUnit);
+		sh_CubeMap->setUniformMat4("view", GL_FALSE, glm::value_ptr(cm_viewMat));
+		sh_CubeMap->setUniformMat4("projection", GL_FALSE, glm::value_ptr(projectionMat));
+
+		glBindVertexArray(cubeMapVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glBindVertexArray(0);
+
+		//End skybox rendering
 
 		genMenu_1(allEntites,
 			entities,
