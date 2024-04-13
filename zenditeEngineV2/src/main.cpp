@@ -208,13 +208,14 @@ int main(void)
 	std::shared_ptr<Shader> sh_basicWithTex = std::make_shared<Shader>("res/shaders/BasicShaders/vs_cubeWnormANDtex.glsl",
 		"res/shaders/BasicShaders/fs_cubeWnormANDtex.glsl"); //#Shaders have not yet been abstracted into the API_Manger
 		
-	//std::shared_ptr<Shader> sh_basicWithTex = std::make_shared<Shader>("res/shaders/BasicShaders/vs_cubeWnormANDtex.glsl",
-		//"res/shaders/BasicShaders/fs_cubeWnormANDtex.glsl");
+	std::shared_ptr<Shader> sh_emReflection = std::make_shared<Shader>("res/shaders/cubeMaps/vs_emReflection.glsl",
+		"res/shaders/cubeMaps/fs_emReflection.glsl");
 
 	std::unique_ptr<I_SceneFactory> sceneFactory = std::make_unique<MinimalSceneFactory>(COORD);
 
 	std::vector<std::shared_ptr<Shader>> shaders;
 	shaders.push_back(sh_basicWithTex);
+	shaders.push_back(sh_emReflection);
 
 	std::vector<Entity> entities;
 	std::vector<Entity> allEntites;

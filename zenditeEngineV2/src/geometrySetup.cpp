@@ -655,6 +655,12 @@ namespace util
 		addDataToRenderable(rc_3, verticalQuad, vertQuadVertNorms, vertQuadTexCoord, vertQuadIndices, sizeOfVerticalQuad, sizeOfVQIndices);
 		rc_3.outline = false;
 
+		c_Renderable rc_cubeEM;
+		addDataToRenderable(rc_cubeEM, vertCubePosData, vertCubeNormData, vertCubeTexCoordData, indices, sizeOfVertCubePosData, sizeOfIndices);
+		rc_cubeEM.emReflection = true;
+		rc_cubeEM.outline = false;
+		
+
 		//c_Renderable rc_grass;
 
 		c_Texture tx_0;

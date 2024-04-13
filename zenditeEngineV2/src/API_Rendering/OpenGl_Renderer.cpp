@@ -16,9 +16,7 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 	c_Transform& trans = ECScoord.GetComponentDataFromEntity<c_Transform>(EID);
 	c_Renderable& rendData = ECScoord.GetComponentDataFromEntity<c_Renderable>(EID);
 
-
 	std::shared_ptr<Shader> shader = DataHandle.shader;
-
 	shader->bindProgram();
 	bindVao(DataHandle.VAO);
 	glm::mat4 cubeProjection = glm::perspective(glm::radians(cam->Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
@@ -26,64 +24,65 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 	shader->setUniformMat4("projection", GL_FALSE, glm::value_ptr(cubeProjection));
 	shader->setUniformMat4("view", GL_FALSE, glm::value_ptr(cubeView));
 
-	//shader->setUniformMat4("model", GL_FALSE, glm::value_ptr(trans.modelMat[0]));
-
-	//(DataHandle.texture)->changeTexUnit(DataHandle.texUnit); //#unnecessary. Each texture is saved to a texture unit and is not changed throught the programs lifespan
-															   //			   This might be useful later if assigned texture units can be modified later during runtime
-															   //			   Although, all this does is take a texture and assign it to a texture unit.
-
-	shader->setUniformTextureUnit("colorTexture", DataHandle.texUnit);
-
-	if (rendData.outline == false)
+	if(rendData.emReflection == true)
 	{
-		//glStencilFunc(GL_ALWAYS, 1, 0xFF); // all fragments should pass the stencil test	
-		//glStencilMask(0xFF); // enable writing to the stencil buffer
-		glStencilMask(0x00);
+		//#Continue_from_here!
 	}
 	else
 	{
-		glStencilFunc(GL_ALWAYS, 1, 0xFF);
-		glStencilMask(0xFF);
+
+		shader->setUniformTextureUnit("colorTexture", DataHandle.texUnit);
+
+		if (rendData.outline == false)
+		{
+			//glStencilFunc(GL_ALWAYS, 1, 0xFF); // all fragments should pass the stencil test	
+			//glStencilMask(0xFF); // enable writing to the stencil buffer
+			glStencilMask(0x00);
+		}
+		else
+		{
+			glStencilFunc(GL_ALWAYS, 1, 0xFF);
+			glStencilMask(0xFF);
+		}
+
+		if (rendData.blending == true)
+		{
+
+		}
+
+
+		for (int i = 0; i < trans.modelMat.size(); ++i)
+		{
+			shader->setUniformMat4("model", GL_FALSE, glm::value_ptr((trans.modelMat)[i]));
+
+			GLCALL(glDrawElements(GL_TRIANGLES, (rendData.indices).size(), GL_UNSIGNED_INT, 0));
+		}
+
+		if (rendData.outline == true)
+		{
+			m_sh_SingleColor->bindProgram();
+			//glDisable(GL_STENCIL_TEST);
+
+			glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+			glStencilMask(0x00); // disable writing to the stencil buffer
+			glDisable(GL_DEPTH_TEST);
+
+			float scaleFactor = 1.1;
+			glm::mat4 outlineMM;
+			outlineMM = glm::scale(trans.modelMat[0], glm::vec3(scaleFactor, scaleFactor, scaleFactor));
+
+			m_sh_SingleColor->setUniformMat4("projection", GL_FALSE, glm::value_ptr(cubeProjection));
+			m_sh_SingleColor->setUniformMat4("view", GL_FALSE, glm::value_ptr(cubeView));
+			(m_sh_SingleColor)->setUniformMat4("model", GL_FALSE, glm::value_ptr(outlineMM));
+
+			GLCALL(glDrawElements(GL_TRIANGLES, (rendData.indices).size(), GL_UNSIGNED_INT, 0));
+
+			//glDisable(GL_STENCIL_TEST);
+			glStencilMask(0xFF);
+			glStencilFunc(GL_ALWAYS, 1, 0xFF);
+			glEnable(GL_DEPTH_TEST);
+		}
 	}
-
-	if(rendData.blending == true)
-	{
-
-	}
-	
-
-	for (int i = 0; i < trans.modelMat.size(); ++i)
-	{
-		(DataHandle.shader)->setUniformMat4("model", GL_FALSE, glm::value_ptr((trans.modelMat)[i]));
-
-		GLCALL(glDrawElements(GL_TRIANGLES, (rendData.indices).size(), GL_UNSIGNED_INT, 0));
-	}
-
-	if (rendData.outline == true)
-	{
-		m_sh_SingleColor->bindProgram();
-		//glDisable(GL_STENCIL_TEST);
-
-		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-		glStencilMask(0x00); // disable writing to the stencil buffer
-		glDisable(GL_DEPTH_TEST);
-
-		float scaleFactor = 1.1;
-		glm::mat4 outlineMM;
-		outlineMM = glm::scale(trans.modelMat[0], glm::vec3(scaleFactor, scaleFactor, scaleFactor));
-
-		m_sh_SingleColor->setUniformMat4("projection", GL_FALSE, glm::value_ptr(cubeProjection));
-		m_sh_SingleColor->setUniformMat4("view", GL_FALSE, glm::value_ptr(cubeView));
-		(m_sh_SingleColor)->setUniformMat4("model", GL_FALSE, glm::value_ptr(outlineMM));
-
-		GLCALL(glDrawElements(GL_TRIANGLES, (rendData.indices).size(), GL_UNSIGNED_INT, 0));
-
-		//glDisable(GL_STENCIL_TEST);
-		glStencilMask(0xFF);
-		glStencilFunc(GL_ALWAYS, 1, 0xFF);
-		glEnable(GL_DEPTH_TEST);
-	}
-	
 }
 
 void OpenGL_Renderer::RenderAABB(const R_DataHandle& DataHandle, 
