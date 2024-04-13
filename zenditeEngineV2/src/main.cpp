@@ -208,6 +208,9 @@ int main(void)
 	std::shared_ptr<Shader> sh_basicWithTex = std::make_shared<Shader>("res/shaders/BasicShaders/vs_cubeWnormANDtex.glsl",
 		"res/shaders/BasicShaders/fs_cubeWnormANDtex.glsl"); //#Shaders have not yet been abstracted into the API_Manger
 		
+	//std::shared_ptr<Shader> sh_basicWithTex = std::make_shared<Shader>("res/shaders/BasicShaders/vs_cubeWnormANDtex.glsl",
+		//"res/shaders/BasicShaders/fs_cubeWnormANDtex.glsl");
+
 	std::unique_ptr<I_SceneFactory> sceneFactory = std::make_unique<MinimalSceneFactory>(COORD);
 
 	std::vector<std::shared_ptr<Shader>> shaders;
@@ -409,24 +412,10 @@ int main(void)
 
 		COORD.runAllSystems(2.0f, allEntites); //#ECS_RENDERING
 
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		//sh_fboShader->bindProgram();
-
-		sh_fboKernalEffect->bindProgram();
-		sh_fboKernalEffect->setUniformTextureUnit("screenTexture", fbo_tex_attachment);
-
-		GLCALL(glBindVertexArray(screenQuadVAO));
-		glDisable(GL_DEPTH_TEST);
-
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-
 		//Render Skybox:
 		glBindVertexArray(cubeMapVAO);
 		glDepthFunc(GL_LEQUAL);
-		
+
 		glm::mat4 cm_viewMat = glm::mat4(glm::mat3(camera->GetViewMatrix()));
 		glm::mat4 projectionMat = glm::perspective(glm::radians(camera->Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 
@@ -435,12 +424,26 @@ int main(void)
 		sh_CubeMap->setUniformMat4("view", GL_FALSE, glm::value_ptr(cm_viewMat));
 		sh_CubeMap->setUniformMat4("projection", GL_FALSE, glm::value_ptr(projectionMat));
 
-		
+
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		glBindVertexArray(0);
 		glDepthFunc(GL_LESS);
 
 		//End skybox rendering
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		//sh_fboShader->bindProgram();
+
+		sh_fboShader->bindProgram();
+		sh_fboShader->setUniformTextureUnit("screenTexture", fbo_tex_attachment);
+
+		GLCALL(glBindVertexArray(screenQuadVAO));
+		glDisable(GL_DEPTH_TEST);
+
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 
 		genMenu_1(allEntites,
 			entities,
