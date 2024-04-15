@@ -87,11 +87,12 @@ struct c_Renderable
 	bool active = true;
 
 	bool emReflection = false; //#If_active_you_must_set_the_appropriate_shader_for_the_Entity
+	
 };
 
 struct c_Texture
 {
-	unsigned short int texUnit;
+	unsigned short int texUnit; //If emReflection this should be a cube map tex unit.
 	//std::string type;
 };
 

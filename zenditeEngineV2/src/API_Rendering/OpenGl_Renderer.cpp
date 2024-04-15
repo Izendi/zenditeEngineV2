@@ -27,6 +27,8 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 	if(rendData.emReflection == true)
 	{
 		//#Continue_from_here!
+		shader->setUniformInt("skybox", DataHandle.texUnit);
+		shader->setUniform3fv("cameraPos", cam->Position);
 	}
 	else
 	{
@@ -50,6 +52,7 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 
 		}
 
+	}
 
 		for (int i = 0; i < trans.modelMat.size(); ++i)
 		{
@@ -82,7 +85,7 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 			glStencilFunc(GL_ALWAYS, 1, 0xFF);
 			glEnable(GL_DEPTH_TEST);
 		}
-	}
+	
 }
 
 void OpenGL_Renderer::RenderAABB(const R_DataHandle& DataHandle, 
