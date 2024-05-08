@@ -1498,5 +1498,7 @@
     <None Include="res\shaders\cubeMaps\fs_basicCM.glsl" />
     <None Include="res\shaders\cubeMaps\fs_emReflection.glsl" />
     <None Include="res\shaders\cubeMaps\vs_emReflection.glsl" />
+    <None Include="res\shaders\ComputeShaders\cs_example.glsl" />
+    <None Include="res\shaders\ComputeShaders\cs_basic.glsl" />
   </ItemGroup>
 </Project>

@@ -35,6 +35,59 @@ void setUpBasicModelMatrix(glm::mat4& MM, glm::vec3 pos, glm::vec3 scale)
 	MM = glm::scale(MM, scale);
 }
 
+std::string readComputeShaderFile(const char* filepath)
+{
+
+	std::ifstream csFile;
+
+
+	csFile.open(filepath);
+
+
+	if (!csFile.is_open())
+	{
+		std::cerr << "\nError: Unable to open compute shader file at: " << filepath << std::endl;
+		ASSERT(false);
+	}
+
+
+	std::stringstream csStream;
+
+
+	csStream << csFile.rdbuf();
+
+	csFile.close();
+
+	return csStream.str();
+
+}
+
+void CreateComputeShader(unsigned int &cShader, const std::string& cShader_String)
+{
+	const char* css = cShader_String.c_str();
+
+	cShader = glCreateShader(GL_VERTEX_SHADER);
+
+	if (cShader == 0)
+	{
+		std::cout << "vShader could not be created" << std::endl;
+		ASSERT(false);
+	}
+
+	GLCALL(glShaderSource(cShader, 1, &css, NULL));
+	GLCALL(glCompileShader(cShader));
+
+	// check for shader compile errors
+	int success;
+	char infoLog[512];
+	glGetShaderiv(cShader, GL_COMPILE_STATUS, &success);
+	if (!success)
+	{
+		glGetShaderInfoLog(cShader, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+	}
+}
+
 // camera
 std::shared_ptr<Camera> camera = std::make_shared<Camera>(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = SCR_WIDTH / 2.0f;
@@ -226,11 +279,12 @@ int main(void)
 	util::setupSceneECS(
 		COORD,
 		shaders,
-		entities,
+		entities, 
 		allEntites,
 		allTexUnits
 	);
 
+	unsigned short int fbo_tex_attachment = allTexUnits[allTexUnits.size() - 1];//COORD.GenerateTexUnit("res/textures/awesomeface.png", "png");
 		
 	//std::cout << "\nc_AABB bitset position: " << static_cast<unsigned int>(COORD.GetComponentBitsetPos<c_AABB>());
 	//std::cout << "\nentities[2] bitset: " << COORD.GetEntitySignature(entities[2]) << std::endl;
@@ -263,8 +317,6 @@ int main(void)
 
 
 	//Frame buffer Code:
-	
-	unsigned short int fbo_tex_attachment = COORD.GenerateTexUnit("res/textures/awesomeface.png", "png");
 	
 	unsigned int fbo;
 	glGenFramebuffers(1, &fbo);
@@ -347,6 +399,26 @@ int main(void)
 
 	glBindVertexArray(0);
 	//Cube Map End - - - - - - - - - - - - - - - - - - - - - - - -
+
+	//Compute Shader Set up [Start]
+
+	unsigned int computeShader;
+
+	std::string cShaderCode = readComputeShaderFile("res/shaders/ComputeShaders/cs_basic.glsl");
+	CreateComputeShader(computeShader, cShaderCode);
+
+	unsigned int computeShaderProgram;
+	computeShaderProgram = glCreateProgram();
+	glAttachShader(computeShaderProgram, computeShader);
+
+	glLinkProgram(computeShaderProgram);
+
+	glDeleteShader(computeShader);
+
+
+	glUseProgram(computeShaderProgram);
+	glDispatchCompute(1, 1, 1);
+
 
 	while (!glfwWindowShouldClose(window))
 	{

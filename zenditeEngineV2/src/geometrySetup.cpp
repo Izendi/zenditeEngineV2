@@ -590,6 +590,9 @@ namespace util
 		cm_faces.push_back("C:/Code/Chalmers/myGraphicsCode/zenditeEngineV2/zenditeEngineV2/res/textures/skybox/front.jpg");
 		cm_faces.push_back("C:/Code/Chalmers/myGraphicsCode/zenditeEngineV2/zenditeEngineV2/res/textures/skybox/back.jpg");
 
+		unsigned short int fbo_tex_attachment = COORD.GenerateTexUnit("res/textures/awesomeface.png", "png");
+		allTexUnits.push_back(fbo_tex_attachment);
+
 		//A cube map is just a texture, as such it is created using a texture ID handle:
 		unsigned short int cubeMapTexUnit = COORD.GenerateTexUnit("res/textures/awesomeface.png", "png"); // even though I pass in awesome face here, the calls to glBindTexture will overide this.
 		allTexUnits.push_back(cubeMapTexUnit);
@@ -726,6 +729,9 @@ namespace util
 		c_Texture tx_6;
 		tx_6.texUnit = redWindowTexUnit;
 
+		c_Texture tx_FBT;
+		tx_FBT.texUnit = fbo_tex_attachment;
+
 		c_Texture tx_EM;
 		tx_EM.texUnit = cubeMapTexUnit;
 
@@ -810,7 +816,7 @@ namespace util
 
 		COORD.AddComponentToEntity<c_Transform>(entities[1], tr_2);
 		COORD.AddComponentToEntity<c_Renderable>(entities[1], rc_0);
-		COORD.AddComponentToEntity<c_Texture>(entities[1], tx_2);
+		COORD.AddComponentToEntity<c_Texture>(entities[1], tx_FBT);
 		COORD.AddComponentToEntity<c_AABB>(entities[1], aabb_2);
 		COORD.AddComponentToEntity<c_Wall>(entities[1], wall_0);
 		COORD.AddComponentToEntity<c_Modified>(entities[1], md_2);

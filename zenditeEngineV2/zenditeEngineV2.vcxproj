@@ -504,6 +504,8 @@
     <None Include="res\shaders\BasicShaders\vs_cubeWnormANDtex.glsl" />
     <None Include="res\shaders\BasicShaders\vs_Texture.glsl" />
     <None Include="res\shaders\BasicShaders\vs_Transform.glsl" />
+    <None Include="res\shaders\ComputeShaders\cs_basic.glsl" />
+    <None Include="res\shaders\ComputeShaders\cs_example.glsl" />
     <None Include="res\shaders\cubeMaps\fs_basicCM.glsl" />
     <None Include="res\shaders\cubeMaps\fs_emReflection.glsl" />
     <None Include="res\shaders\cubeMaps\vs_basicCM.glsl" />
