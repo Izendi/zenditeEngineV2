@@ -109,12 +109,6 @@ int main(void)
 	std::cout << "\nRenderableSystem bitset: " << COORD.GetSystemBitset<RenderableSystem>() << std::endl;
 	//std::cout << "\Rigid_CollisionDetectionSystem bitset: " << COORD.GetSystemBitset<Rigid_CollisionDetectionSystem>() << std::endl;
 
-	std::shared_ptr<Shader> sh_fboShader = std::make_shared<Shader>("res/shaders/fbo/vs_BasicFbo.glsl",
-		"res/shaders/fbo/fs_BasicFbo.glsl");
-
-	std::shared_ptr<Shader> sh_fboKernalEffect = std::make_shared<Shader>("res/shaders/fbo/vs_KernalEffect.glsl",
-		"res/shaders/fbo/fs_KernalEffect.glsl");
-
 	std::shared_ptr<Shader> sh_basicWithTex = std::make_shared<Shader>("res/shaders/BasicShaders/vs_cubeWnormANDtex.glsl",
 		"res/shaders/BasicShaders/fs_cubeWnormANDtex.glsl"); //#Shaders have not yet been abstracted into the API_Manger
 
