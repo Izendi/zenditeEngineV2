@@ -378,7 +378,11 @@ namespace util
 		std::vector<std::shared_ptr<Shader>>& shaders,
 		std::vector<Entity>& entities,
 		std::vector<Entity>& allEntites,
-		std::vector<unsigned short int>& allTexUnits)
+		std::vector<unsigned short int>& allTexUnits,
+		std::unordered_map<std::string, std::shared_ptr<EntityScene>>& map_SceneNameToEntitiyScene,
+		std::unordered_map<std::string, std::vector<Entity>>& map_SceneEntites,
+		std::shared_ptr<I_SceneFactory> sceneFactory
+		)
 	{
 
 		float verticalQuad[] = {
@@ -581,49 +585,6 @@ namespace util
 		unsigned short int redWindowTexUnit = COORD.GenerateTexUnit("res/textures/redWindow.png", "png");		 // tx Unit = 5
 		allTexUnits.push_back(redWindowTexUnit);
 
-		//Set up cube map tex unit:
-		std::vector<std::string> cm_faces; //Contains the file path to the faces:
-		cm_faces.push_back("C:/Code/Chalmers/myGraphicsCode/zenditeEngineV2/zenditeEngineV2/res/textures/skybox/right.jpg");
-		cm_faces.push_back("C:/Code/Chalmers/myGraphicsCode/zenditeEngineV2/zenditeEngineV2/res/textures/skybox/left.jpg");
-		cm_faces.push_back("C:/Code/Chalmers/myGraphicsCode/zenditeEngineV2/zenditeEngineV2/res/textures/skybox/top.jpg");
-		cm_faces.push_back("C:/Code/Chalmers/myGraphicsCode/zenditeEngineV2/zenditeEngineV2/res/textures/skybox/bottom.jpg");
-		cm_faces.push_back("C:/Code/Chalmers/myGraphicsCode/zenditeEngineV2/zenditeEngineV2/res/textures/skybox/front.jpg");
-		cm_faces.push_back("C:/Code/Chalmers/myGraphicsCode/zenditeEngineV2/zenditeEngineV2/res/textures/skybox/back.jpg");
-
-		//A cube map is just a texture, as such it is created using a texture ID handle:
-		unsigned short int cubeMapTexUnit = COORD.GenerateTexUnit("res/textures/awesomeface.png", "png"); // even though I pass in awesome face here, the calls to glBindTexture will overide this.
-		allTexUnits.push_back(cubeMapTexUnit);
-
-		unsigned int cubeMapHandle;
-		glGenTextures(1, &cubeMapHandle);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapHandle);
-
-		int width, height, nrChannels;
-		unsigned char* cubeMapData;
-
-		for (unsigned int i = 0; i < cm_faces.size(); i++)
-		{
-			unsigned char* data = stbi_load(cm_faces[i].c_str(), &width, &height, &nrChannels, 0);
-
-			if (data)
-			{
-				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-				stbi_image_free(data);
-			}
-			else
-			{
-				std::cout << "Cube map texture failed to load :( " << std::endl;
-			}
-		}
-
-		//set the texture parameters (which specify how a texture should be sampled):
-		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
-
-		//unsigned short int heightMapTex = COORD.GenerateTexUnit("res/textures/heightmap.png", "PNG");
 
 		c_Transform tr_0;
 		c_Transform tr_1;
@@ -696,11 +657,6 @@ namespace util
 		c_Renderable rc_3;
 		addDataToRenderable(rc_3, verticalQuad, vertQuadVertNorms, vertQuadTexCoord, vertQuadIndices, sizeOfVerticalQuad, sizeOfVQIndices);
 		rc_3.outline = false;
-
-		c_Renderable rc_cubeEM;
-		addDataToRenderable(rc_cubeEM, vertCubePosData, vertCubeNormData, vertCubeTexCoordData, indices, sizeOfVertCubePosData, sizeOfIndices);
-		rc_cubeEM.emReflection = true;
-		rc_cubeEM.outline = false;
 		
 
 		//c_Renderable rc_grass;
@@ -725,9 +681,6 @@ namespace util
 
 		c_Texture tx_6;
 		tx_6.texUnit = redWindowTexUnit;
-
-		c_Texture tx_EM;
-		tx_EM.texUnit = cubeMapTexUnit;
 
 
 		c_Modified md_0;
@@ -784,19 +737,6 @@ namespace util
 		c_EntityInfo ei_4;
 		ei_4.name = "red Window";
 
-		//C:/Code/Chalmers/myGraphicsCode/zenditeEngineV2/zenditeEngineV2/res/models/OakTree/OakTree.obj
-
-		/*
-		glm::mat4 ES2_mm = glm::mat4(1.0f);
-		glm::vec3 ES2_pos(-8.6f, -3.1f, -4.0f);
-		glm::vec3 ES2_scale(0.3f, 0.3f, 0.3f);
-		ES2_mm = glm::translate(ES2_mm, ES2_pos);
-		ES2_mm = glm::scale(ES2_mm, ES2_scale);
-
-		map_SceneNameToEntitiyScene["OakTree_1"] = sceneFactory->CreateEntityScene("res/models/OakTree/", "OakTree.obj", ES2_mm, sh_basicWithTex, 1);
-		map_SceneEntites["OakTree_1"] = map_SceneNameToEntitiyScene["OakTree_1"]->GetSceneEntities();
-		*/
-
 		COORD.AddComponentToEntity<c_Transform>(entities[0], tr_1);
 		COORD.AddComponentToEntity<c_Renderable>(entities[0], rc_1);
 		COORD.AddComponentToEntity<c_Texture>(entities[0], tx_1);
@@ -820,14 +760,14 @@ namespace util
 		COORD.StoreShaderInEntityDataHandle(entities[1]);
 
 		COORD.AddComponentToEntity<c_Transform>(entities[2], tr_0);
-		COORD.AddComponentToEntity<c_Renderable>(entities[2], rc_cubeEM);
-		COORD.AddComponentToEntity<c_Texture>(entities[2], tx_EM);
+		COORD.AddComponentToEntity<c_Renderable>(entities[2], rc_1);
+		COORD.AddComponentToEntity<c_Texture>(entities[2], tx_3);
 		COORD.AddComponentToEntity<c_AABB>(entities[2], aabb_0);
 		COORD.AddComponentToEntity<c_WallCollider>(entities[2], wallCollider_2);
 		COORD.AddComponentToEntity<c_EntityInfo>(entities[2], ei_0);
 		COORD.AddComponentToEntity<c_Modified>(entities[2], md_0);
 		COORD.SetUpRenderData(entities[2]); //#NOTE: SetUpRenderData and setShaderForEntity will do nothing if the entity does no have a c_RenderableComponent
-		COORD.setShaderForEntity(entities[2], shaders[1]); //#C_NOTE: Will need to set the map but not the DH, that needs to be done separatly by the renderer.
+		COORD.setShaderForEntity(entities[2], shaders[0]); //#C_NOTE: Will need to set the map but not the DH, that needs to be done separatly by the renderer.
 		COORD.StoreShaderInEntityDataHandle(entities[2]);
 
 		COORD.AddComponentToEntity<c_Transform>(entities[3], tr_3);
@@ -847,6 +787,22 @@ namespace util
 		COORD.SetUpRenderData(entities[4]); //#NOTE: SetUpRenderData and setShaderForEntity will do nothing if the entity does no have a c_RenderableComponent
 		COORD.setShaderForEntity(entities[4], shaders[0]); //#C_NOTE: Will need to set the map but not the DH, that needs to be done separatly by the renderer.
 		COORD.StoreShaderInEntityDataHandle(entities[4]);
+
+
+		//Loaded Models:
+		glm::mat4 ES0_mm = glm::mat4(1.0f);
+		glm::vec3 ES0_pos(-3.0f, -2.8f, 7.7f);
+		glm::vec3 ES0_scale(0.3f, 0.3f, 0.3f);
+		ES0_mm = glm::translate(ES0_mm, ES0_pos);
+		float angleY = glm::radians(180.0f);
+		float angleX = glm::radians(-13.0f);
+		ES0_mm = glm::rotate(ES0_mm, angleY, glm::vec3(0, 1, 0));
+		ES0_mm = glm::rotate(ES0_mm, angleX, glm::vec3(1, 0, 0));
+		ES0_mm = glm::scale(ES0_mm, ES0_scale);
+
+		map_SceneNameToEntitiyScene["Backpack_1"] = sceneFactory->CreateEntityScene("res/models/backpack/", "backpack.obj", ES0_mm, shaders[0], 1);
+		//std::shared_ptr<EntityScene> ES_0 = sceneFactory->CreateEntityScene("res/models/backpack/", "backpack.obj", ES0_mm, sh_shadows, 1);
+		map_SceneEntites["Backpack_1"] = map_SceneNameToEntitiyScene["Backpack_1"]->GetSceneEntities();
 	}
 
 }

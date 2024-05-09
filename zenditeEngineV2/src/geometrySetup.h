@@ -5,6 +5,7 @@
 class Coordinator;
 class c_Renderable;
 class EntityScene;
+class I_SceneFactory;
 
 namespace util
 {
@@ -12,7 +13,11 @@ namespace util
 		std::vector<std::shared_ptr<Shader>>& shaders,
 		std::vector<Entity>& entities,
 		std::vector<Entity>& allEntites,
-		std::vector<unsigned short int>& allTexUnits);
+		std::vector<unsigned short int>& allTexUnits,
+		std::unordered_map<std::string, std::shared_ptr<EntityScene>>& map_SceneNameToEntitiyScene,
+		std::unordered_map<std::string, std::vector<Entity>>& map_SceneEntites,
+		std::shared_ptr<I_SceneFactory> sceneFactory
+	);
 }
 
 void GenerateBasicSquareVAO(unsigned int &VAO_Square, unsigned int &VBO_Square, unsigned int &EBO_Square);
