@@ -590,6 +590,9 @@ namespace util
 		cm_faces.push_back("C:/Code/Chalmers/myGraphicsCode/zenditeEngineV2/zenditeEngineV2/res/textures/skybox/front.jpg");
 		cm_faces.push_back("C:/Code/Chalmers/myGraphicsCode/zenditeEngineV2/zenditeEngineV2/res/textures/skybox/back.jpg");
 
+		unsigned short int cs_texUnit = COORD.GenerateTexUnit("res/textures/awesomeface.png", "png");
+		allTexUnits.push_back(cs_texUnit);
+
 		unsigned short int fbo_tex_attachment = COORD.GenerateTexUnit("res/textures/awesomeface.png", "png");
 		allTexUnits.push_back(fbo_tex_attachment);
 

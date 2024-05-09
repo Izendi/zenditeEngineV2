@@ -66,7 +66,7 @@ void CreateComputeShader(unsigned int &cShader, const std::string& cShader_Strin
 {
 	const char* css = cShader_String.c_str();
 
-	cShader = glCreateShader(GL_VERTEX_SHADER);
+	cShader = glCreateShader(GL_COMPUTE_SHADER);
 
 	if (cShader == 0)
 	{
@@ -284,7 +284,7 @@ int main(void)
 		allTexUnits
 	);
 
-	unsigned short int fbo_tex_attachment = allTexUnits[allTexUnits.size() - 1];//COORD.GenerateTexUnit("res/textures/awesomeface.png", "png");
+	unsigned short int fbo_tex_attachment = allTexUnits[allTexUnits.size() - 1]; //COORD.GenerateTexUnit("res/textures/awesomeface.png", "png");
 		
 	//std::cout << "\nc_AABB bitset position: " << static_cast<unsigned int>(COORD.GetComponentBitsetPos<c_AABB>());
 	//std::cout << "\nentities[2] bitset: " << COORD.GetEntitySignature(entities[2]) << std::endl;
@@ -314,7 +314,6 @@ int main(void)
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 
 	//Frame buffer Code:
 	
@@ -400,6 +399,8 @@ int main(void)
 	glBindVertexArray(0);
 	//Cube Map End - - - - - - - - - - - - - - - - - - - - - - - -
 
+
+
 	//Compute Shader Set up [Start]
 
 	unsigned int computeShader;
@@ -415,9 +416,32 @@ int main(void)
 
 	glDeleteShader(computeShader);
 
+	glUseProgram(computeShaderProgram);
+
+	//Create Texture Image Unit for the compute shader to write to:
+	unsigned int CSTex;
+	glGenTextures(1, &CSTex);
+	glActiveTexture(GL_TEXTURE0 + (allTexUnits.size() - 2));
+	glBindTexture(GL_TEXTURE_2D, CSTex);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+
+	glBindImageTexture(0, CSTex, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
 
 	glUseProgram(computeShaderProgram);
-	glDispatchCompute(1, 1, 1);
+	glDispatchCompute(1, 1, 1); //Run currently bound compute shader program with 1 work group 1 * 1 * 1 = 1.
+	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
+	std::cout << "GL_TEXTURE0 => " << GL_TEXTURE0 << std::endl;
+	std::cout << "GL_TEXTURE1 => " << GL_TEXTURE1 << std::endl;
+	std::cout << "GL_TEXTURE2 => " << GL_TEXTURE0 + (allTexUnits.size() - 2) << std::endl;
+
+	glBindTexture(GL_TEXTURE_2D, 0); //unbind texture
 
 
 	while (!glfwWindowShouldClose(window))
@@ -470,7 +494,9 @@ int main(void)
 		//sh_fboShader->bindProgram();
 
 		sh_fboShader->bindProgram();
-		sh_fboShader->setUniformTextureUnit("screenTexture", fbo_tex_attachment);
+		//sh_fboShader->setUniformTextureUnit("screenTexture", fbo_tex_attachment);
+		sh_fboShader->setUniformTextureUnit("screenTexture", CSTex);
+		//CSTex
 
 		GLCALL(glBindVertexArray(screenQuadVAO));
 		glDisable(GL_DEPTH_TEST);
