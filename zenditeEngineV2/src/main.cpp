@@ -197,7 +197,6 @@ int main(void)
 
 		glfwSwapBuffers(window);
 
-
 	}
 
 	//glDeleteFramebuffers(1, &fbo);
