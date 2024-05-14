@@ -281,7 +281,7 @@ void genMenu_1(std::vector<Entity>& entities,
 						// you may want to build a string using the "###" operator to preserve a constant ID with a variable label)
 
 						static int selected_tex = -1;
-						const char* names[] = { "Wooden planks", "Rock" , "water", "grass", "lava", "wood brown" };
+						const char* names[] = { "Height Field", "Rock" , "water", "grass", "lava", "wood brown" };
 						static bool toggles[] = { true, false };
 
 						if (ImGui::Button("Select texture"))
@@ -370,6 +370,10 @@ void genMenu_1(std::vector<Entity>& entities,
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 
+}
+
+float scaleToRange(float value, float min, float max) {
+	return (value - min) / (max - min);
 }
 
 namespace util
@@ -572,8 +576,45 @@ namespace util
 			allEntites.push_back(entities[i]);
 		}
 
-		unsigned short int containerTexUnit = COORD.GenerateTexUnit("res/textures/container2.png", "png");		 // tx Unit = 0
-		allTexUnits.push_back(containerTexUnit);
+		unsigned short int hfTexUnit = COORD.GenerateTexUnit("res/textures/container2.png", "png");		 // tx Unit = 0
+
+		unsigned int hfHeight = 100;
+		unsigned int hfWidth = 100;
+		unsigned int heightFieldTex;
+
+		glGenTextures(1, &heightFieldTex);
+		glBindTexture(GL_TEXTURE_2D, heightFieldTex);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, hfWidth, hfHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+		std::vector<float> data(hfWidth* hfHeight * 4);
+
+		std::random_device rd; // Non-deterministic random number generator
+		std::mt19937 gen(rd()); // Mersenne Twister engine seeded with rd()
+
+		// Define a uniform real distribution in the range [0.0, 255.0]
+		std::uniform_real_distribution<> dis(0.0, 255.0);
+
+		/*
+		for(int i = 0; i < data.size(); i = i + 4)
+		{
+			float rnd = dis(gen);
+			rnd = scaleToRange(rnd, 0.0f, 255.0f);
+
+			data[i] = rnd;
+			data[i+1] = rnd;
+			data[i+2] = rnd;
+			data[i+3] = 255.0f;
+		}
+		*/
+
+		GeneratePerlinNoise(data, hfWidth, hfHeight);
+
+		//Store perlin noise in OpenGL texture.
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, hfWidth, hfHeight, GL_RGBA, GL_FLOAT, data.data());
+
+		allTexUnits.push_back(hfTexUnit);
 		unsigned short int rockySurfaceTexUnit = COORD.GenerateTexUnit("res/textures/rockySurface.png", "png");	 // tx Unit = 1
 		allTexUnits.push_back(rockySurfaceTexUnit);
 		unsigned short int waterTexUnit = COORD.GenerateTexUnit("res/textures/water.jpg", "jpg");				 // tx Unit = 2
@@ -594,7 +635,7 @@ namespace util
 
 		//tr_0
 		glm::mat4 mm_tr0 = glm::mat4(1.0f);
-		glm::vec3 pos_tr0(0.0f, -2.3f, 0.0f);
+		glm::vec3 pos_tr0(0.0f, -2.2f, 0.0f);
 		glm::vec3 scale_tr0(1.0f, 1.0f, 1.0f);
 		mm_tr0 = glm::translate(mm_tr0, pos_tr0);
 		mm_tr0 = glm::scale(mm_tr0, scale_tr0);
@@ -610,7 +651,7 @@ namespace util
 
 		//tr_2
 		glm::mat4 mm_tr2 = glm::mat4(1.0f);
-		glm::vec3 pos_tr2(-1.2f, -2.3f, -6.0f);
+		glm::vec3 pos_tr2(-1.2f, -2.2f, -6.0f);
 		glm::vec3 scale_tr2(1.0f, 1.0f, 1.0f);
 		mm_tr2 = glm::translate(mm_tr2, pos_tr2);
 		mm_tr2 = glm::scale(mm_tr2, scale_tr2);
@@ -618,7 +659,7 @@ namespace util
 
 		//tr_3
 		glm::mat4 mm_tr3 = glm::mat4(1.0f);
-		glm::vec3 pos_tr3(-2.5f, -2.3f, -0.48f);
+		glm::vec3 pos_tr3(-2.5f, -2.2f, -0.48f);
 		glm::vec3 scale_tr3(1.0f, 1.0f, 1.0f);
 		mm_tr3 = glm::translate(mm_tr3, pos_tr3);
 		mm_tr3 = glm::scale(mm_tr3, scale_tr3);
@@ -626,7 +667,7 @@ namespace util
 
 		//tr_4
 		glm::mat4 mm_tr4 = glm::mat4(1.0f);
-		glm::vec3 pos_tr4(-4.5f, -2.3f, -0.48f);
+		glm::vec3 pos_tr4(-4.5f, -2.2f, -0.48f);
 		glm::vec3 scale_tr4(1.0f, 1.0f, 1.0f);
 		mm_tr4 = glm::translate(mm_tr4, pos_tr4);
 		mm_tr4 = glm::scale(mm_tr4, scale_tr4);
@@ -662,7 +703,7 @@ namespace util
 		//c_Renderable rc_grass;
 
 		c_Texture tx_0;
-		tx_0.texUnit = containerTexUnit;
+		tx_0.texUnit = hfTexUnit;
 
 		c_Texture tx_1;
 		tx_1.texUnit = waterTexUnit;
@@ -1270,4 +1311,165 @@ void bindVao(unsigned int VAO)
 void unbindVao()
 {
 	GLCALL(glBindVertexArray(0));
+}
+
+std::vector<glm::vec2> generateUniformVectors(int num_vectors) {
+	std::vector<glm::vec2> vectors;
+	float angle_step = 2 * M_PI / num_vectors;  // radians
+	for (int i = 0; i < num_vectors; ++i)
+	{
+		float angle = i * angle_step;
+		vectors.emplace_back(cos(angle), sin(angle));
+	}
+	return vectors;
+}
+
+//Here we are using pure random gradients, usually we want to use a set of uniform gradients that we RANDOMLY sample from.
+glm::vec2 randomGradient(int ix, int iy, unsigned seed)
+{
+	const unsigned w = 8 * sizeof(unsigned);
+	const unsigned s = w / 2;
+	unsigned a = ix + seed;
+	unsigned b = iy + seed;
+
+	a *= 3284157443;
+
+	b ^= a << s | a >> w - s;
+	b *= 1911520717;
+
+	a ^= b << s | b >> w - s;
+	a *= 2048419325;
+	float random = a * (3.14159265 / ~(~0u >> 1));
+
+	glm::vec2 v;
+	v.x = sin(random);
+	v.y = cos(random);
+
+	return v;
+}
+
+glm::vec2 randomGradient_2(int ix, int iy, const std::vector<glm::vec2>& vectors, unsigned seed)
+{
+	const unsigned w = 8 * sizeof(unsigned);
+	const unsigned s = w / 2;
+	unsigned a = ix + seed;
+	unsigned b = iy + seed;
+
+	a *= 3284157443;
+
+	b ^= a << s | a >> w - s;
+	b *= 1911520717;
+
+	a ^= b << s | b >> w - s;
+	a *= 2048419325;
+
+	a = a % 8;
+
+	return vectors[a];
+}
+
+float interpolate(float a0, float a1, float w)
+{
+	return (a1 - a0) * (3.0 - w * 2.0) * w * w + a0;
+}
+
+float dotGridGradient(int ix, int iy, float x, float y, const std::vector<glm::vec2> vectors, unsigned seed)
+{
+	glm::vec2 gradient = randomGradient(ix, iy, seed);
+	//glm::vec2 gradient = randomGradient_2(ix, iy, vectors, seed);
+
+	float dx = x - (float)ix;
+	float dy = y - (float)iy;
+
+	//Compute the dot product
+	return (dx * gradient.x + dy * gradient.y);
+}
+
+float perlin(float x, float y, const std::vector<glm::vec2> vectors, unsigned seed)
+{
+	int x0 = (int)x;
+	int y0 = (int)y;
+
+	int x1 = x0 + 1;
+	int y1 = y0 + 1;
+
+	//Compute interpolation weights:
+	float sx = x - (float)x0;
+	float sy = y - (float)y0;
+
+	//compute an interpolate the two top corners:
+	float n0 = dotGridGradient(x0, y0, x, y, vectors, seed);
+	float n1 = dotGridGradient(x1, y0, x, y, vectors, seed);
+	float ix0 = interpolate(n0, n1, sx);
+
+	//compute and interpolate the bottom 2 corners:
+	n0 = dotGridGradient(x0, y1, x, y, vectors, seed);
+	n1 = dotGridGradient(x1, y1, x, y, vectors, seed);
+	float ix1 = interpolate(n0, n1, sx);
+
+	//interpolate between the two previous values:
+	float value = interpolate(ix0, ix1, sy);
+
+	return value;
+}
+
+void GeneratePerlinNoise(std::vector<float>& data, int width, int height)
+{
+	const unsigned seed = 0;
+	const int GRID_SIZE = 50;
+
+	std::vector<glm::vec2> vectors = generateUniformVectors(8);
+
+	for (int x = 0; x < width; x++)
+	{
+		for (int y = 0; y < height; y++)
+		{
+			int index = (y * width + x) * 4;
+
+			float val = 0;
+
+			float freq = 1;
+			float amp = 1;
+
+			for (int i = 0; i < 12; i++)
+			{
+				val += perlin(x * freq / GRID_SIZE, y * freq / GRID_SIZE, vectors, seed) * amp;
+
+				freq *= 2;
+				amp /= 2;
+			}
+
+			//contrast
+			val *= 1.2;
+
+			//clamping:
+			//val = std::min(std::max(val, 1.0f), 1.0f);
+			if (val > 1.0f)
+			{
+				val = 1.0f;
+			}
+			else if (val < -1.0f)
+			{
+				val = -1.0f;
+			}
+
+			int color = (int)(((val + 1.0f) * 0.5f) * 255);
+			float finalColor = color;
+			finalColor = scaleToRange(color, 0.0f, 255.0f);
+
+			data[index] = finalColor;
+			data[index + 1] = finalColor;
+			data[index + 2] = finalColor;
+
+			data[index + 3] = 1.0f;
+
+			int xy = x * y;
+
+			if (xy > height * width - 1)
+			{
+				std::cout << "What is going on?" << std::endl;
+			}
+
+		}
+	}
 }

@@ -1,6 +1,11 @@
 #pragma once
 #include "utils.h"
 #include "ECS/ECSUtils.h"
+#include <random>
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 class Coordinator;
 class c_Renderable;
@@ -58,3 +63,18 @@ void genMenu_1(std::vector<Entity>& entities,
 	unsigned short int lavaTexUnit,
 	unsigned short int brickWallTexUnit
 );
+
+std::vector<glm::vec2> generateUniformVectors(int num_vectors);
+
+//Here we are using pure random gradients, usually we want to use a set of uniform gradients that we RANDOMLY sample from.
+glm::vec2 randomGradient(int ix, int iy, unsigned seed);
+
+glm::vec2 randomGradient_2(int ix, int iy, const std::vector<glm::vec2>& vectors, unsigned seed);
+
+float interpolate(float a0, float a1, float w);
+
+float dotGridGradient(int ix, int iy, float x, float y, const std::vector<glm::vec2> vectors, unsigned seed);
+
+float perlin(float x, float y, const std::vector<glm::vec2> vectors, unsigned seed);
+
+void GeneratePerlinNoise(std::vector<float>& data, int width, int height);

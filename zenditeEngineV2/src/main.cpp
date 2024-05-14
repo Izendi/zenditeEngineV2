@@ -154,7 +154,6 @@ int main(void)
 		}
 	}
 
-
 	while (!glfwWindowShouldClose(window))
 	{
 		//glBindFramebuffer(GL_FRAMEBUFFER, fbo);
