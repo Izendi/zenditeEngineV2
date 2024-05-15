@@ -677,9 +677,9 @@ namespace util
 		//tr_hf //#Check_if_Correct
 		glm::mat4 mm_tr_hf = glm::mat4(1.0f);
 		glm::vec3 pos_tr_hf(0.0f, -7.2f, 0.0f);
-		glm::vec3 scale_tr0(0.2f, 0.2f, 0.2f);
-		mm_tr_hf = glm::translate(mm_tr0, pos_tr0);
-		mm_tr_hf = glm::scale(mm_tr0, scale_tr0);
+		glm::vec3 scale_tr_hf(0.2f, 0.2f, 0.2f);
+		mm_tr_hf = glm::translate(mm_tr_hf, pos_tr_hf);
+		mm_tr_hf = glm::scale(mm_tr_hf, scale_tr_hf);
 		tr_hf.modelMat.push_back(mm_tr_hf);
 
 		size_t sizeOfVertCubePosData = sizeof(vertCubePosData) / sizeof(float);
@@ -710,6 +710,17 @@ namespace util
 
 		//We need to generate a VBO based on the HF data here:
 		c_Renderable rc_hf; //#HERE
+
+		for (unsigned int z = 0; z < hfHeight; z++)
+		{
+			for (unsigned int x = 0; x < hfWidth; x++)
+			{
+				Vertex vert;
+
+				//unsigned char* texel = hmTexData + (x + hmWidth * z) * 
+			}
+
+		}
 		
 
 		//c_Renderable rc_grass;
