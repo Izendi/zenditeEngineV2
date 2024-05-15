@@ -52,8 +52,14 @@ bool toggle = true;
 bool wireframe = false;
 bool rotation = false;
 
+unsigned int SEED = 0;
+bool reload = false;
+
 int main(void)
 {
+	do 
+	{
+	
 	GLFWwindow* window;
 	if (!glfwInit()) {
 		return -1;
@@ -130,7 +136,8 @@ int main(void)
 		allTexUnits,
 		map_SceneNameToEntitiyScene,
 		map_SceneEntites,
-		sceneFactory
+		sceneFactory,
+		SEED
 	);
 		
 	//std::cout << "\nc_AABB bitset position: " << static_cast<unsigned int>(COORD.GetComponentBitsetPos<c_AABB>());
@@ -187,7 +194,9 @@ int main(void)
 			allTexUnits[2],
 			allTexUnits[3],
 			allTexUnits[4],
-			allTexUnits[5]);
+			allTexUnits[5],
+			SEED,
+			reload);
 
 		glfwPollEvents();
 
@@ -205,6 +214,7 @@ int main(void)
 	glfwTerminate();
 
 	//std::cin.get();
+	} while (reload);
 
 	return 0;
 }

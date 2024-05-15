@@ -20,7 +20,9 @@ void genMenu_1(std::vector<Entity>& entities,
 	unsigned short int grassTexUnit,
 	unsigned short int waterTexUnit,
 	unsigned short int lavaTexUnit,
-	unsigned short int brickWallTexUnit
+	unsigned short int brickWallTexUnit,
+	unsigned int& SEED,
+	bool& reload
 )
 {
 
@@ -31,7 +33,7 @@ void genMenu_1(std::vector<Entity>& entities,
 
 	// Here, you can start using ImGui to create interfaces
 
-	if (ImGui::Begin("Entities", nullptr))
+	if (ImGui::Begin("Debug Menu", nullptr))
 	{
 
 		ImGui::SetNextWindowSize(ImVec2(500, 440), ImGuiCond_FirstUseEver);
@@ -40,6 +42,32 @@ void genMenu_1(std::vector<Entity>& entities,
 		{
 			int i = 0;
 			ImGui::BeginChild("left pane", ImVec2(150, 0), ImGuiChildFlags_Border | ImGuiChildFlags_ResizeX);
+
+			if (ImGui::Checkbox("Reload", &reload))
+			{
+				// This block is executed when the checkbox state changes
+				if (!reload)
+				{
+					//reload = true;
+					std::cout << "Reload == False" << std::endl;
+				}
+				else
+				{
+					//reload = false;
+					std::cout << "Reload == True" << std::endl;
+				}
+			}
+
+			if (ImGui::InputScalar("Unsigned Int Input", ImGuiDataType_U32, &SEED))
+			{
+				// This block is executed when the input value changes
+				std::cout << "Unsigned Int Value: " << SEED << std::endl;
+			}
+
+			ImGui::NewLine();
+			ImGui::Text(" --- Entities --- ");
+			ImGui::Separator();
+
 			for (i = 0; i < nonSceneEntities.size(); ++i)
 			{
 				// FIXME: Good candidate to use ImGuiSelectableFlags_SelectOnNav
@@ -385,7 +413,8 @@ namespace util
 		std::vector<unsigned short int>& allTexUnits,
 		std::unordered_map<std::string, std::shared_ptr<EntityScene>>& map_SceneNameToEntitiyScene,
 		std::unordered_map<std::string, std::vector<Entity>>& map_SceneEntites,
-		std::shared_ptr<I_SceneFactory> sceneFactory
+		std::shared_ptr<I_SceneFactory> sceneFactory,
+		unsigned int SEED
 		)
 	{
 
@@ -612,7 +641,7 @@ namespace util
 		}
 		*/
 
-		GeneratePerlinNoise(data, hfWidth, hfHeight);
+		GeneratePerlinNoise(data, hfWidth, hfHeight, SEED);
 
 		//Store perlin noise in OpenGL texture.
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, hfWidth, hfHeight, GL_RGBA, GL_FLOAT, data.data());
@@ -1630,9 +1659,9 @@ float perlin(float x, float y, const std::vector<glm::vec2> vectors, unsigned se
 	return value;
 }
 
-void GeneratePerlinNoise(std::vector<float>& data, int width, int height)
+void GeneratePerlinNoise(std::vector<float>& data, int width, int height, unsigned int SEED)
 {
-	const unsigned seed = 2;
+	const unsigned seed = SEED;
 	const int GRID_SIZE = 50;
 
 	std::vector<glm::vec2> vectors = generateUniformVectors(8);

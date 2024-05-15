@@ -21,7 +21,8 @@ namespace util
 		std::vector<unsigned short int>& allTexUnits,
 		std::unordered_map<std::string, std::shared_ptr<EntityScene>>& map_SceneNameToEntitiyScene,
 		std::unordered_map<std::string, std::vector<Entity>>& map_SceneEntites,
-		std::shared_ptr<I_SceneFactory> sceneFactory
+		std::shared_ptr<I_SceneFactory> sceneFactory,
+		unsigned int SEED
 	);
 }
 
@@ -61,7 +62,9 @@ void genMenu_1(std::vector<Entity>& entities,
 	unsigned short int grassTexUnit,
 	unsigned short int waterTexUnit,
 	unsigned short int lavaTexUnit,
-	unsigned short int brickWallTexUnit
+	unsigned short int brickWallTexUnit,
+	unsigned int& SEED,
+	bool& reload
 );
 
 std::vector<glm::vec2> generateUniformVectors(int num_vectors);
@@ -77,4 +80,4 @@ float dotGridGradient(int ix, int iy, float x, float y, const std::vector<glm::v
 
 float perlin(float x, float y, const std::vector<glm::vec2> vectors, unsigned seed);
 
-void GeneratePerlinNoise(std::vector<float>& data, int width, int height);
+void GeneratePerlinNoise(std::vector<float>& data, int width, int height, unsigned int SEED);
