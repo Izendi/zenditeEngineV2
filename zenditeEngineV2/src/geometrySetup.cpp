@@ -632,6 +632,7 @@ namespace util
 		c_Transform tr_2;
 		c_Transform tr_3;
 		c_Transform tr_4;
+		c_Transform tr_hf;
 
 		//tr_0
 		glm::mat4 mm_tr0 = glm::mat4(1.0f);
@@ -673,6 +674,14 @@ namespace util
 		mm_tr4 = glm::scale(mm_tr4, scale_tr4);
 		tr_4.modelMat.push_back(mm_tr4);
 
+		//tr_hf //#Check_if_Correct
+		glm::mat4 mm_tr_hf = glm::mat4(1.0f);
+		glm::vec3 pos_tr_hf(0.0f, -7.2f, 0.0f);
+		glm::vec3 scale_tr0(0.2f, 0.2f, 0.2f);
+		mm_tr_hf = glm::translate(mm_tr0, pos_tr0);
+		mm_tr_hf = glm::scale(mm_tr0, scale_tr0);
+		tr_hf.modelMat.push_back(mm_tr_hf);
+
 		size_t sizeOfVertCubePosData = sizeof(vertCubePosData) / sizeof(float);
 		size_t sizeOfIndices = sizeof(indices) / sizeof(unsigned int);
 
@@ -698,6 +707,9 @@ namespace util
 		c_Renderable rc_3;
 		addDataToRenderable(rc_3, verticalQuad, vertQuadVertNorms, vertQuadTexCoord, vertQuadIndices, sizeOfVerticalQuad, sizeOfVQIndices);
 		rc_3.outline = false;
+
+		//We need to generate a VBO based on the HF data here:
+		c_Renderable rc_hf; //#HERE
 		
 
 		//c_Renderable rc_grass;
