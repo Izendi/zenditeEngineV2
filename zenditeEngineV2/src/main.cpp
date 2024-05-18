@@ -57,6 +57,11 @@ bool seedMovement = false;
 
 unsigned int SEED = 0;
 unsigned int frequency = 1;
+int octaves = 4;
+float lacunarity = 2.0f;
+float persistence = 0.5f;
+float amplitude = 1.0f;
+float maxAmplitude = 0.0f;
 bool reload = false;
 
 int main(void)
@@ -149,7 +154,12 @@ int main(void)
 		hfHeight,
 		heightFieldTex,
 		frequency,
-		SEED
+		SEED,
+		octaves,
+		lacunarity,
+		persistence,
+		amplitude,
+		maxAmplitude
 	);
 		
 	//std::cout << "\nc_AABB bitset position: " << static_cast<unsigned int>(COORD.GetComponentBitsetPos<c_AABB>());
@@ -211,7 +221,35 @@ int main(void)
 			allTexUnits[5],
 			SEED,
 			frequency,
-			reload);
+			reload,
+			octaves,
+			lacunarity,
+			persistence,
+			amplitude,
+			maxAmplitude);
+
+		if (seedMovement == true)
+		{
+			SEED = SEED + 1;
+
+		}
+
+		util::resetHF
+		(
+			COORD,
+			COORD.GetComponentDataFromEntity<c_Renderable>(allEntites[5]),
+			allEntites[5],
+			heightFieldTex,
+			hfWidth,
+			hfHeight,
+			frequency,
+			SEED,
+			octaves,
+			lacunarity,
+			persistence,
+			amplitude,
+			maxAmplitude
+		);
 
 		glfwPollEvents();
 
@@ -226,23 +264,6 @@ int main(void)
 		}
 		*/
 
-		if (seedMovement == true)
-		{
-			SEED = SEED + 1;
-			
-
-			util::resetHF
-			(
-				COORD,
-				COORD.GetComponentDataFromEntity<c_Renderable>(allEntites[5]),
-				allEntites[5],
-				heightFieldTex,
-				hfWidth,
-				hfHeight,
-				frequency,
-				SEED
-			);
-		}
 	}
 
 	//glDeleteFramebuffers(1, &fbo);

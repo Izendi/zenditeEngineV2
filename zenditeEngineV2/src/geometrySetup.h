@@ -25,7 +25,12 @@ namespace util
 		unsigned int hfWidth,
 		unsigned int hfHeight,
 		unsigned int frequency,
-		unsigned int SEED
+		unsigned int SEED,
+		int& octaves,
+		float& lacunarity,
+		float& persistence,
+		float& amplitude,
+		float& maxAmplitude
 	);
 
 	void setupSceneECS(Coordinator& COORD,
@@ -40,7 +45,12 @@ namespace util
 		unsigned int& hfWidth,
 		unsigned int& heightFieldTex,
 		unsigned int& frequency,
-		unsigned int SEED
+		unsigned int SEED,
+		int& octaves, 
+		float& lacunarity, 
+		float& persistence, 
+		float& amplitude, 
+		float& maxAmplitude
 	);
 }
 
@@ -83,7 +93,12 @@ void genMenu_1(std::vector<Entity>& entities,
 	unsigned short int brickWallTexUnit,
 	unsigned int& SEED,
 	unsigned int& frequency,
-	bool& reload
+	bool& reload,
+	int &octaves,
+	float& lacunarity,
+	float& persistence,
+	float& amplitude,
+	float& maxAmplitude
 );
 
 std::vector<glm::vec2> generateUniformVectors(int num_vectors);

@@ -10,9 +10,21 @@
 
 #include "Model_Loading/MinimalSceneFactory.h"
 
-float FbmNoise()
+float FbmNoise2D(float x, float y, unsigned int frequency, int octaves, float lacunarity, float persistence, float amplitude, float maxAmplitude)
 {
+	float total = 0.0f;
+	//float amplitude = 1.0f;
+	//float maxAmplitude = 0.0f; // Used for normalization
+	float freq = (float)frequency;
 
+	for (int i = 0; i < octaves; ++i) {
+		total += stb_perlin_noise3(x * frequency, y * frequency, 0.0f, 0, 0, 0) * amplitude;
+		frequency *= lacunarity;
+		maxAmplitude += amplitude;
+		amplitude *= persistence;
+	}
+
+	return total / maxAmplitude; // Normalize the result
 }
 
 void genMenu_1(std::vector<Entity>& entities,
@@ -28,7 +40,12 @@ void genMenu_1(std::vector<Entity>& entities,
 	unsigned short int brickWallTexUnit,
 	unsigned int& SEED,
 	unsigned int& frequency,
-	bool& reload
+	bool& reload,
+	int &octaves,
+	float& lacunarity,
+	float& persistence,
+	float& amplitude,
+	float& maxAmplitude
 )
 {
 
@@ -73,6 +90,29 @@ void genMenu_1(std::vector<Entity>& entities,
 			{
 				// This block is executed when the input value changes
 				std::cout << "Frequency = " << frequency << std::endl;
+			}
+			if (ImGui::InputScalar("octaves", ImGuiDataType_U32, &octaves))
+			{
+
+			}
+			if (ImGui::InputFloat("lacunarity", &lacunarity))
+			{
+				
+			}
+			if (ImGui::InputFloat("persistence", &persistence))
+			{
+				// This block is executed when the input value changes
+				
+			}
+			if (ImGui::InputFloat("amplitude", &amplitude))
+			{
+				// This block is executed when the input value changes
+				
+			}
+			if (ImGui::InputFloat("maxAmplitude", &maxAmplitude))
+			{
+				// This block is executed when the input value changes
+				
 			}
 
 			ImGui::NewLine();
@@ -467,10 +507,12 @@ namespace util
 				float fx = static_cast<float>(x + SEED) / hfWidth;
 				float fy = static_cast<float>(y + SEED) / hfHeight;
 
-				fx = fx * frequency;
-				fy = fy * frequency;
+				//fx = fx * frequency;
+				//fy = fy * frequency;
 
-				float pnoise = stb_perlin_noise3(fx, fy, 0.0f, 0, 0, 0);
+				//FbmNoise2D(fx, fy, frequency, 4, 2.0f, 0.5f, 1.0f, 0.0f);
+
+				float pnoise = FbmNoise2D(fx, fy, frequency, 4, 2.0f, 0.5f, 1.0f, 0.0f);
 				pnoise = (pnoise + 1.0f) / 2.0f;
 
 				noiseData[index] = pnoise;
@@ -685,7 +727,12 @@ namespace util
 		unsigned int hfWidth,
 		unsigned int hfHeight,
 		unsigned int frequency,
-		unsigned int SEED
+		unsigned int SEED,
+		int& octaves,
+		float& lacunarity,
+		float& persistence,
+		float& amplitude,
+		float& maxAmplitude
 	)
 	{
 		rc_hf.clear();
@@ -693,7 +740,7 @@ namespace util
 		auto& modified = COORD.GetComponentDataFromEntity<c_Modified>(hfEntity);
 
 		modified.isModifed = true;
-
+		glActiveTexture(COORD.GetComponentDataFromEntity<c_Texture>(hfEntity).texUnit);
 		glBindTexture(GL_TEXTURE_2D, heightFieldTex);
 
 		std::vector<float> data(hfWidth * hfHeight * 4);
@@ -716,10 +763,12 @@ namespace util
 				float fx = static_cast<float>(x + SEED) / hfWidth;
 				float fy = static_cast<float>(y + SEED) / hfHeight;
 
-				fx = fx * frequency;
-				fy = fy * frequency;
+				//fx = fx * frequency;
+				//fy = fy * frequency;
 
-				float pnoise = stb_perlin_noise3(fx, fy, 0.0f, 0, 0, 0);
+				//FbmNoise2D(fx, fy, frequency, 4, 2.0f, 0.5f, 1.0f, 0.0f);
+
+				float pnoise = FbmNoise2D(fx, fy, frequency, octaves, lacunarity, persistence, amplitude, maxAmplitude);
 				pnoise = (pnoise + 1.0f) / 2.0f;
 
 				noiseData[index] = pnoise;
@@ -935,7 +984,12 @@ namespace util
 		unsigned int& hfWidth,
 		unsigned int& heightFieldTex,
 		unsigned int& frequency,
-		unsigned int SEED
+		unsigned int SEED,
+		int& octaves,
+		float& lacunarity,
+		float& persistence,
+		float& amplitude,
+		float& maxAmplitude
 		)
 	{
 
