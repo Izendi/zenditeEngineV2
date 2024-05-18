@@ -3,6 +3,8 @@
 #include "ECS/ECSUtils.h"
 #include <random>
 
+#include "stb_perlin/stb_perlin.h"
+
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
