@@ -1,3 +1,4 @@
+
 #include "utils.h"
 #include <GLFW/glfw3.h>
 #include <chrono>
@@ -129,6 +130,10 @@ int main(void)
 	std::unordered_map<std::string, std::shared_ptr<EntityScene>> map_SceneNameToEntitiyScene;
 	std::unordered_map<std::string, std::vector<Entity>> map_SceneEntites;
 
+	unsigned int hfWidth = 35;
+	unsigned int hfHeight = 35;
+	unsigned int heightFieldTex;
+
 	util::setupSceneECS(
 		COORD,
 		shaders,
@@ -138,6 +143,9 @@ int main(void)
 		map_SceneNameToEntitiyScene,
 		map_SceneEntites,
 		sceneFactory,
+		hfWidth,
+		hfHeight,
+		heightFieldTex,
 		SEED
 	);
 		
@@ -160,6 +168,8 @@ int main(void)
 			allEntites.push_back(pair.second[i]);
 		}
 	}
+
+	unsigned seedCounter = 0;
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -204,6 +214,24 @@ int main(void)
 		processInput(window);
 
 		glfwSwapBuffers(window);
+		
+		seedCounter++;
+		if (seedCounter == 2)
+		{
+			SEED = SEED + 1;
+			seedCounter = 0;
+		}
+
+		util::resetHF
+		(
+			COORD,
+			COORD.GetComponentDataFromEntity<c_Renderable>(allEntites[5]),
+			allEntites[5],
+			heightFieldTex,
+			hfWidth,
+			hfHeight,
+			SEED
+		);
 
 	}
 

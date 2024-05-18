@@ -404,8 +404,504 @@ float scaleToRange(float value, float min, float max) {
 	return (value - min) / (max - min);
 }
 
+
+
 namespace util
 {
+	void setupHeightField
+	(
+		c_Renderable& rc_hf,
+		std::vector<unsigned short int>& allTexUnits, 
+		unsigned int hfTexUnit, 
+		unsigned int hfWidth, 
+		unsigned int hfHeight, 
+		unsigned int SEED
+	)
+	{
+		rc_hf.clear();
+
+		std::vector<float> data(hfWidth * hfHeight * 4);
+		std::vector<float> noiseData(hfWidth * hfHeight * 4);
+
+		//std::cout << "\n ------------- Data Size = " << data.size() << "\n" << std::endl;
+
+		std::random_device rd; // Non-deterministic random number generator
+		std::mt19937 gen(rd()); // Mersenne Twister engine seeded with rd()
+
+		// Define a uniform real distribution in the range [0.0, 255.0]
+		std::uniform_real_distribution<> dis(0.0, 255.0);
+
+		/*
+		for(int i = 0; i < data.size(); i = i + 4)
+		{
+			float rnd = dis(gen);
+			rnd = scaleToRange(rnd, 0.0f, 255.0f);
+
+			data[i] = rnd;
+			data[i+1] = rnd;
+			data[i+2] = rnd;
+			data[i+3] = 255.0f;
+		}
+		*/
+
+		//GeneratePerlinNoise(data, hfWidth, hfHeight, SEED);
+
+		for (int y = 0; y < hfWidth; ++y)
+		{
+			for (int x = 0; x < hfHeight; ++x)
+			{
+				int index = (y * hfWidth + x) * 4;
+
+				float fx = static_cast<float>(x + SEED) / hfWidth;
+				float fy = static_cast<float>(y + SEED) / hfHeight;
+				float pnoise = stb_perlin_noise3(fx, fy, 0.0f, 0, 0, 0);
+				pnoise = (pnoise + 1.0f) / 2.0f;
+
+				noiseData[index] = pnoise;
+				noiseData[index + 1] = pnoise;
+				noiseData[index + 2] = pnoise;
+				noiseData[index + 3] = 1.0f;
+			}
+		}
+
+		//Store perlin noise in OpenGL texture.
+		//glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, hfWidth, hfHeight, GL_RGBA, GL_FLOAT, data.data());
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, hfWidth, hfHeight, GL_RGBA, GL_FLOAT, noiseData.data());
+
+		allTexUnits.push_back(hfTexUnit);
+
+
+		std::vector<Face> hmFaces;
+
+		float x_texPoint = 1.0f / (hfWidth);// / 6);
+		float y_texPoint = 1.0f / (hfHeight);// / 6);
+
+		for (unsigned int z = 0; z < hfHeight; z++)
+		{
+			for (unsigned int x = 0; x < hfWidth; x++)
+			{
+				unsigned int index = (x + z * hfWidth) * 4;
+				Vertex vert;
+
+				float y = noiseData[index];
+
+				//Scale by 5 (value is between 0 and 1)
+				y = y * 10.0f;
+
+				vert.Position.x = x;
+				vert.Position.y = y;
+				vert.Position.z = z;
+
+				vert.TexCoords.x = x_texPoint * x;
+				vert.TexCoords.y = y_texPoint * z;
+
+				rc_hf.vertices.push_back(vert);
+			}
+
+		}
+
+		//Fill Height map indices data and hm face data:
+		for (unsigned int i = 0; i < (hfHeight - 1); i++)
+		{
+			for (unsigned int ii = 0; ii < (hfWidth - 1) * 6; ii = ii + 6)
+			{
+
+				unsigned int val = 0;
+				Face face1;
+				Face face2;
+
+				val = i * hfWidth + ii / 6;
+				rc_hf.indices.push_back(val);
+				face1.in_1 = val;
+
+				val = (i + 1) * hfWidth + ii / 6;
+				rc_hf.indices.push_back(val);
+				face1.in_2 = val;
+
+				val = ((i + 1) * hfWidth + ii / 6) + 1;
+				rc_hf.indices.push_back(val);
+				face1.in_3 = val;
+
+				glm::vec3 AB = rc_hf.vertices[face1.in_2].Position - rc_hf.vertices[face1.in_1].Position;
+				glm::vec3 AC = rc_hf.vertices[face1.in_3].Position - rc_hf.vertices[face1.in_1].Position;
+
+				face1.faceNormal = glm::normalize(glm::cross(AB, AC));
+
+
+				val = i * hfWidth + ii / 6;
+				rc_hf.indices.push_back(val);
+				face2.in_1 = val;
+
+				val = ((i + 1) * hfWidth + ii / 6) + 1;
+				rc_hf.indices.push_back(val);
+				face2.in_2 = val;
+
+				val = (i * hfWidth + ii / 6) + 1;
+				rc_hf.indices.push_back(val);
+				face2.in_3 = val;
+
+				AB = rc_hf.vertices[face2.in_2].Position - rc_hf.vertices[face2.in_1].Position;
+				AC = rc_hf.vertices[face2.in_3].Position - rc_hf.vertices[face2.in_1].Position;
+
+				face2.faceNormal = glm::normalize(glm::cross(AB, AC));
+
+				hmFaces.push_back(face1);
+				hmFaces.push_back(face2);
+
+			}
+		}
+
+		//First element (of first row - special case)
+		std::vector<Face> fb;
+		fb.push_back(hmFaces[0]);
+		fb.push_back(hmFaces[1]);
+
+		rc_hf.vertices[0].Normal = calcVertNormal(fb);
+
+		fb.clear();
+
+		for (unsigned int i = 1; i < hfWidth - 1; i++)
+		{
+			fb.clear();
+
+			fb.push_back(hmFaces[(i * 2) + 1]);
+			fb.push_back(hmFaces[(i * 2) + 2]);
+			fb.push_back(hmFaces[(i * 2) + 3]);
+
+			rc_hf.vertices[i].Normal = calcVertNormal(fb);
+		}
+
+		//last element of first row (special case)
+		fb.clear();
+
+		fb.push_back(hmFaces[hfWidth - 1]);
+
+		rc_hf.vertices[hfWidth - 1].Normal = calcVertNormal(fb);
+
+		fb.clear();
+
+		unsigned int facesPerRow = (hfWidth * 2) - 2;
+
+		for (unsigned int i = 1; i < hfHeight - 1; i++)
+		{
+			//Handle first and last elements of each row here
+			fb.clear();
+
+			fb.push_back(hmFaces[(i - 1) * facesPerRow]);
+			fb.push_back(hmFaces[(i)*facesPerRow]);
+			fb.push_back(hmFaces[(i * facesPerRow) + 1]);
+
+			rc_hf.vertices[i * hfWidth].Normal = calcVertNormal(fb);
+
+			fb.clear();
+
+			for (unsigned int ii = 1; ii < hfWidth - 1; ii++)
+			{
+				fb.clear();
+
+				fb.push_back(hmFaces[((ii - 1) * 2) + ((i - 1) * facesPerRow)]); //0
+				fb.push_back(hmFaces[((ii - 1) * 2) + ((i - 1) * facesPerRow) + 1]); //1
+				fb.push_back(hmFaces[((ii - 1) * 2) + ((i - 1) * facesPerRow) + 2]); //2
+
+				fb.push_back(hmFaces[((ii - 1) * 2) + ((i)*facesPerRow) + 1]);
+				fb.push_back(hmFaces[((ii - 1) * 2) + ((i)*facesPerRow) + 2]);
+				fb.push_back(hmFaces[((ii - 1) * 2) + ((i)*facesPerRow) + 3]);
+
+				rc_hf.vertices[(i * hfWidth) + ii].Normal = calcVertNormal(fb);
+
+			}
+
+			fb.clear();
+
+			fb.push_back(hmFaces[((i)*facesPerRow) - 1]);
+			fb.push_back(hmFaces[((i)*facesPerRow) - 2]);
+			fb.push_back(hmFaces[((i + 1) * facesPerRow) - 1]);
+
+			rc_hf.vertices[((i + 1) * hfWidth) - 1].Normal = calcVertNormal(fb);
+
+			fb.clear();
+
+		}
+
+		//Last Row Elements:
+		fb.clear();
+
+		//First last town vertex:
+		fb.push_back(hmFaces[facesPerRow * (hfHeight - 2)]);
+
+		rc_hf.vertices[hfWidth * (hfHeight - 1)].Normal = calcVertNormal(fb);
+
+		fb.clear();
+
+		//Each last row element
+		unsigned int k = 0;
+		for (unsigned int i = hfWidth * (hfHeight - 1) + 1; i < (hfWidth * (hfHeight)) - 2; i++)
+		{
+			fb.clear();
+
+			fb.push_back(hmFaces[facesPerRow * (hfHeight - 2) + (k * 2)]);
+			fb.push_back(hmFaces[facesPerRow * (hfHeight - 2) + (k * 2) + 1]);
+			fb.push_back(hmFaces[facesPerRow * (hfHeight - 2) + (k * 2) + 2]);
+
+			rc_hf.vertices[i].Normal = calcVertNormal(fb);
+
+			k++;
+		}
+
+		//last element of first row (special case)
+		fb.clear();
+
+		fb.push_back(hmFaces[facesPerRow * (hfHeight - 2) + ((k - 1) * 2) + 2]);
+		fb.push_back(hmFaces[facesPerRow * (hfHeight - 2) + ((k - 1) * 2) + 3]); //#Check this one again!!!
+
+		rc_hf.vertices[(hfWidth * (hfHeight)) - 2].Normal = calcVertNormal(fb);
+
+		fb.clear();
+
+	}
+
+	void resetHF
+	(
+		Coordinator& COORD,
+		c_Renderable& rc_hf,
+		Entity& hfEntity,
+		unsigned int& heightFieldTex,
+		unsigned int hfWidth,
+		unsigned int hfHeight,
+		unsigned int SEED
+	)
+	{
+		rc_hf.clear();
+		//auto& texData = COORD.GetComponentDataFromEntity<c_Texture>(hfEntity);
+		auto& modified = COORD.GetComponentDataFromEntity<c_Modified>(hfEntity);
+
+		modified.isModifed = true;
+
+		glBindTexture(GL_TEXTURE_2D, heightFieldTex);
+
+		std::vector<float> data(hfWidth * hfHeight * 4);
+		std::vector<float> noiseData(hfWidth * hfHeight * 4);
+
+		//std::cout << "\n ------------- Data Size = " << data.size() << "\n" << std::endl;
+
+		std::random_device rd; // Non-deterministic random number generator
+		std::mt19937 gen(rd()); // Mersenne Twister engine seeded with rd()
+
+		// Define a uniform real distribution in the range [0.0, 255.0]
+		std::uniform_real_distribution<> dis(0.0, 255.0);
+
+		for (int y = 0; y < hfWidth; ++y)
+		{
+			for (int x = 0; x < hfHeight; ++x)
+			{
+				int index = (y * hfWidth + x) * 4;
+
+				float fx = static_cast<float>(x + SEED) / hfWidth;
+				float fy = static_cast<float>(y + SEED) / hfHeight;
+				float pnoise = stb_perlin_noise3(fx, fy, 0.0f, 0, 0, 0);
+				pnoise = (pnoise + 1.0f) / 2.0f;
+
+				noiseData[index] = pnoise;
+				noiseData[index + 1] = pnoise;
+				noiseData[index + 2] = pnoise;
+				noiseData[index + 3] = 1.0f;
+			}
+		}
+
+		//Store perlin noise in OpenGL texture.
+		//glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, hfWidth, hfHeight, GL_RGBA, GL_FLOAT, data.data());
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, hfWidth, hfHeight, GL_RGBA, GL_FLOAT, noiseData.data());
+
+
+		std::vector<Face> hmFaces;
+
+		float x_texPoint = 1.0f / (hfWidth);// / 6);
+		float y_texPoint = 1.0f / (hfHeight);// / 6);
+
+		for (unsigned int z = 0; z < hfHeight; z++)
+		{
+			for (unsigned int x = 0; x < hfWidth; x++)
+			{
+				unsigned int index = (x + z * hfWidth) * 4;
+				Vertex vert;
+
+				float y = noiseData[index];
+
+				//Scale by 5 (value is between 0 and 1)
+				y = y * 100.0f;
+
+				vert.Position.x = x;
+				vert.Position.y = y;
+				vert.Position.z = z;
+
+				vert.TexCoords.x = x_texPoint * x;
+				vert.TexCoords.y = y_texPoint * z;
+
+				rc_hf.vertices.push_back(vert);
+			}
+
+		}
+
+		//Fill Height map indices data and hm face data:
+		for (unsigned int i = 0; i < (hfHeight - 1); i++)
+		{
+			for (unsigned int ii = 0; ii < (hfWidth - 1) * 6; ii = ii + 6)
+			{
+
+				unsigned int val = 0;
+				Face face1;
+				Face face2;
+
+				val = i * hfWidth + ii / 6;
+				rc_hf.indices.push_back(val);
+				face1.in_1 = val;
+
+				val = (i + 1) * hfWidth + ii / 6;
+				rc_hf.indices.push_back(val);
+				face1.in_2 = val;
+
+				val = ((i + 1) * hfWidth + ii / 6) + 1;
+				rc_hf.indices.push_back(val);
+				face1.in_3 = val;
+
+				glm::vec3 AB = rc_hf.vertices[face1.in_2].Position - rc_hf.vertices[face1.in_1].Position;
+				glm::vec3 AC = rc_hf.vertices[face1.in_3].Position - rc_hf.vertices[face1.in_1].Position;
+
+				face1.faceNormal = glm::normalize(glm::cross(AB, AC));
+
+
+				val = i * hfWidth + ii / 6;
+				rc_hf.indices.push_back(val);
+				face2.in_1 = val;
+
+				val = ((i + 1) * hfWidth + ii / 6) + 1;
+				rc_hf.indices.push_back(val);
+				face2.in_2 = val;
+
+				val = (i * hfWidth + ii / 6) + 1;
+				rc_hf.indices.push_back(val);
+				face2.in_3 = val;
+
+				AB = rc_hf.vertices[face2.in_2].Position - rc_hf.vertices[face2.in_1].Position;
+				AC = rc_hf.vertices[face2.in_3].Position - rc_hf.vertices[face2.in_1].Position;
+
+				face2.faceNormal = glm::normalize(glm::cross(AB, AC));
+
+				hmFaces.push_back(face1);
+				hmFaces.push_back(face2);
+
+			}
+		}
+
+		//First element (of first row - special case)
+		std::vector<Face> fb;
+		fb.push_back(hmFaces[0]);
+		fb.push_back(hmFaces[1]);
+
+		rc_hf.vertices[0].Normal = calcVertNormal(fb);
+
+		fb.clear();
+
+		for (unsigned int i = 1; i < hfWidth - 1; i++)
+		{
+			fb.clear();
+
+			fb.push_back(hmFaces[(i * 2) + 1]);
+			fb.push_back(hmFaces[(i * 2) + 2]);
+			fb.push_back(hmFaces[(i * 2) + 3]);
+
+			rc_hf.vertices[i].Normal = calcVertNormal(fb);
+		}
+
+		//last element of first row (special case)
+		fb.clear();
+
+		fb.push_back(hmFaces[hfWidth - 1]);
+
+		rc_hf.vertices[hfWidth - 1].Normal = calcVertNormal(fb);
+
+		fb.clear();
+
+		unsigned int facesPerRow = (hfWidth * 2) - 2;
+
+		for (unsigned int i = 1; i < hfHeight - 1; i++)
+		{
+			//Handle first and last elements of each row here
+			fb.clear();
+
+			fb.push_back(hmFaces[(i - 1) * facesPerRow]);
+			fb.push_back(hmFaces[(i)*facesPerRow]);
+			fb.push_back(hmFaces[(i * facesPerRow) + 1]);
+
+			rc_hf.vertices[i * hfWidth].Normal = calcVertNormal(fb);
+
+			fb.clear();
+
+			for (unsigned int ii = 1; ii < hfWidth - 1; ii++)
+			{
+				fb.clear();
+
+				fb.push_back(hmFaces[((ii - 1) * 2) + ((i - 1) * facesPerRow)]); //0
+				fb.push_back(hmFaces[((ii - 1) * 2) + ((i - 1) * facesPerRow) + 1]); //1
+				fb.push_back(hmFaces[((ii - 1) * 2) + ((i - 1) * facesPerRow) + 2]); //2
+
+				fb.push_back(hmFaces[((ii - 1) * 2) + ((i)*facesPerRow) + 1]);
+				fb.push_back(hmFaces[((ii - 1) * 2) + ((i)*facesPerRow) + 2]);
+				fb.push_back(hmFaces[((ii - 1) * 2) + ((i)*facesPerRow) + 3]);
+
+				rc_hf.vertices[(i * hfWidth) + ii].Normal = calcVertNormal(fb);
+
+			}
+
+			fb.clear();
+
+			fb.push_back(hmFaces[((i)*facesPerRow) - 1]);
+			fb.push_back(hmFaces[((i)*facesPerRow) - 2]);
+			fb.push_back(hmFaces[((i + 1) * facesPerRow) - 1]);
+
+			rc_hf.vertices[((i + 1) * hfWidth) - 1].Normal = calcVertNormal(fb);
+
+			fb.clear();
+
+		}
+
+		//Last Row Elements:
+		fb.clear();
+
+		//First last town vertex:
+		fb.push_back(hmFaces[facesPerRow * (hfHeight - 2)]);
+
+		rc_hf.vertices[hfWidth * (hfHeight - 1)].Normal = calcVertNormal(fb);
+
+		fb.clear();
+
+		//Each last row element
+		unsigned int k = 0;
+		for (unsigned int i = hfWidth * (hfHeight - 1) + 1; i < (hfWidth * (hfHeight)) - 2; i++)
+		{
+			fb.clear();
+
+			fb.push_back(hmFaces[facesPerRow * (hfHeight - 2) + (k * 2)]);
+			fb.push_back(hmFaces[facesPerRow * (hfHeight - 2) + (k * 2) + 1]);
+			fb.push_back(hmFaces[facesPerRow * (hfHeight - 2) + (k * 2) + 2]);
+
+			rc_hf.vertices[i].Normal = calcVertNormal(fb);
+
+			k++;
+		}
+
+		//last element of first row (special case)
+		fb.clear();
+
+		fb.push_back(hmFaces[facesPerRow * (hfHeight - 2) + ((k - 1) * 2) + 2]);
+		fb.push_back(hmFaces[facesPerRow * (hfHeight - 2) + ((k - 1) * 2) + 3]); //#Check this one again!!!
+
+		rc_hf.vertices[(hfWidth * (hfHeight)) - 2].Normal = calcVertNormal(fb);
+
+		fb.clear();
+
+	}
+
 	void setupSceneECS(Coordinator& COORD,
 		std::vector<std::shared_ptr<Shader>>& shaders,
 		std::vector<Entity>& entities,
@@ -414,6 +910,9 @@ namespace util
 		std::unordered_map<std::string, std::shared_ptr<EntityScene>>& map_SceneNameToEntitiyScene,
 		std::unordered_map<std::string, std::vector<Entity>>& map_SceneEntites,
 		std::shared_ptr<I_SceneFactory> sceneFactory,
+		unsigned int& hfHeight,
+		unsigned int& hfWidth,
+		unsigned int& heightFieldTex,
 		unsigned int SEED
 		)
 	{
@@ -601,6 +1100,8 @@ namespace util
 		entities.push_back(COORD.CreateEntity());
 		entities.push_back(COORD.CreateEntity());
 
+		std::cout << "\n - entities.size() = " << entities.size() << std::endl;
+
 		for (int i = 0; i < entities.size(); ++i)
 		{
 			allEntites.push_back(entities[i]);
@@ -608,9 +1109,6 @@ namespace util
 
 		unsigned short int hfTexUnit = COORD.GenerateTexUnit("res/textures/container2.png", "png");		 // tx Unit = 0
 
-		unsigned int hfHeight = 100;
-		unsigned int hfWidth = 100;
-		unsigned int heightFieldTex;
 
 		glGenTextures(1, &heightFieldTex);
 		glBindTexture(GL_TEXTURE_2D, heightFieldTex);
@@ -618,35 +1116,20 @@ namespace util
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-		std::vector<float> data(hfWidth* hfHeight * 4);
+		// -- HERE --
+		c_Renderable rc_hf; //#HERE
 
-		//std::cout << "\n ------------- Data Size = " << data.size() << "\n" << std::endl;
+		setupHeightField(
+			rc_hf,
+			allTexUnits,
+			hfTexUnit,
+			hfWidth,
+			hfHeight,
+			SEED
+		);
 
-		std::random_device rd; // Non-deterministic random number generator
-		std::mt19937 gen(rd()); // Mersenne Twister engine seeded with rd()
-
-		// Define a uniform real distribution in the range [0.0, 255.0]
-		std::uniform_real_distribution<> dis(0.0, 255.0);
-
-		/*
-		for(int i = 0; i < data.size(); i = i + 4)
-		{
-			float rnd = dis(gen);
-			rnd = scaleToRange(rnd, 0.0f, 255.0f);
-
-			data[i] = rnd;
-			data[i+1] = rnd;
-			data[i+2] = rnd;
-			data[i+3] = 255.0f;
-		}
-		*/
-
-		GeneratePerlinNoise(data, hfWidth, hfHeight, SEED);
-
-		//Store perlin noise in OpenGL texture.
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, hfWidth, hfHeight, GL_RGBA, GL_FLOAT, data.data());
-
-		allTexUnits.push_back(hfTexUnit);
+		//resetHF(COORD, rc_hf, entities[5], heightFieldTex, hfTexUnit, hfWidth, hfHeight, SEED);
+		
 		unsigned short int rockySurfaceTexUnit = COORD.GenerateTexUnit("res/textures/rockySurface.png", "png");	 // tx Unit = 1
 		allTexUnits.push_back(rockySurfaceTexUnit);
 		unsigned short int waterTexUnit = COORD.GenerateTexUnit("res/textures/water.jpg", "jpg");				 // tx Unit = 2
@@ -741,194 +1224,6 @@ namespace util
 		rc_3.outline = false;
 
 		//We need to generate a VBO based on the HF data here:
-		c_Renderable rc_hf; //#HERE
-
-		std::vector<Face> hmFaces;
-
-		float x_texPoint = 1.0f / (hfWidth);// / 6);
-		float y_texPoint = 1.0f / (hfHeight);// / 6);
-
-		for (unsigned int z = 0; z < hfHeight; z++)
-		{
-			for (unsigned int x = 0; x < hfWidth; x++)
-			{
-				unsigned int index = (x + z * hfWidth) * 4;
-				Vertex vert;
-
-				float y = data[index];
-
-				//Scale by 5 (value is between 0 and 1)
-				y = y * 20.0f;
-
-				vert.Position.x = x;
-				vert.Position.y = y;
-				vert.Position.z = z;
-
-				vert.TexCoords.x = x_texPoint * x;
-				vert.TexCoords.y = y_texPoint * z;
-
-				rc_hf.vertices.push_back(vert);
-			}
-
-		}
-		
-		//Fill Height map indices data and hm face data:
-		for (unsigned int i = 0; i < (hfHeight - 1); i++)
-		{
-			for (unsigned int ii = 0; ii < (hfWidth - 1) * 6; ii = ii + 6)
-			{
-				
-				unsigned int val = 0;
-				Face face1;
-				Face face2;
-
-				val = i * hfWidth + ii / 6;
-				rc_hf.indices.push_back(val);
-				face1.in_1 = val;
-
-				val = (i + 1) * hfWidth + ii / 6;
-				rc_hf.indices.push_back(val);
-				face1.in_2 = val;
-
-				val = ((i + 1) * hfWidth + ii / 6) + 1;
-				rc_hf.indices.push_back(val);
-				face1.in_3 = val;
-
-				glm::vec3 AB = rc_hf.vertices[face1.in_2].Position - rc_hf.vertices[face1.in_1].Position;
-				glm::vec3 AC = rc_hf.vertices[face1.in_3].Position - rc_hf.vertices[face1.in_1].Position;
-
-				face1.faceNormal = glm::normalize(glm::cross(AB, AC));
-
-
-				val = i * hfWidth + ii / 6;
-				rc_hf.indices.push_back(val);
-				face2.in_1 = val;
-
-				val = ((i + 1) * hfWidth + ii / 6) + 1;
-				rc_hf.indices.push_back(val);
-				face2.in_2 = val;
-
-				val = (i * hfWidth + ii / 6) + 1;
-				rc_hf.indices.push_back(val);
-				face2.in_3 = val;
-
-				AB = rc_hf.vertices[face2.in_2].Position - rc_hf.vertices[face2.in_1].Position;
-				AC = rc_hf.vertices[face2.in_3].Position - rc_hf.vertices[face2.in_1].Position;
-
-				face2.faceNormal = glm::normalize(glm::cross(AB, AC));
-
-				hmFaces.push_back(face1);
-				hmFaces.push_back(face2);
-				
-			}
-		}
-
-		//First element (of first row - special case)
-		std::vector<Face> fb;
-		fb.push_back(hmFaces[0]);
-		fb.push_back(hmFaces[1]);
-
-		rc_hf.vertices[0].Normal = calcVertNormal(fb);
-
-		fb.clear();
-
-		for (unsigned int i = 1; i < hfWidth - 1; i++)
-		{
-			fb.clear();
-
-			fb.push_back(hmFaces[(i * 2) + 1]);
-			fb.push_back(hmFaces[(i * 2) + 2]);
-			fb.push_back(hmFaces[(i * 2) + 3]);
-
-			rc_hf.vertices[i].Normal = calcVertNormal(fb);
-		}
-
-		//last element of first row (special case)
-		fb.clear();
-
-		fb.push_back(hmFaces[hfWidth - 1]);
-
-		rc_hf.vertices[hfWidth - 1].Normal = calcVertNormal(fb);
-
-		fb.clear();
-
-		unsigned int facesPerRow = (hfWidth * 2) - 2;
-
-		for (unsigned int i = 1; i < hfHeight - 1; i++)
-		{
-			//Handle first and last elements of each row here
-			fb.clear();
-
-			fb.push_back(hmFaces[(i - 1) * facesPerRow]);
-			fb.push_back(hmFaces[(i)*facesPerRow]);
-			fb.push_back(hmFaces[(i * facesPerRow) + 1]);
-
-			rc_hf.vertices[i * hfWidth].Normal = calcVertNormal(fb);
-
-			fb.clear();
-
-			for (unsigned int ii = 1; ii < hfWidth - 1; ii++)
-			{
-				fb.clear();
-
-				fb.push_back(hmFaces[((ii - 1) * 2) + ((i - 1) * facesPerRow)]); //0
-				fb.push_back(hmFaces[((ii - 1) * 2) + ((i - 1) * facesPerRow) + 1]); //1
-				fb.push_back(hmFaces[((ii - 1) * 2) + ((i - 1) * facesPerRow) + 2]); //2
-
-				fb.push_back(hmFaces[((ii - 1) * 2) + ((i)*facesPerRow) + 1]);
-				fb.push_back(hmFaces[((ii - 1) * 2) + ((i)*facesPerRow) + 2]);
-				fb.push_back(hmFaces[((ii - 1) * 2) + ((i)*facesPerRow) + 3]);
-
-				rc_hf.vertices[(i * hfWidth) + ii].Normal = calcVertNormal(fb);
-
-			}
-
-			fb.clear();
-
-			fb.push_back(hmFaces[((i)*facesPerRow) - 1]);
-			fb.push_back(hmFaces[((i)*facesPerRow) - 2]);
-			fb.push_back(hmFaces[((i + 1) * facesPerRow) - 1]);
-
-			rc_hf.vertices[((i + 1) * hfWidth) - 1].Normal = calcVertNormal(fb);
-
-			fb.clear();
-
-		}
-
-		//Last Row Elements:
-		fb.clear();
-
-		//First last town vertex:
-		fb.push_back(hmFaces[facesPerRow * (hfHeight - 2)]);
-
-		rc_hf.vertices[hfWidth * (hfHeight - 1)].Normal = calcVertNormal(fb);
-
-		fb.clear();
-
-		//Each last row element
-		unsigned int k = 0;
-		for (unsigned int i = hfWidth * (hfHeight - 1) + 1; i < (hfWidth * (hfHeight)) - 2; i++)
-		{
-			fb.clear();
-
-			fb.push_back(hmFaces[facesPerRow * (hfHeight - 2) + (k * 2)]);
-			fb.push_back(hmFaces[facesPerRow * (hfHeight - 2) + (k * 2) + 1]);
-			fb.push_back(hmFaces[facesPerRow * (hfHeight - 2) + (k * 2) + 2]);
-
-			rc_hf.vertices[i].Normal = calcVertNormal(fb);
-
-			k++;
-		}
-
-		//last element of first row (special case)
-		fb.clear();
-
-		fb.push_back(hmFaces[facesPerRow * (hfHeight - 2) + ((k - 1) * 2) + 2]);
-		fb.push_back(hmFaces[facesPerRow * (hfHeight - 2) + ((k - 1) * 2) + 3]); //#Check this one again!!!
-
-		rc_hf.vertices[(hfWidth * (hfHeight)) - 2].Normal = calcVertNormal(fb);
-
-		fb.clear();
 
 		//c_Renderable rc_grass;
 

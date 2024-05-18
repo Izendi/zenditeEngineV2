@@ -16,6 +16,17 @@ class I_SceneFactory;
 
 namespace util
 {
+	void resetHF
+	(
+		Coordinator& COORD,
+		c_Renderable& rc_hf,
+		Entity& hfEntity,
+		unsigned int& heightFieldTex,
+		unsigned int hfWidth,
+		unsigned int hfHeight,
+		unsigned int SEED
+	);
+
 	void setupSceneECS(Coordinator& COORD,
 		std::vector<std::shared_ptr<Shader>>& shaders,
 		std::vector<Entity>& entities,
@@ -24,6 +35,9 @@ namespace util
 		std::unordered_map<std::string, std::shared_ptr<EntityScene>>& map_SceneNameToEntitiyScene,
 		std::unordered_map<std::string, std::vector<Entity>>& map_SceneEntites,
 		std::shared_ptr<I_SceneFactory> sceneFactory,
+		unsigned int& hfHeight,
+		unsigned int& hfWidth,
+		unsigned int& heightFieldTex,
 		unsigned int SEED
 	);
 }

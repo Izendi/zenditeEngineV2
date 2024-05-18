@@ -88,6 +88,15 @@ struct c_Renderable
 
 	bool emReflection = false; //#If_active_you_must_set_the_appropriate_shader_for_the_Entity
 	
+	void clear()
+	{
+		vertices.clear();
+		indices.clear();
+		outline = false;
+		blending = false;
+		active = true;
+		emReflection = false;
+	}
 };
 
 struct c_Texture
