@@ -24,6 +24,7 @@ namespace util
 		unsigned int& heightFieldTex,
 		unsigned int hfWidth,
 		unsigned int hfHeight,
+		unsigned int frequency,
 		unsigned int SEED
 	);
 
@@ -38,6 +39,7 @@ namespace util
 		unsigned int& hfHeight,
 		unsigned int& hfWidth,
 		unsigned int& heightFieldTex,
+		unsigned int& frequency,
 		unsigned int SEED
 	);
 }
@@ -80,6 +82,7 @@ void genMenu_1(std::vector<Entity>& entities,
 	unsigned short int lavaTexUnit,
 	unsigned short int brickWallTexUnit,
 	unsigned int& SEED,
+	unsigned int& frequency,
 	bool& reload
 );
 

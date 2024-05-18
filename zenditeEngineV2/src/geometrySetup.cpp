@@ -10,6 +10,11 @@
 
 #include "Model_Loading/MinimalSceneFactory.h"
 
+float FbmNoise()
+{
+
+}
+
 void genMenu_1(std::vector<Entity>& entities,
 	std::vector<Entity>& nonSceneEntities,
 	std::unordered_map<std::string, std::vector<Entity>> map_sceneNameToEntitiesVec,
@@ -22,6 +27,7 @@ void genMenu_1(std::vector<Entity>& entities,
 	unsigned short int lavaTexUnit,
 	unsigned short int brickWallTexUnit,
 	unsigned int& SEED,
+	unsigned int& frequency,
 	bool& reload
 )
 {
@@ -61,7 +67,12 @@ void genMenu_1(std::vector<Entity>& entities,
 			if (ImGui::InputScalar("Unsigned Int Input", ImGuiDataType_U32, &SEED))
 			{
 				// This block is executed when the input value changes
-				std::cout << "Unsigned Int Value: " << SEED << std::endl;
+				//std::cout << "Seed" << SEED << std::endl;
+			}
+			if (ImGui::InputScalar("Frequency", ImGuiDataType_U32, &frequency))
+			{
+				// This block is executed when the input value changes
+				std::cout << "Frequency = " << frequency << std::endl;
 			}
 
 			ImGui::NewLine();
@@ -415,6 +426,7 @@ namespace util
 		unsigned int hfTexUnit, 
 		unsigned int hfWidth, 
 		unsigned int hfHeight, 
+		unsigned int frequency,
 		unsigned int SEED
 	)
 	{
@@ -454,6 +466,10 @@ namespace util
 
 				float fx = static_cast<float>(x + SEED) / hfWidth;
 				float fy = static_cast<float>(y + SEED) / hfHeight;
+
+				fx = fx * frequency;
+				fy = fy * frequency;
+
 				float pnoise = stb_perlin_noise3(fx, fy, 0.0f, 0, 0, 0);
 				pnoise = (pnoise + 1.0f) / 2.0f;
 
@@ -668,6 +684,7 @@ namespace util
 		unsigned int& heightFieldTex,
 		unsigned int hfWidth,
 		unsigned int hfHeight,
+		unsigned int frequency,
 		unsigned int SEED
 	)
 	{
@@ -698,6 +715,10 @@ namespace util
 
 				float fx = static_cast<float>(x + SEED) / hfWidth;
 				float fy = static_cast<float>(y + SEED) / hfHeight;
+
+				fx = fx * frequency;
+				fy = fy * frequency;
+
 				float pnoise = stb_perlin_noise3(fx, fy, 0.0f, 0, 0, 0);
 				pnoise = (pnoise + 1.0f) / 2.0f;
 
@@ -728,7 +749,7 @@ namespace util
 				float y = noiseData[index];
 
 				//Scale by 5 (value is between 0 and 1)
-				y = y * 100.0f;
+				y = y * 30.0f;
 
 				vert.Position.x = x;
 				vert.Position.y = y;
@@ -913,6 +934,7 @@ namespace util
 		unsigned int& hfHeight,
 		unsigned int& hfWidth,
 		unsigned int& heightFieldTex,
+		unsigned int& frequency,
 		unsigned int SEED
 		)
 	{
@@ -1125,6 +1147,7 @@ namespace util
 			hfTexUnit,
 			hfWidth,
 			hfHeight,
+			frequency,
 			SEED
 		);
 

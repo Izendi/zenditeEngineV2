@@ -53,8 +53,10 @@ float lastFrame = 0.0f;
 bool toggle = true;
 bool wireframe = false;
 bool rotation = false;
+bool seedMovement = false;
 
 unsigned int SEED = 0;
+unsigned int frequency = 1;
 bool reload = false;
 
 int main(void)
@@ -130,8 +132,8 @@ int main(void)
 	std::unordered_map<std::string, std::shared_ptr<EntityScene>> map_SceneNameToEntitiyScene;
 	std::unordered_map<std::string, std::vector<Entity>> map_SceneEntites;
 
-	unsigned int hfWidth = 35;
-	unsigned int hfHeight = 35;
+	unsigned int hfWidth = 100;
+	unsigned int hfHeight = 100;
 	unsigned int heightFieldTex;
 
 	util::setupSceneECS(
@@ -146,6 +148,7 @@ int main(void)
 		hfWidth,
 		hfHeight,
 		heightFieldTex,
+		frequency,
 		SEED
 	);
 		
@@ -207,6 +210,7 @@ int main(void)
 			allTexUnits[4],
 			allTexUnits[5],
 			SEED,
+			frequency,
 			reload);
 
 		glfwPollEvents();
@@ -214,25 +218,31 @@ int main(void)
 		processInput(window);
 
 		glfwSwapBuffers(window);
-		
+		/*
 		seedCounter++;
 		if (seedCounter == 2)
 		{
-			SEED = SEED + 1;
 			seedCounter = 0;
 		}
+		*/
 
-		util::resetHF
-		(
-			COORD,
-			COORD.GetComponentDataFromEntity<c_Renderable>(allEntites[5]),
-			allEntites[5],
-			heightFieldTex,
-			hfWidth,
-			hfHeight,
-			SEED
-		);
+		if (seedMovement == true)
+		{
+			SEED = SEED + 1;
+			
 
+			util::resetHF
+			(
+				COORD,
+				COORD.GetComponentDataFromEntity<c_Renderable>(allEntites[5]),
+				allEntites[5],
+				heightFieldTex,
+				hfWidth,
+				hfHeight,
+				frequency,
+				SEED
+			);
+		}
 	}
 
 	//glDeleteFramebuffers(1, &fbo);
@@ -267,6 +277,10 @@ void processInput(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
 		camera->ProcessKeyboard(DOWN, deltaTime);
 
+	if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
+		seedMovement = true;
+	if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS)
+		seedMovement = false;
 
 	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
 	{
