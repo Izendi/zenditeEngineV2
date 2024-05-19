@@ -5,6 +5,8 @@
 
 #include "stb_perlin/stb_perlin.h"
 
+#include "helper/Skydome.h"
+
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
@@ -50,7 +52,8 @@ namespace util
 		float& lacunarity, 
 		float& persistence, 
 		float& amplitude, 
-		float& maxAmplitude
+		float& maxAmplitude,
+		Skydome& skydome
 	);
 }
 

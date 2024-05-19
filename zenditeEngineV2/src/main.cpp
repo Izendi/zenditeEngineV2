@@ -141,6 +141,8 @@ int main(void)
 	unsigned int hfHeight = 100;
 	unsigned int heightFieldTex;
 
+	Skydome skydome;
+
 	util::setupSceneECS(
 		COORD,
 		shaders,
@@ -159,7 +161,8 @@ int main(void)
 		lacunarity,
 		persistence,
 		amplitude,
-		maxAmplitude
+		maxAmplitude,
+		skydome
 	);
 		
 	//std::cout << "\nc_AABB bitset position: " << static_cast<unsigned int>(COORD.GetComponentBitsetPos<c_AABB>());
@@ -183,6 +186,8 @@ int main(void)
 	}
 
 	unsigned seedCounter = 0;
+
+
 
 	while (!glfwWindowShouldClose(window))
 	{

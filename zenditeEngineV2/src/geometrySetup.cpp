@@ -989,7 +989,8 @@ namespace util
 		float& lacunarity,
 		float& persistence,
 		float& amplitude,
-		float& maxAmplitude
+		float& maxAmplitude,
+		Skydome& skydome
 		)
 	{
 
@@ -1380,8 +1381,8 @@ namespace util
 		c_EntityInfo ei_3;
 		ei_3.name = "Grass Billboard 1";
 
-		c_EntityInfo ei_4;
-		ei_4.name = "red Window";
+		//c_EntityInfo ei_4;
+		//ei_4.name = "red Window";
 
 		c_EntityInfo ei_hf;
 		ei_hf.name = "Height Field";
@@ -1428,11 +1429,14 @@ namespace util
 		COORD.setShaderForEntity(entities[3], shaders[0]); //#C_NOTE: Will need to set the map but not the DH, that needs to be done separatly by the renderer.
 		COORD.StoreShaderInEntityDataHandle(entities[3]);
 
-		COORD.AddComponentToEntity<c_Transform>(entities[4], tr_4);
-		COORD.AddComponentToEntity<c_Renderable>(entities[4], rc_3);
-		COORD.AddComponentToEntity<c_Texture>(entities[4], tx_6);
-		COORD.AddComponentToEntity<c_EntityInfo>(entities[4], ei_4);
-		COORD.AddComponentToEntity<c_Modified>(entities[4], md_4);
+		skydome.setSkydomeTransform(glm::vec3(1.0f, 4.0f, 1.0f), glm::vec3(0.5f, 0.5f, 0.5f));
+		skydome.CreateSkydome(4, 8, 8, glm::vec3(0.0f, 0.0f, 0.0f));
+
+		COORD.AddComponentToEntity<c_Transform>(entities[4], skydome.GetComponent_Transform());
+		COORD.AddComponentToEntity<c_Renderable>(entities[4], skydome.GetComponent_Renderable());
+		COORD.AddComponentToEntity<c_Texture>(entities[4], tx_1);
+		COORD.AddComponentToEntity<c_EntityInfo>(entities[4], skydome.GetComponent_EntityInfo());
+		COORD.AddComponentToEntity<c_Modified>(entities[4], skydome.GetComponent_Modified());
 		COORD.SetUpRenderData(entities[4]); //#NOTE: SetUpRenderData and setShaderForEntity will do nothing if the entity does no have a c_RenderableComponent
 		COORD.setShaderForEntity(entities[4], shaders[0]); //#C_NOTE: Will need to set the map but not the DH, that needs to be done separatly by the renderer.
 		COORD.StoreShaderInEntityDataHandle(entities[4]);

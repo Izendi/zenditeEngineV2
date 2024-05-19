@@ -55,6 +55,17 @@ struct c_Transform
 
 	glm::mat4 prevModelMat;
 	std::vector<glm::mat4> modelMat;
+
+	void clear()
+	{
+		prevModelMat = glm::mat4(1.0f);
+
+		for(int i = 0; i < modelMat.size(); ++i)
+		{
+			modelMat[i] = glm::mat4(1.0f);
+		}
+		
+	}
 };
 
 struct c_AABB

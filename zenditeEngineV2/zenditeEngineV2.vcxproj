@@ -146,6 +146,7 @@
     <ClCompile Include="src\API_Rendering\OpenGl_Renderer.cpp" />
     <ClCompile Include="src\Coordinator.cpp" />
     <ClCompile Include="src\geometrySetup.cpp" />
+    <ClCompile Include="src\helper\Skydome.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Model_Loading\EntityNode.cpp" />
     <ClCompile Include="src\Model_Loading\EntityScene.cpp" />
@@ -192,6 +193,7 @@
     <ClInclude Include="src\EventManager\I_Observer.h" />
     <ClInclude Include="src\EventManager\I_Subject.h" />
     <ClInclude Include="src\geometrySetup.h" />
+    <ClInclude Include="src\helper\Skydome.h" />
     <ClInclude Include="src\menu.h" />
     <ClInclude Include="src\Model_Loading\EntityNode.h" />
     <ClInclude Include="src\Model_Loading\EntityScene.h" />
