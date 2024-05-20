@@ -1429,8 +1429,8 @@ namespace util
 		COORD.setShaderForEntity(entities[3], shaders[0]); //#C_NOTE: Will need to set the map but not the DH, that needs to be done separatly by the renderer.
 		COORD.StoreShaderInEntityDataHandle(entities[3]);
 
-		skydome.setSkydomeTransform(glm::vec3(1.0f, 4.0f, 1.0f), glm::vec3(0.5f, 0.5f, 0.5f));
-		skydome.CreateSkydome(4, 8, 8, glm::vec3(0.0f, 0.0f, 0.0f));
+		skydome.CreateSkydome(16, 16, 8, glm::vec3(-3.35f, 2.25f, 2.95f), glm::vec3(0.8f, 0.45f, 0.8f));
+		//skydome.setSkydomeTransform(glm::vec3(1.0f, 10.0f, 1.0f), glm::vec3(0.2f, 0.2f, 0.2f));
 
 		COORD.AddComponentToEntity<c_Transform>(entities[4], skydome.GetComponent_Transform());
 		COORD.AddComponentToEntity<c_Renderable>(entities[4], skydome.GetComponent_Renderable());

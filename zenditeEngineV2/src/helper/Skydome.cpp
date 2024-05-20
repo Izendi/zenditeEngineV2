@@ -16,7 +16,7 @@ void Skydome::DestroySkydome()
 	mod.isModifed = true;
 }
 
-void Skydome::CreateSkydome(unsigned nLats, unsigned nlongs, float fRadius, glm::vec3 worldOrigin)
+void Skydome::CreateSkydome(unsigned nLats, unsigned nlongs, float fRadius, glm::vec3 worldPosition, glm::vec3 scale)
 {
 	//DEBUG_ASSERT(nResolution > 0 && fRadius > 0, "Resolution or Radius can't be below 0");
 	//DEBUG_ASSERT(fVertSweep > 0 && fVertSweep <= 90, "vertical Sweep must be between 0 - 90 degrees");
@@ -30,9 +30,12 @@ void Skydome::CreateSkydome(unsigned nLats, unsigned nlongs, float fRadius, glm:
 
 	info.name = "Skydome";
 	mod.isModifed = true;
+	m_worldOrigin = worldPosition;
+
+	setSkydomeTransform(m_worldOrigin, scale);
 
 	m_Radius = fRadius;
-	m_worldOrigin = worldOrigin;
+	
 
 	unsigned m_nVertices = nLats * nlongs + 1;
 
@@ -45,7 +48,7 @@ void Skydome::CreateSkydome(unsigned nLats, unsigned nlongs, float fRadius, glm:
 
 	glm::vec3 posData;
 	posData.x = 0.0f;
-	posData.y = 0.0f;
+	posData.y = fRadius;
 	posData.z = 0.0f;
 
 	glm::vec3 normData;
@@ -68,8 +71,11 @@ void Skydome::CreateSkydome(unsigned nLats, unsigned nlongs, float fRadius, glm:
 
 	float angleOfRotation = glm::radians(longOffset);
 
+	float verticalRotationOffset = 90.0f / (float)nLats;
+
 	float z = latOffset;
 	float x = 0.0f;
+	float y = fRadius;
 
 	float x_new = 0.0f;
 	float z_new = latOffset;
@@ -78,18 +84,22 @@ void Skydome::CreateSkydome(unsigned nLats, unsigned nlongs, float fRadius, glm:
 	{
 		z_new = (latOffset * (i + 1));
 		x_new = 0.0f;
+		float rotationVal = verticalRotationOffset * (float)i;
 
+		y = fRadius * std::cos(glm::radians(rotationVal));
+		
 		//Do one rotation around the circle for each of these loops (nLongs tells us how many angle increments we have)
 		for (size_t ii = 0; ii < nlongs; ++ii)
 		{
 			x = x_new;
 			z = z_new;
+			//y = i + i * 0.2;
 
 			Vertex vert;
 
 			glm::vec3 pos;
 			pos.x = x_new;
-			pos.y = 0.0f;
+			pos.y = y;
 			pos.z = z_new;
 
 			glm::vec3 norm;
@@ -111,7 +121,6 @@ void Skydome::CreateSkydome(unsigned nLats, unsigned nlongs, float fRadius, glm:
 			x_new = x * std::cos(angleOfRotation) - z * std::sin(angleOfRotation);
 			z_new = x * std::sin(angleOfRotation) + z * std::cos(angleOfRotation);
 
-			
 		}
 	}
 
@@ -153,6 +162,8 @@ void Skydome::CreateSkydome(unsigned nLats, unsigned nlongs, float fRadius, glm:
 	}
 	
 	std::cout << " --  ";
+
+
 }
 
 void Skydome::setSkydomeTransform(glm::vec3 worldPos, glm::vec3 scale)

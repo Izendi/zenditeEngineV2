@@ -36,7 +36,8 @@ public:
 		unsigned nLats, 
 		unsigned nlongs, 
 		float fRadius, 
-		glm::vec3 worldOrigin);
+		glm::vec3 worldPosition,
+		glm::vec3 scale);
 
 	void setSkydomeTransform(glm::vec3 worldPos, glm::vec3 scale);
 
