@@ -123,6 +123,9 @@ int main(void)
 	std::cout << "\nRenderableSystem bitset: " << COORD.GetSystemBitset<RenderableSystem>() << std::endl;
 	//std::cout << "\Rigid_CollisionDetectionSystem bitset: " << COORD.GetSystemBitset<Rigid_CollisionDetectionSystem>() << std::endl;
 
+	std::shared_ptr<Shader> sh_Skydome = std::make_shared<Shader>("res/shaders/PerlinNoise/vs_Skydome.glsl",
+		"res/shaders/PerlinNoise/fs_Skydome.glsl"); 
+
 	std::shared_ptr<Shader> sh_basicWithTex = std::make_shared<Shader>("res/shaders/BasicShaders/vs_cubeWnormANDtex.glsl",
 		"res/shaders/BasicShaders/fs_cubeWnormANDtex.glsl"); //#Shaders have not yet been abstracted into the API_Manger
 
@@ -130,6 +133,7 @@ int main(void)
 
 	std::vector<std::shared_ptr<Shader>> shaders;
 	shaders.push_back(sh_basicWithTex);
+	shaders.push_back(sh_Skydome);
 
 	std::vector<Entity> entities;
 	std::vector<Entity> allEntites;
@@ -211,7 +215,7 @@ int main(void)
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		COORD.runAllSystems(2.0f, allEntites); //#ECS_RENDERING
+		COORD.runAllSystems(deltaTime, allEntites); //#ECS_RENDERING
 
 		genMenu_1(allEntites,
 			entities,

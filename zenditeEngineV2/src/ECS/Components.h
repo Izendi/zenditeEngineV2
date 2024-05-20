@@ -115,6 +115,7 @@ struct c_Renderable
 struct c_Texture
 {
 	unsigned short int texUnit; //If emReflection this should be a cube map tex unit.
+	bool is3Dtex = false;
 	//std::string type;
 };
 

@@ -57,10 +57,12 @@ public:
 
 		if ((entitySig & textureBitset) == textureBitset) // If this entity has a texture component
 		{
+			c_Texture& texData = ECScoord->GetComponentDataFromEntity<c_Texture>(EID);
+			
+
 			GLCALL(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords)));
 			GLCALL(glEnableVertexAttribArray(2));
 
-			c_Texture& texData = ECScoord->GetComponentDataFromEntity<c_Texture>(EID);
 
 			DH.texUnit = texData.texUnit; //#TexUNIT_Set
 			//DH.texture = textures[texData.texUnit];

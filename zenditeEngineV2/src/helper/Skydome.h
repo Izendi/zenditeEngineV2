@@ -39,6 +39,8 @@ public:
 		glm::vec3 worldPosition,
 		glm::vec3 scale);
 
+	void generate3DNoiseTexture(unsigned short texUnitToAssign, int x, int y, int z);
+
 	void setSkydomeTransform(glm::vec3 worldPos, glm::vec3 scale);
 
 	void setSkydomeTexUnit(unsigned short skydomeTexUnit);

@@ -11,10 +11,11 @@ OpenGL_Renderer::OpenGL_Renderer(std::shared_ptr<Camera> cam) : I_Renderer(cam)
 		"res/shaders/simple/fs_shaderSingleColor.glsl");
 }
 
-void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECScoord, Entity EID)
+void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECScoord, Entity EID, float deltaTime)
 {
 	c_Transform& trans = ECScoord.GetComponentDataFromEntity<c_Transform>(EID);
 	c_Renderable& rendData = ECScoord.GetComponentDataFromEntity<c_Renderable>(EID);
+	c_Texture& texComponentData = ECScoord.GetComponentDataFromEntity<c_Texture>(EID);
 
 	std::shared_ptr<Shader> shader = DataHandle.shader;
 	shader->bindProgram();
@@ -23,6 +24,11 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 	glm::mat4 cubeView = cam->GetViewMatrix();
 	shader->setUniformMat4("projection", GL_FALSE, glm::value_ptr(cubeProjection));
 	shader->setUniformMat4("view", GL_FALSE, glm::value_ptr(cubeView));
+
+	if(texComponentData.is3Dtex)
+	{
+		shader->setUniformFloat("iTime", deltaTime);
+	}
 
 	if(rendData.emReflection == true)
 	{

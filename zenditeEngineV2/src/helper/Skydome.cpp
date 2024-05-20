@@ -30,6 +30,8 @@ void Skydome::CreateSkydome(unsigned nLats, unsigned nlongs, float fRadius, glm:
 
 	info.name = "Skydome";
 	mod.isModifed = true;
+	texUnit.is3Dtex = true;
+
 	m_worldOrigin = worldPosition;
 
 	setSkydomeTransform(m_worldOrigin, scale);
@@ -175,6 +177,11 @@ void Skydome::setSkydomeTransform(glm::vec3 worldPos, glm::vec3 scale)
 	modelMat = glm::translate(modelMat, worldPos);
 	modelMat = glm::scale(modelMat, scale);
 	trans.modelMat.push_back(modelMat);
+}
+
+void Skydome::generate3DNoiseTexture(unsigned short texUnitToAssign, int x, int y, int z)
+{
+	texUnit.is3Dtex = true;
 }
 
 void Skydome::setSkydomeTexUnit(unsigned short skydomeTexUnit)
