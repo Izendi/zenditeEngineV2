@@ -182,6 +182,9 @@ void Skydome::setSkydomeTransform(glm::vec3 worldPos, glm::vec3 scale)
 void Skydome::generate3DNoiseTexture(unsigned short texUnitToAssign, int x, int y, int z)
 {
 	texUnit.is3Dtex = true;
+	GLCALL(glActiveTexture(GL_TEXTURE0 + texUnitToAssign));
+
+
 }
 
 void Skydome::setSkydomeTexUnit(unsigned short skydomeTexUnit)

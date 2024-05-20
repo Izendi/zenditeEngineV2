@@ -1434,11 +1434,11 @@ namespace util
 
 		COORD.AddComponentToEntity<c_Transform>(entities[4], skydome.GetComponent_Transform());
 		COORD.AddComponentToEntity<c_Renderable>(entities[4], skydome.GetComponent_Renderable());
-		COORD.AddComponentToEntity<c_Texture>(entities[4], tx_1);
+		COORD.AddComponentToEntity<c_Texture>(entities[4], tx_3/*skydome.GetComponent_Texture()*/);
 		COORD.AddComponentToEntity<c_EntityInfo>(entities[4], skydome.GetComponent_EntityInfo());
 		COORD.AddComponentToEntity<c_Modified>(entities[4], skydome.GetComponent_Modified());
 		COORD.SetUpRenderData(entities[4]); //#NOTE: SetUpRenderData and setShaderForEntity will do nothing if the entity does no have a c_RenderableComponent
-		COORD.setShaderForEntity(entities[4], shaders[0]); //#C_NOTE: Will need to set the map but not the DH, that needs to be done separatly by the renderer.
+		COORD.setShaderForEntity(entities[4], shaders[1]); //#C_NOTE: Will need to set the map but not the DH, that needs to be done separatly by the renderer.
 		COORD.StoreShaderInEntityDataHandle(entities[4]);
 
 		COORD.AddComponentToEntity<c_Transform>(entities[5], tr_hf);

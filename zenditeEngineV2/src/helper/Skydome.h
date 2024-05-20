@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../ECS/Components.h"
-//#include "../utils.h"
+#include "../utils.h"
 #include "../ECS/ECSUtils.h"
 
 #include <glm/glm.hpp>
