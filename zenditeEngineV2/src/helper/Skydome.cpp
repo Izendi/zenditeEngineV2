@@ -1,3 +1,4 @@
+#include <iostream>
 #include "Skydome.h"
 
 Skydome::Skydome()
@@ -13,38 +14,6 @@ void Skydome::DestroySkydome()
 	renderable.clear();
 	trans.clear();
 	mod.isModifed = true;
-}
-
-void addDataToRenderable(c_Renderable& rc, float* vertCubePosData, float* vertCubeNormData, float* vertCubeTexCoordData, unsigned int* indices, size_t sizeofVertCubePosData, size_t sizeofIndices)
-{
-	for (size_t i = 0; i < sizeofVertCubePosData; i = i + 3)
-	{
-		Vertex vert;
-		glm::vec3 pos;
-		pos.x = vertCubePosData[i];
-		pos.y = vertCubePosData[i + 1];
-		pos.z = vertCubePosData[i + 2];
-
-		glm::vec3 norm;
-		norm.x = vertCubeNormData[i];
-		norm.y = vertCubeNormData[i + 1];
-		norm.z = vertCubeNormData[i + 2];
-
-		glm::vec2 texCoord;
-		texCoord.x = vertCubeTexCoordData[2 * (i / 3)];
-		texCoord.y = vertCubeTexCoordData[2 * (i / 3) + 1];
-
-		vert.Position = pos;
-		vert.Normal = norm;
-		vert.TexCoords = texCoord;
-
-		rc.vertices.push_back(vert);
-	}
-
-	for (size_t i = 0; i < sizeofIndices; ++i)
-	{
-		rc.indices.push_back(indices[i]);
-	}
 }
 
 void Skydome::CreateSkydome(unsigned nLats, unsigned nlongs, float fRadius, glm::vec3 worldOrigin)
@@ -107,12 +76,15 @@ void Skydome::CreateSkydome(unsigned nLats, unsigned nlongs, float fRadius, glm:
 
 	for (size_t i = 0; i < nLats; ++i)
 	{
-		z_new = z_new + (latOffset * i);
+		z_new = (latOffset * (i + 1));
 		x_new = 0.0f;
 
 		//Do one rotation around the circle for each of these loops (nLongs tells us how many angle increments we have)
 		for (size_t ii = 0; ii < nlongs; ++ii)
 		{
+			x = x_new;
+			z = z_new;
+
 			Vertex vert;
 
 			glm::vec3 pos;
@@ -139,8 +111,7 @@ void Skydome::CreateSkydome(unsigned nLats, unsigned nlongs, float fRadius, glm:
 			x_new = x * std::cos(angleOfRotation) - z * std::sin(angleOfRotation);
 			z_new = x * std::sin(angleOfRotation) + z * std::cos(angleOfRotation);
 
-			x = x_new;
-			z = z_new;
+			
 		}
 	}
 
@@ -172,15 +143,16 @@ void Skydome::CreateSkydome(unsigned nLats, unsigned nlongs, float fRadius, glm:
 
 		}
 
-		renderable.indices.push_back(nlongs + (i - 1) * nLats);
-		renderable.indices.push_back(1 + i * nLats);
-		renderable.indices.push_back(1 + (i - 1) * nLats);
+		renderable.indices.push_back(nlongs + (i - 1) * nlongs);
+		renderable.indices.push_back(1 + i * nlongs);
+		renderable.indices.push_back(1 + (i - 1) * nlongs);
 
-		renderable.indices.push_back(nlongs + (i - 1) * nLats);
-		renderable.indices.push_back(nlongs + i * nLats);
-		renderable.indices.push_back(1 + i * nLats);
+		renderable.indices.push_back(nlongs + (i - 1) * nlongs);
+		renderable.indices.push_back(nlongs + i * nlongs);
+		renderable.indices.push_back(1 + i * nlongs);
 	}
 	
+	std::cout << " --  ";
 }
 
 void Skydome::setSkydomeTransform(glm::vec3 worldPos, glm::vec3 scale)
