@@ -1,23 +1,21 @@
 #version 420 core
 
-in vec2 texCoord;
-in vec4 fragPos;
-
 out vec4 FragColor;
 
-uniform float deltaTime;
+in vec2 TexCoords;
+in vec2 OffsetTexCoords[4];
+
+uniform sampler2D noiseTexture;
 
 void main()
 {
-    // Perform perspective division to get normalized device coordinates (if needed)
-    //vec3 ndcPos = fragPos.xyz / fragPos.w; // Uncomment if fragPos is in clip space
+    float noiseR = texture(noiseTexture, OffsetTexCoords[0]).r;
+    float noiseG = texture(noiseTexture, OffsetTexCoords[1]).g;
+    float noiseB = texture(noiseTexture, OffsetTexCoords[2]).b;
+    float noiseA = texture(noiseTexture, OffsetTexCoords[3]).a;
 
-    // Map NDC coordinates [-1, 1] to [0, 1]
-    vec3 normalizedPos = (fragPos.xyz + vec3(1.0)) * 0.5;
+    // Combine the octaves
+    float fbm = (noiseR + noiseG + noiseB + noiseA) / 4.0;
 
-    // Create an oscillating color effect using a sine wave
-    float oscillation = sin(deltaTime) * 0.5 + 0.5; // Oscillates between 0 and 1
-
-    // Output normalized coordinates directly for debugging
-    FragColor = vec4(normalizedPos * oscillation, 1.0); // Color based on normalized position
+    FragColor = vec4(vec3(fbm), 1.0); // Output final cloud texture
 }

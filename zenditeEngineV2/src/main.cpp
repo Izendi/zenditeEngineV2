@@ -27,6 +27,17 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
 
+void generateFBMOctave(float* data, int width, int height, float scale, float amplitude) 
+{
+	for (int y = 0; y < height; ++y) {
+		for (int x = 0; x < width; ++x) {
+			float fx = x * scale;
+			float fy = y * scale;
+			data[y * width + x] = stb_perlin_noise3(fx, fy, 0, 0, 0, 0) * amplitude;
+		}
+	}
+}
+
 //void addDataToLightRenderable(c_LightRenderable& rc, float* vertCubePosData, unsigned int* indices, size_t sizeofVertCubePosData, size_t sizeofIndices);
 
 void setUpBasicModelMatrix(glm::mat4& MM, glm::vec3 pos, glm::vec3 scale)
@@ -284,15 +295,78 @@ int main(void)
 
 	glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 
+
+	//Set Up Cloud Noise Octave Textures
+	float noiseData_1[512 * 512];
+	float noiseData_2[512 * 512];
+	float noiseData_3[512 * 512];
+	float noiseData_4[512 * 512];
+
+	// Parameters for fbm
+	float scale = 0.1f;
+	float persistence = 0.5f;
+
+	generateFBMOctave(noiseData_1, 512, 512, scale, 1.0f);
+	generateFBMOctave(noiseData_2, 512, 512, scale * 2, 0.5f);
+	generateFBMOctave(noiseData_3, 512, 512, scale * 4, 0.25f);
+	generateFBMOctave(noiseData_4, 512, 512, scale * 8, 0.125f);
+
+	float* combinedNoiseData = new float[512 * 512 * 4];
+
+	for (int i = 0; i < 512 * 512; ++i) {
+		combinedNoiseData[4 * i + 0] = noiseData_1[i]; // Red channel
+		combinedNoiseData[4 * i + 1] = noiseData_2[i]; // Green channel
+		combinedNoiseData[4 * i + 2] = noiseData_3[i]; // Blue channel
+		combinedNoiseData[4 * i + 3] = noiseData_4[i]; // Alpha channel
+	}
+
+	GLuint cloudNoiseTexture;
+	glGenTextures(1, &cloudNoiseTexture);
+	glBindTexture(GL_TEXTURE_2D, cloudNoiseTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 512, 512, 0, GL_RGBA, GL_FLOAT, combinedNoiseData);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	// Set the speed for each octave
+	glm::vec2 speeds[4] = {
+		glm::vec2(0.1f, 0.1f),
+		glm::vec2(0.05f, 0.05f),
+		glm::vec2(0.02f, 0.02f),
+		glm::vec2(0.01f, 0.01f)
+	};
+
+
+
 	while (!glfwWindowShouldClose(window))
 	{
 		float currentFrame = static_cast<float>(glfwGetTime());
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		glViewport(0, 0, 512, 512);
+		// START => Cloud Noise Octaves 
 		sh_Clouds->bindProgram();
-		sh_Clouds->setUniformFloat("deltaTime", currentFrame);
+		sh_Clouds->setUniformFloat("time", currentFrame);
+
+		for (int i = 0; i < 4; ++i) {
+			std::string uniformName = "speed[" + std::to_string(i) + "]";
+			GLint location = glGetUniformLocation(sh_Clouds->getShaderHandle(), uniformName.c_str());
+			glUniform2f(location, speeds[i].x, speeds[i].y);
+		}
+
+		// Bind the noise texture
+		glActiveTexture(GL_TEXTURE8);
+		glBindTexture(GL_TEXTURE_2D, cloudNoiseTexture);
+		sh_Clouds->setUniformTextureUnit("noiseTexture", 8);
+
+		glActiveTexture(GL_TEXTURE0);
+
+		// END => Cloud Noise Octaves 
+
+		glViewport(0, 0, 512, 512);
+		//sh_Clouds->bindProgram();
+		//sh_Clouds->setUniformFloat("deltaTime", currentFrame);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, cloudFBO);
 		glBindVertexArray(quadVAO);

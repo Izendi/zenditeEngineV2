@@ -1514,5 +1514,7 @@
     <None Include="res\shaders\PerlinNoise\vs_Skydome.glsl" />
     <None Include="res\shaders\PerlinNoise\fs_Clouds.glsl" />
     <None Include="res\shaders\PerlinNoise\vs_Clouds.glsl" />
+    <None Include="res\shaders\PerlinNoise\fs_Basic.glsl" />
+    <None Include="res\shaders\PerlinNoise\vs_Basic.glsl" />
   </ItemGroup>
 </Project>

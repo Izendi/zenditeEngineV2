@@ -84,6 +84,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)dep\assimp\lib\Debug;$(SolutionDir)dep\GLEW\lib\Release\x64;$(SolutionDir)dep\GLFW\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>assimp-vc143-mtd.lib;opengl32.lib;glew32s.lib;glfw3.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <StackReserveSize>16777216</StackReserveSize>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -104,6 +105,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)dep\assimp\lib\Debug;$(SolutionDir)dep\GLEW\lib\Release\x64;$(SolutionDir)dep\GLFW\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>assimp-vc143-mtd.lib;opengl32.lib;glew32s.lib;glfw3.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <StackReserveSize>16777216</StackReserveSize>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -120,6 +122,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)dep\assimp\lib\Debug;$(SolutionDir)dep\GLEW\lib\Release\x64;$(SolutionDir)dep\GLFW\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>assimp-vc143-mtd.lib;opengl32.lib;glew32s.lib;glfw3.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <StackReserveSize>16777216</StackReserveSize>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -140,6 +143,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)dep\assimp\lib\Debug;$(SolutionDir)dep\GLEW\lib\Release\x64;$(SolutionDir)dep\GLFW\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>assimp-vc143-mtd.lib;opengl32.lib;glew32s.lib;glfw3.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <StackReserveSize>16777216</StackReserveSize>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -526,8 +530,10 @@
     <None Include="res\shaders\LightingShaders\vs_lightSource.glsl" />
     <None Include="res\shaders\modelLoading\fs_model_loading.glsl" />
     <None Include="res\shaders\modelLoading\vs_model_loading.glsl" />
+    <None Include="res\shaders\PerlinNoise\fs_Basic.glsl" />
     <None Include="res\shaders\PerlinNoise\fs_Clouds.glsl" />
     <None Include="res\shaders\PerlinNoise\fs_Skydome.glsl" />
+    <None Include="res\shaders\PerlinNoise\vs_Basic.glsl" />
     <None Include="res\shaders\PerlinNoise\vs_Clouds.glsl" />
     <None Include="res\shaders\PerlinNoise\vs_Skydome.glsl" />
     <None Include="res\shaders\simple\fs_shaderSingleColor.glsl" />
