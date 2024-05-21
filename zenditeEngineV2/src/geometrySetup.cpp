@@ -27,7 +27,9 @@ float FbmNoise2D(float x, float y, unsigned int frequency, int octaves, float la
 	return total / maxAmplitude; // Normalize the result
 }
 
-void genMenu_1(std::vector<Entity>& entities,
+void genMenu_1(
+	float deltaTime,
+	std::vector<Entity>& entities,
 	std::vector<Entity>& nonSceneEntities,
 	std::unordered_map<std::string, std::vector<Entity>> map_sceneNameToEntitiesVec,
 	std::unordered_map<std::string, std::shared_ptr<EntityScene>>& map_SceneNameToEntitiyScene,
@@ -66,6 +68,18 @@ void genMenu_1(std::vector<Entity>& entities,
 		{
 			int i = 0;
 			ImGui::BeginChild("left pane", ImVec2(150, 0), ImGuiChildFlags_Border | ImGuiChildFlags_ResizeX);
+
+			float framerate = 0.0f;
+
+			if (deltaTime > 0.0f)
+			{
+				framerate = 1.0f / deltaTime;
+			}
+
+			ImGui::Text("Framerate: %.1f FPS", framerate);
+			ImGui::NewLine();
+			ImGui::Separator();
+			ImGui::NewLine();
 
 			if (ImGui::Checkbox("Reload", &reload))
 			{

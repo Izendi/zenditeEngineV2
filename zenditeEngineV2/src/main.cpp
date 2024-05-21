@@ -218,6 +218,9 @@ int main(void)
 
 
 	//FBO - START:
+
+	glViewport(0, 0, 512, 512);
+
 	unsigned int quadVAO;
 	unsigned int quadPosVBO, quadTexVBO;
 	unsigned int quadEBO;
@@ -275,19 +278,7 @@ int main(void)
 		std::cout << "Cloud Framebuffer is complete" << std::endl;
 	}
 
-	sh_Clouds->bindProgram();
-	glBindVertexArray(quadVAO);
-
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-	glBindVertexArray(0);
-
-	glViewport(0, 0, 512, 512);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0); //rebind default framebuffer
-	//FBO - END
+	// FrameBuffer Used to be drawn here //#HERE_WAS_FRAMEBUFFER
 
 	glActiveTexture(GL_TEXTURE0);
 
@@ -295,6 +286,26 @@ int main(void)
 
 	while (!glfwWindowShouldClose(window))
 	{
+		float currentFrame = static_cast<float>(glfwGetTime());
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
+
+		glViewport(0, 0, 512, 512);
+		sh_Clouds->bindProgram();
+		sh_Clouds->setUniformFloat("deltaTime", currentFrame);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, cloudFBO);
+		glBindVertexArray(quadVAO);
+
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+		glBindVertexArray(0);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0); //rebind default framebuffer
+		//FBO - END
+
+		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+
 		//glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // <== #HERE
@@ -311,13 +322,11 @@ int main(void)
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
 
-		float currentFrame = static_cast<float>(glfwGetTime());
-		deltaTime = currentFrame - lastFrame;
-		lastFrame = currentFrame;
-
 		COORD.runAllSystems(deltaTime, allEntites); //#ECS_RENDERING
 
-		genMenu_1(allEntites,
+		genMenu_1(
+			deltaTime,
+			allEntites,
 			entities,
 			map_SceneEntites,
 			map_SceneNameToEntitiyScene,

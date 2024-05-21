@@ -84,7 +84,9 @@ void unbindVao();
 
 void addDataToRenderable(c_Renderable& rc, float* vertCubePosData, float* vertCubeNormData, float* vertCubeTexCoordData, unsigned int* indices, size_t sizeofVertCubePosData, size_t sizeofIndices);
 
-void genMenu_1(std::vector<Entity>& entities,
+void genMenu_1(
+	float deltaTime,
+	std::vector<Entity>& entities,
 	std::vector<Entity>& nonSceneEntities,
 	std::unordered_map<std::string, std::vector<Entity>> map_sceneNameToEntitiesVec,
 	std::unordered_map<std::string, std::shared_ptr<EntityScene>>& map_SceneNameToEntitiyScene,
