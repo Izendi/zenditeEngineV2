@@ -32,12 +32,13 @@ void genMenu_1(std::vector<Entity>& entities,
 	std::unordered_map<std::string, std::vector<Entity>> map_sceneNameToEntitiesVec,
 	std::unordered_map<std::string, std::shared_ptr<EntityScene>>& map_SceneNameToEntitiyScene,
 	Coordinator& COORD,
-	short int containerTexUnit,
+	short int hfTexUnit,
 	unsigned short int rockySurfaceTexUnit,
 	unsigned short int grassTexUnit,
 	unsigned short int waterTexUnit,
 	unsigned short int lavaTexUnit,
-	unsigned short int brickWallTexUnit,
+	unsigned short int redWindowTexUnit,
+	unsigned short int cloudNoiseTexUnit,
 	unsigned int& SEED,
 	unsigned int& frequency,
 	bool& reload,
@@ -360,7 +361,7 @@ void genMenu_1(std::vector<Entity>& entities,
 						// you may want to build a string using the "###" operator to preserve a constant ID with a variable label)
 
 						static int selected_tex = -1;
-						const char* names[] = { "Height Field", "Rock" , "water", "grass", "lava", "wood brown" };
+						const char* names[] = { "Height Field", "Rock" , "water", "grass Billboard", "lava", "Red Window", "Noise Clouds" };
 						static bool toggles[] = { true, false };
 
 						if (ImGui::Button("Select texture"))
@@ -377,7 +378,7 @@ void genMenu_1(std::vector<Entity>& entities,
 									selected_tex = i;
 									switch (i) {
 									case 0:
-										texData.texUnit = containerTexUnit;
+										texData.texUnit = hfTexUnit;
 										modified.isModifed = true;
 										break;
 
@@ -402,7 +403,12 @@ void genMenu_1(std::vector<Entity>& entities,
 										break;
 
 									case 5:
-										texData.texUnit = brickWallTexUnit;
+										texData.texUnit = redWindowTexUnit;
+										modified.isModifed = true;
+										break;
+
+									case 6:
+										texData.texUnit = cloudNoiseTexUnit;
 										modified.isModifed = true;
 										break;
 
@@ -720,6 +726,7 @@ namespace util
 
 	void resetHF
 	(
+		unsigned short hf_originalTexUnit,
 		Coordinator& COORD,
 		c_Renderable& rc_hf,
 		Entity& hfEntity,
@@ -738,9 +745,9 @@ namespace util
 		rc_hf.clear();
 		//auto& texData = COORD.GetComponentDataFromEntity<c_Texture>(hfEntity);
 		auto& modified = COORD.GetComponentDataFromEntity<c_Modified>(hfEntity);
-
+		
 		modified.isModifed = true;
-		glActiveTexture(COORD.GetComponentDataFromEntity<c_Texture>(hfEntity).texUnit);
+		glActiveTexture(GL_TEXTURE0 + hf_originalTexUnit);
 		glBindTexture(GL_TEXTURE_2D, heightFieldTex);
 
 		std::vector<float> data(hfWidth * hfHeight * 4);
@@ -970,6 +977,7 @@ namespace util
 
 		fb.clear();
 
+
 	}
 
 	void setupSceneECS(Coordinator& COORD,
@@ -993,7 +1001,6 @@ namespace util
 		Skydome& skydome
 		)
 	{
-
 		float verticalQuad[] = {
 				-1.0f, -1.0f,  1.0f,
 				 1.0f, -1.0f,  1.0f,
@@ -1185,7 +1192,7 @@ namespace util
 		}
 
 		unsigned short int hfTexUnit = COORD.GenerateTexUnit("res/textures/container2.png", "png");		 // tx Unit = 0
-
+		//allTexUnits.push_back(hfTexUnit); //Done in setupHeightField function
 
 		glGenTextures(1, &heightFieldTex);
 		glBindTexture(GL_TEXTURE_2D, heightFieldTex);
@@ -1218,6 +1225,8 @@ namespace util
 		allTexUnits.push_back(lavaTexUnit);
 		unsigned short int redWindowTexUnit = COORD.GenerateTexUnit("res/textures/redWindow.png", "png");		 // tx Unit = 5
 		allTexUnits.push_back(redWindowTexUnit);
+		unsigned short int cloudNoiseTextureUnit = COORD.GenerateTexUnit("res/textures/awesomeface.png", "png"); // tx Unit = 6
+		allTexUnits.push_back(cloudNoiseTextureUnit);
 
 
 		c_Transform tr_0;

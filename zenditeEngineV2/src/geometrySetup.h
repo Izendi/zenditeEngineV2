@@ -20,6 +20,7 @@ namespace util
 {
 	void resetHF
 	(
+		unsigned short hf_originalTexUnit,
 		Coordinator& COORD,
 		c_Renderable& rc_hf,
 		Entity& hfEntity,
@@ -88,12 +89,13 @@ void genMenu_1(std::vector<Entity>& entities,
 	std::unordered_map<std::string, std::vector<Entity>> map_sceneNameToEntitiesVec,
 	std::unordered_map<std::string, std::shared_ptr<EntityScene>>& map_SceneNameToEntitiyScene,
 	Coordinator& COORD,
-	short int containerTexUnit,
+	short int hfTexUnit,
 	unsigned short int rockySurfaceTexUnit,
 	unsigned short int grassTexUnit,
 	unsigned short int waterTexUnit,
 	unsigned short int lavaTexUnit,
 	unsigned short int brickWallTexUnit,
+	unsigned short int cloudNoiseTexUnit,
 	unsigned int& SEED,
 	unsigned int& frequency,
 	bool& reload,

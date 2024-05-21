@@ -108,6 +108,27 @@ int main(void)
 
 	std::cout << glGetString(GL_VERSION) << "\n";
 
+
+	float Quad[] = {
+		-1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f
+	};
+
+	float QuadTexCoord[] = {
+		0.0f, 0.0f,
+		1.0f, 0.0f,
+		1.0f, 1.0f,
+		0.0f, 1.0f
+	};
+
+	unsigned int QuadIndices[] = {
+		0, 1, 2,
+		2, 3, 0
+	};
+
+
 	//Check the number of texture units we can have on the GPU
 	GLint maxTextureUnits;
 	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxTextureUnits);
@@ -126,6 +147,9 @@ int main(void)
 	std::shared_ptr<Shader> sh_Skydome = std::make_shared<Shader>("res/shaders/PerlinNoise/vs_Skydome.glsl",
 		"res/shaders/PerlinNoise/fs_Skydome.glsl"); 
 
+	std::shared_ptr<Shader> sh_Clouds = std::make_shared<Shader>("res/shaders/PerlinNoise/vs_Clouds.glsl",
+		"res/shaders/PerlinNoise/fs_Clouds.glsl");
+
 	std::shared_ptr<Shader> sh_basicWithTex = std::make_shared<Shader>("res/shaders/BasicShaders/vs_cubeWnormANDtex.glsl",
 		"res/shaders/BasicShaders/fs_cubeWnormANDtex.glsl"); //#Shaders have not yet been abstracted into the API_Manger
 
@@ -134,6 +158,7 @@ int main(void)
 	std::vector<std::shared_ptr<Shader>> shaders;
 	shaders.push_back(sh_basicWithTex);
 	shaders.push_back(sh_Skydome);
+	shaders.push_back(sh_Clouds);
 
 	std::vector<Entity> entities;
 	std::vector<Entity> allEntites;
@@ -192,6 +217,81 @@ int main(void)
 	unsigned seedCounter = 0;
 
 
+	//FBO - START:
+	unsigned int quadVAO;
+	unsigned int quadPosVBO, quadTexVBO;
+	unsigned int quadEBO;
+
+	glGenVertexArrays(1, &quadVAO);
+	glBindVertexArray(quadVAO);
+
+	glGenBuffers(1, &quadPosVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, quadPosVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Quad), Quad, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	glGenBuffers(1, &quadTexVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, quadTexVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(QuadTexCoord), QuadTexCoord, GL_STATIC_DRAW);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
+
+	glGenBuffers(1, &quadEBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, quadEBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(QuadIndices), QuadIndices, GL_STATIC_DRAW);
+
+	glBindVertexArray(0);
+
+
+	unsigned int cloudFBO;
+	glGenFramebuffers(1, &cloudFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, cloudFBO);
+
+	unsigned int cloudTexture;
+	unsigned int short cloudTexUnit = 6;
+
+	glActiveTexture(GL_TEXTURE0 + cloudTexUnit);
+
+	glGenTextures(1, &cloudTexture);
+	glBindTexture(GL_TEXTURE_2D, cloudTexture);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 512, 512, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	//Attach the cloudTexture to the cloudFBO:
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, cloudTexture, 0);
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) 
+	{
+		std::cerr << "Cloud Framebuffer is not complete! :(" << std::endl;
+		return 0;
+	}
+	else
+	{
+		std::cout << "Cloud Framebuffer is complete" << std::endl;
+	}
+
+	sh_Clouds->bindProgram();
+	glBindVertexArray(quadVAO);
+
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+	glBindVertexArray(0);
+
+	glViewport(0, 0, 512, 512);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0); //rebind default framebuffer
+	//FBO - END
+
+	glActiveTexture(GL_TEXTURE0);
+
+	glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -228,6 +328,7 @@ int main(void)
 			allTexUnits[3],
 			allTexUnits[4],
 			allTexUnits[5],
+			cloudTexUnit,
 			SEED,
 			frequency,
 			reload,
@@ -245,6 +346,7 @@ int main(void)
 
 		util::resetHF
 		(
+			allTexUnits[0],
 			COORD,
 			COORD.GetComponentDataFromEntity<c_Renderable>(allEntites[5]),
 			allEntites[5],
@@ -275,7 +377,7 @@ int main(void)
 
 	}
 
-	//glDeleteFramebuffers(1, &fbo);
+	glDeleteFramebuffers(1, &cloudFBO);
 
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();

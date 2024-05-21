@@ -1512,5 +1512,7 @@
     <None Include="res\shaders\cubeMaps\vs_emReflection.glsl" />
     <None Include="res\shaders\PerlinNoise\fs_Skydome.glsl" />
     <None Include="res\shaders\PerlinNoise\vs_Skydome.glsl" />
+    <None Include="res\shaders\PerlinNoise\fs_Clouds.glsl" />
+    <None Include="res\shaders\PerlinNoise\vs_Clouds.glsl" />
   </ItemGroup>
 </Project>
