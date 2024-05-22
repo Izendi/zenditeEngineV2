@@ -67,13 +67,20 @@ bool rotation = false;
 bool seedMovement = false;
 
 unsigned int SEED = 0;
-unsigned int frequency = 1;
+unsigned int frequency = 4;
 int octaves = 4;
 float lacunarity = 2.0f;
 float persistence = 0.5f;
-float amplitude = 1.0f;
+float amplitude = 20.0f;
 float maxAmplitude = 0.0f;
 bool reload = false;
+
+//cloud dbm parameters:
+float cloud_noiseFrequency = 0.01f;
+float cloud_persistence = 0.5f;
+float cloud_amplitude = 1.0f;
+
+float discardThreshold = 0.05;
 
 int main(void)
 {
@@ -303,13 +310,20 @@ int main(void)
 	float noiseData_4[512 * 512];
 
 	// Parameters for fbm
-	float scale = 0.1f;
-	float persistence = 0.5f;
 
-	generateFBMOctave(noiseData_1, 512, 512, scale, 1.0f);
-	generateFBMOctave(noiseData_2, 512, 512, scale * 2, 0.5f);
-	generateFBMOctave(noiseData_3, 512, 512, scale * 4, 0.25f);
-	generateFBMOctave(noiseData_4, 512, 512, scale * 8, 0.125f);
+	generateFBMOctave(noiseData_1, 512, 512, cloud_noiseFrequency, cloud_amplitude);
+
+	cloud_noiseFrequency = cloud_noiseFrequency * 2;
+	cloud_amplitude = cloud_amplitude * cloud_persistence;
+	generateFBMOctave(noiseData_2, 512, 512, cloud_noiseFrequency, cloud_amplitude);
+
+	cloud_noiseFrequency = cloud_noiseFrequency * 2;
+	cloud_amplitude = cloud_amplitude * cloud_persistence;
+	generateFBMOctave(noiseData_3, 512, 512, cloud_noiseFrequency, cloud_amplitude);
+
+	cloud_noiseFrequency = cloud_noiseFrequency * 2;
+	cloud_amplitude = cloud_amplitude * cloud_persistence;
+	generateFBMOctave(noiseData_4, 512, 512, cloud_noiseFrequency, cloud_amplitude);
 
 	float* combinedNoiseData = new float[512 * 512 * 4];
 
@@ -331,10 +345,10 @@ int main(void)
 
 	// Set the speed for each octave
 	glm::vec2 speeds[4] = {
-		glm::vec2(0.1f, 0.1f),
-		glm::vec2(0.05f, 0.05f),
-		glm::vec2(0.02f, 0.02f),
-		glm::vec2(0.01f, 0.01f)
+		glm::vec2(0.0f, 0.025f),
+		glm::vec2(0.013f, 0.00f),
+		glm::vec2(0.00f, 0.006f),
+		glm::vec2(0.003f, 0.00f)
 	};
 
 
@@ -359,6 +373,7 @@ int main(void)
 		glActiveTexture(GL_TEXTURE8);
 		glBindTexture(GL_TEXTURE_2D, cloudNoiseTexture);
 		sh_Clouds->setUniformTextureUnit("noiseTexture", 8);
+		sh_Clouds->setUniformFloat("discardThreshold", discardThreshold);
 
 		glActiveTexture(GL_TEXTURE0);
 
@@ -370,6 +385,10 @@ int main(void)
 
 		glBindFramebuffer(GL_FRAMEBUFFER, cloudFBO);
 		glBindVertexArray(quadVAO);
+
+		//glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -419,7 +438,12 @@ int main(void)
 			lacunarity,
 			persistence,
 			amplitude,
-			maxAmplitude);
+			maxAmplitude,
+			cloud_noiseFrequency,
+			cloud_persistence,
+			cloud_amplitude,
+			discardThreshold
+			);
 
 		if (seedMovement == true)
 		{

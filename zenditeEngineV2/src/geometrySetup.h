@@ -105,7 +105,11 @@ void genMenu_1(
 	float& lacunarity,
 	float& persistence,
 	float& amplitude,
-	float& maxAmplitude
+	float& maxAmplitude,
+	float& cloud_noiseFrequency,
+	float& cloud_persistence,
+	float& cloud_amplitude,
+	float& discardThreshold
 );
 
 std::vector<glm::vec2> generateUniformVectors(int num_vectors);

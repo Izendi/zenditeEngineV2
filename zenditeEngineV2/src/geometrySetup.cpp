@@ -48,10 +48,13 @@ void genMenu_1(
 	float& lacunarity,
 	float& persistence,
 	float& amplitude,
-	float& maxAmplitude
+	float& maxAmplitude,
+	float& cloud_noiseFrequency,
+	float& cloud_persistence,
+	float& cloud_amplitude,
+	float& discardThreshold
 )
 {
-
 	// Start the Dear ImGui frame
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
@@ -128,6 +131,27 @@ void genMenu_1(
 			{
 				// This block is executed when the input value changes
 				
+			}
+
+			ImGui::NewLine();
+			ImGui::Text("--- Cloud Parameters ---");
+
+			if (ImGui::InputFloat("cloud_noiseFrequency", &cloud_noiseFrequency)) //#BUG_input_always_becomes_8_after_reload
+			{
+				// This block is executed when the input value changes
+			}
+			if (ImGui::InputFloat("cloud_persistence", &cloud_persistence))
+			{
+				// This block is executed when the input value changes
+			}
+			if (ImGui::InputFloat("cloud_amplitude", &cloud_amplitude))
+			{
+				// This block is executed when the input value changes
+			}
+
+			if (ImGui::InputFloat("discardThreshold", &discardThreshold))
+			{
+				// This block is executed when the input value changes
 			}
 
 			ImGui::NewLine();
@@ -1461,7 +1485,7 @@ namespace util
 		COORD.AddComponentToEntity<c_EntityInfo>(entities[4], skydome.GetComponent_EntityInfo());
 		COORD.AddComponentToEntity<c_Modified>(entities[4], skydome.GetComponent_Modified());
 		COORD.SetUpRenderData(entities[4]); //#NOTE: SetUpRenderData and setShaderForEntity will do nothing if the entity does no have a c_RenderableComponent
-		COORD.setShaderForEntity(entities[4], shaders[1]); //#C_NOTE: Will need to set the map but not the DH, that needs to be done separatly by the renderer.
+		COORD.setShaderForEntity(entities[4], shaders[0]); //#C_NOTE: Will need to set the map but not the DH, that needs to be done separatly by the renderer.
 		COORD.StoreShaderInEntityDataHandle(entities[4]);
 
 		COORD.AddComponentToEntity<c_Transform>(entities[5], tr_hf);

@@ -532,9 +532,11 @@
     <None Include="res\shaders\modelLoading\vs_model_loading.glsl" />
     <None Include="res\shaders\PerlinNoise\fs_Basic.glsl" />
     <None Include="res\shaders\PerlinNoise\fs_Clouds.glsl" />
+    <None Include="res\shaders\PerlinNoise\fs_shiftingColors.glsl" />
     <None Include="res\shaders\PerlinNoise\fs_Skydome.glsl" />
     <None Include="res\shaders\PerlinNoise\vs_Basic.glsl" />
     <None Include="res\shaders\PerlinNoise\vs_Clouds.glsl" />
+    <None Include="res\shaders\PerlinNoise\vs_shiftingColors.glsl" />
     <None Include="res\shaders\PerlinNoise\vs_Skydome.glsl" />
     <None Include="res\shaders\simple\fs_shaderSingleColor.glsl" />
     <None Include="res\shaders\simple\vs_shaderSingleColor.glsl" />

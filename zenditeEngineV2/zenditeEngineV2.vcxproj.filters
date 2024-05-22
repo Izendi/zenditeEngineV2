@@ -1516,5 +1516,7 @@
     <None Include="res\shaders\PerlinNoise\vs_Clouds.glsl" />
     <None Include="res\shaders\PerlinNoise\fs_Basic.glsl" />
     <None Include="res\shaders\PerlinNoise\vs_Basic.glsl" />
+    <None Include="res\shaders\PerlinNoise\fs_shiftingColors.glsl" />
+    <None Include="res\shaders\PerlinNoise\vs_shiftingColors.glsl" />
   </ItemGroup>
 </Project>
