@@ -41,6 +41,10 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 
 		shader->setUniformTextureUnit("colorTexture", DataHandle.texUnit);
 
+		//Temporary uniform setter for height map blended texture tests:
+		shader->setUniformTextureUnit("highTexture", 0);
+		shader->setUniformTextureUnit("lowTexture", 1);
+
 		if (rendData.outline == false)
 		{
 			//glStencilFunc(GL_ALWAYS, 1, 0xFF); // all fragments should pass the stencil test	

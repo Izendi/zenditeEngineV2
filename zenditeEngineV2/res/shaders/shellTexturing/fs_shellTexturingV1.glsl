@@ -40,6 +40,7 @@ void main()
         }
     }
 
+
     if (result >= baseNoGrassValue * layerHeight) //baseNoGrassValue = 0.025 (is a good starting value)
     {
         texColor = texture(colorTexture, texCoord);
@@ -56,8 +57,23 @@ void main()
         discard; //stop processing this fragment and write nothing to the framebuffer.
     }
 
-    float intensity = layerHeight * 0.05;
-    FragColor = texColor * (min(intensity, 1.0)) ;
+    bool check = false;
+
+    if (layerHeight == 0)
+    {
+        if (localPosition.y > 14.0)
+        {
+            vec4 texColor = texture(highTexture, texCoord);
+            FragColor = texColor;
+            check = true;
+        }
+    }
+
+    if (check != true)
+    {
+        float intensity = layerHeight * 0.05;
+        FragColor = texColor * (min(intensity, 1.0));
+    }
 
 
     //FragColor = vec4(vec3(result), 1.0);
