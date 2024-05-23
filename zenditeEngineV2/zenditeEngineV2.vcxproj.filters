@@ -1518,5 +1518,7 @@
     <None Include="res\shaders\PerlinNoise\vs_Basic.glsl" />
     <None Include="res\shaders\PerlinNoise\fs_shiftingColors.glsl" />
     <None Include="res\shaders\PerlinNoise\vs_shiftingColors.glsl" />
+    <None Include="res\shaders\shellTexturing\fs_shellTexturingV1.glsl" />
+    <None Include="res\shaders\shellTexturing\vs_shellTexturingV1.glsl" />
   </ItemGroup>
 </Project>

@@ -16,6 +16,8 @@ private:
 	const char* vs_filePath;
 	const char* fs_filePath;
 
+	unsigned int shaderArrayIndex = 0;
+
 	void createAndCompileVertShader();
 	void createAndCompileFragShader();
 	void linkShaderPrograms();
@@ -38,5 +40,8 @@ public:
 	void setUniformMat4(std::string name, GLboolean transpose, const GLfloat* mat);
 
 	void bindProgram() const;
+
+	unsigned int getShaderArrayIndex();
+	void setShaderArrayIndex(unsigned int index);
 
 };

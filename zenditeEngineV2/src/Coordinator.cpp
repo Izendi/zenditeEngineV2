@@ -157,9 +157,9 @@ uint32_t Coordinator::GetActiveEntities() const
 	return m_ECSCoord->GetActiveEntities();
 }
 
-void Coordinator::runAllSystems(float deltaTime, std::vector<Entity>& entities)
+void Coordinator::runAllSystems(float deltaTime, float time, std::vector<Entity>& entities)
 {
-	m_RenderableSystem->Render(m_Renderer, m_APImanager, m_ECSCoord, deltaTime);
+	m_RenderableSystem->Render(m_Renderer, m_APImanager, m_ECSCoord, deltaTime, time);
 	m_CollisionDetectionAABBSystem->checkCollisions(m_ECSCoord);
 	
 	m_SetUpWallAABBSystem->Setup(m_ECSCoord);

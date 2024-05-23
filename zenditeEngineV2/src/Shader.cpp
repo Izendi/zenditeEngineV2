@@ -21,6 +21,16 @@ unsigned int Shader::getShaderHandle() const
 	return shaderProgHandle;
 }
 
+unsigned int Shader::getShaderArrayIndex()
+{
+	return shaderArrayIndex;
+}
+
+void Shader::setShaderArrayIndex(unsigned int index)
+{
+	shaderArrayIndex = index;
+}
+
 void Shader::readShaderCodeFromFile(const char* vs_path, const char* fs_path)
 {
 

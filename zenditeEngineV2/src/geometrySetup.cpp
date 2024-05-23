@@ -557,6 +557,7 @@ namespace util
 				//FbmNoise2D(fx, fy, frequency, 4, 2.0f, 0.5f, 1.0f, 0.0f);
 
 				float pnoise = FbmNoise2D(fx, fy, frequency, 4, 2.0f, 0.5f, 1.0f, 0.0f);
+
 				pnoise = (pnoise + 1.0f) / 2.0f;
 
 				noiseData[index] = pnoise;
@@ -813,7 +814,12 @@ namespace util
 
 				//FbmNoise2D(fx, fy, frequency, 4, 2.0f, 0.5f, 1.0f, 0.0f);
 
+				//Normal
 				float pnoise = FbmNoise2D(fx, fy, frequency, octaves, lacunarity, persistence, amplitude, maxAmplitude);
+
+				//Shell Texturing test version:
+				//float pnoise = FbmNoise2D(fx, fy, 0, octaves, lacunarity, persistence, amplitude, maxAmplitude);
+
 				pnoise = (pnoise + 1.0f) / 2.0f;
 
 				noiseData[index] = pnoise;
@@ -1013,6 +1019,30 @@ namespace util
 
 		rc_hf.vertices[(hfWidth * (hfHeight)) - 2].Normal = calcVertNormal(fb);
 
+		/*
+		float tallestheight = -100.0f;
+		float smallestHeight = 100.0f;
+
+		
+		for(int i = 0; i < rc_hf.vertices.size(); ++i)
+		{
+			if(rc_hf.vertices[i].Position.y > tallestheight)
+			{
+				tallestheight = rc_hf.vertices[i].Position.y;
+			}
+
+			if(rc_hf.vertices[i].Position.y < smallestHeight)
+			{
+				smallestHeight = rc_hf.vertices[i].Position.y;
+			}
+			
+		}
+		
+
+		std::cout << "tallest height = " << tallestheight << std::endl;
+		std::cout << "smallest height = " << smallestHeight << std::endl;
+
+		*/
 		fb.clear();
 
 
@@ -1241,6 +1271,18 @@ namespace util
 		// -- HERE --
 		c_Renderable rc_hf; //#HERE
 
+		/*
+		setupHeightField(
+			rc_hf,
+			allTexUnits,
+			hfTexUnit,
+			hfWidth,
+			hfHeight,
+			frequency,
+			SEED
+		);
+		*/
+
 		setupHeightField(
 			rc_hf,
 			allTexUnits,
@@ -1261,7 +1303,7 @@ namespace util
 		allTexUnits.push_back(grassTexUnit);
 		unsigned short int lavaTexUnit = COORD.GenerateTexUnit("res/textures/lava.jpg", "jpg");					 // tx Unit = 4
 		allTexUnits.push_back(lavaTexUnit);
-		unsigned short int redWindowTexUnit = COORD.GenerateTexUnit("res/textures/redWindow.png", "png");		 // tx Unit = 5
+		unsigned short int redWindowTexUnit = COORD.GenerateTexUnit("res/textures/grassColor3.png", "png");		 // tx Unit = 5
 		allTexUnits.push_back(redWindowTexUnit);
 		unsigned short int cloudNoiseTextureUnit = COORD.GenerateTexUnit("res/textures/awesomeface.png", "png"); // tx Unit = 6
 		allTexUnits.push_back(cloudNoiseTextureUnit);
@@ -1315,12 +1357,111 @@ namespace util
 		tr_4.modelMat.push_back(mm_tr4);
 
 		//tr_hf //#Check_if_Correct
+		glm::mat4 ShiftUpOneMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.02f, 0.0f));
+
+		//16 layers at present
+
 		glm::mat4 mm_tr_hf = glm::mat4(1.0f);
 		glm::vec3 pos_tr_hf(0.0f, -7.2f, 0.0f);
 		glm::vec3 scale_tr_hf(0.2f, 0.2f, 0.2f);
 		mm_tr_hf = glm::translate(mm_tr_hf, pos_tr_hf);
 		mm_tr_hf = glm::scale(mm_tr_hf, scale_tr_hf);
 		tr_hf.modelMat.push_back(mm_tr_hf);
+
+		mm_tr_hf = ShiftUpOneMatrix * mm_tr_hf;
+		tr_hf.modelMat.push_back((mm_tr_hf));
+
+		mm_tr_hf = ShiftUpOneMatrix * mm_tr_hf;
+		tr_hf.modelMat.push_back((mm_tr_hf));
+
+		mm_tr_hf = ShiftUpOneMatrix * mm_tr_hf;
+		tr_hf.modelMat.push_back((mm_tr_hf));
+
+		mm_tr_hf = ShiftUpOneMatrix * mm_tr_hf;
+		tr_hf.modelMat.push_back((mm_tr_hf));
+
+		mm_tr_hf = ShiftUpOneMatrix * mm_tr_hf;
+		tr_hf.modelMat.push_back((mm_tr_hf));
+
+		mm_tr_hf = ShiftUpOneMatrix * mm_tr_hf;
+		tr_hf.modelMat.push_back((mm_tr_hf));
+
+		mm_tr_hf = ShiftUpOneMatrix * mm_tr_hf;
+		tr_hf.modelMat.push_back((mm_tr_hf));
+
+		mm_tr_hf = ShiftUpOneMatrix * mm_tr_hf;
+		tr_hf.modelMat.push_back((mm_tr_hf));
+
+		mm_tr_hf = ShiftUpOneMatrix * mm_tr_hf;
+		tr_hf.modelMat.push_back((mm_tr_hf));
+
+		mm_tr_hf = ShiftUpOneMatrix * mm_tr_hf;
+		tr_hf.modelMat.push_back((mm_tr_hf));
+
+		mm_tr_hf = ShiftUpOneMatrix * mm_tr_hf;
+		tr_hf.modelMat.push_back((mm_tr_hf));
+
+		mm_tr_hf = ShiftUpOneMatrix * mm_tr_hf;
+		tr_hf.modelMat.push_back((mm_tr_hf));
+
+		mm_tr_hf = ShiftUpOneMatrix * mm_tr_hf;
+		tr_hf.modelMat.push_back((mm_tr_hf));
+
+		mm_tr_hf = ShiftUpOneMatrix * mm_tr_hf;
+		tr_hf.modelMat.push_back((mm_tr_hf));
+
+		mm_tr_hf = ShiftUpOneMatrix * mm_tr_hf;
+		tr_hf.modelMat.push_back((mm_tr_hf));   
+
+		// halfway:
+
+		mm_tr_hf = ShiftUpOneMatrix * mm_tr_hf;
+		tr_hf.modelMat.push_back((mm_tr_hf));
+
+		mm_tr_hf = ShiftUpOneMatrix * mm_tr_hf;
+		tr_hf.modelMat.push_back((mm_tr_hf));
+
+		mm_tr_hf = ShiftUpOneMatrix * mm_tr_hf;
+		tr_hf.modelMat.push_back((mm_tr_hf));
+
+		mm_tr_hf = ShiftUpOneMatrix * mm_tr_hf;
+		tr_hf.modelMat.push_back((mm_tr_hf));
+
+		mm_tr_hf = ShiftUpOneMatrix * mm_tr_hf;
+		tr_hf.modelMat.push_back((mm_tr_hf));
+
+		mm_tr_hf = ShiftUpOneMatrix * mm_tr_hf;
+		tr_hf.modelMat.push_back((mm_tr_hf));
+
+		mm_tr_hf = ShiftUpOneMatrix * mm_tr_hf;
+		tr_hf.modelMat.push_back((mm_tr_hf));
+
+		mm_tr_hf = ShiftUpOneMatrix * mm_tr_hf;
+		tr_hf.modelMat.push_back((mm_tr_hf));
+
+		mm_tr_hf = ShiftUpOneMatrix * mm_tr_hf;
+		tr_hf.modelMat.push_back((mm_tr_hf));
+
+		mm_tr_hf = ShiftUpOneMatrix * mm_tr_hf;
+		tr_hf.modelMat.push_back((mm_tr_hf));
+
+		mm_tr_hf = ShiftUpOneMatrix * mm_tr_hf;
+		tr_hf.modelMat.push_back((mm_tr_hf));
+
+		mm_tr_hf = ShiftUpOneMatrix * mm_tr_hf;
+		tr_hf.modelMat.push_back((mm_tr_hf));
+
+		mm_tr_hf = ShiftUpOneMatrix * mm_tr_hf;
+		tr_hf.modelMat.push_back((mm_tr_hf));
+
+		mm_tr_hf = ShiftUpOneMatrix * mm_tr_hf;
+		tr_hf.modelMat.push_back((mm_tr_hf));
+
+		mm_tr_hf = ShiftUpOneMatrix * mm_tr_hf;
+		tr_hf.modelMat.push_back((mm_tr_hf));
+
+		mm_tr_hf = ShiftUpOneMatrix * mm_tr_hf;
+		tr_hf.modelMat.push_back((mm_tr_hf));
 
 		size_t sizeOfVertCubePosData = sizeof(vertCubePosData) / sizeof(float);
 		size_t sizeOfIndices = sizeof(indices) / sizeof(unsigned int);
@@ -1496,7 +1637,7 @@ namespace util
 		COORD.AddComponentToEntity<c_EntityInfo>(entities[5], ei_hf);
 		COORD.AddComponentToEntity<c_Modified>(entities[5], md_hf);
 		COORD.SetUpRenderData(entities[5]);
-		COORD.setShaderForEntity(entities[5], shaders[0]);
+		COORD.setShaderForEntity(entities[5], shaders[3]);
 		COORD.StoreShaderInEntityDataHandle(entities[5]);
 
 		//Loaded Models:

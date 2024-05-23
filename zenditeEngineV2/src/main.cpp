@@ -171,12 +171,20 @@ int main(void)
 	std::shared_ptr<Shader> sh_basicWithTex = std::make_shared<Shader>("res/shaders/BasicShaders/vs_cubeWnormANDtex.glsl",
 		"res/shaders/BasicShaders/fs_cubeWnormANDtex.glsl"); //#Shaders have not yet been abstracted into the API_Manger
 
+	std::shared_ptr<Shader> sh_ShellTexturing = std::make_shared<Shader>("res/shaders/shellTexturing/vs_shellTexturingV1.glsl",
+		"res/shaders/shellTexturing/fs_shellTexturingV1.glsl"); //#Shaders have not yet been abstracted into the API_Manger
+
 	std::shared_ptr<I_SceneFactory> sceneFactory = std::make_unique<MinimalSceneFactory>(COORD);
 
 	std::vector<std::shared_ptr<Shader>> shaders;
-	shaders.push_back(sh_basicWithTex);
-	shaders.push_back(sh_Skydome);
-	shaders.push_back(sh_Clouds);
+	shaders.push_back(sh_basicWithTex);		// 0
+	sh_basicWithTex->setShaderArrayIndex(shaders.size() - 1);
+	shaders.push_back(sh_Skydome);			// 1
+	sh_basicWithTex->setShaderArrayIndex(shaders.size() - 1);
+	shaders.push_back(sh_Clouds);			// 2
+	sh_basicWithTex->setShaderArrayIndex(shaders.size() - 1);
+	shaders.push_back(sh_ShellTexturing);	// 3
+	sh_basicWithTex->setShaderArrayIndex(shaders.size() - 1);
 
 	std::vector<Entity> entities;
 	std::vector<Entity> allEntites;
@@ -415,7 +423,7 @@ int main(void)
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
 
-		COORD.runAllSystems(deltaTime, allEntites); //#ECS_RENDERING
+		COORD.runAllSystems(deltaTime, currentFrame, allEntites); //#ECS_RENDERING
 
 		genMenu_1(
 			deltaTime,

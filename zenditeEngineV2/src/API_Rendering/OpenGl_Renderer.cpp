@@ -11,7 +11,7 @@ OpenGL_Renderer::OpenGL_Renderer(std::shared_ptr<Camera> cam) : I_Renderer(cam)
 		"res/shaders/simple/fs_shaderSingleColor.glsl");
 }
 
-void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECScoord, Entity EID, float deltaTime)
+void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECScoord, Entity EID, float deltaTime, float time)
 {
 	c_Transform& trans = ECScoord.GetComponentDataFromEntity<c_Transform>(EID);
 	c_Renderable& rendData = ECScoord.GetComponentDataFromEntity<c_Renderable>(EID);
@@ -63,6 +63,11 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 		for (int i = 0; i < trans.modelMat.size(); ++i)
 		{
 			shader->setUniformMat4("model", GL_FALSE, glm::value_ptr((trans.modelMat)[i]));
+
+			shader->setUniformFloat("baseNoGrassValue", 0.04);
+			//layerHeight
+			shader->setUniformFloat("layerHeight", (float)i);
+			shader->setUniformFloat("time", time);
 
 			GLCALL(glDrawElements(GL_TRIANGLES, (rendData.indices).size(), GL_UNSIGNED_INT, 0));
 		}
