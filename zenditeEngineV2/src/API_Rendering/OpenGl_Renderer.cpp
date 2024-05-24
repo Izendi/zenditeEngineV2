@@ -15,7 +15,7 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 {
 	c_Transform& trans = ECScoord.GetComponentDataFromEntity<c_Transform>(EID);
 	c_Renderable& rendData = ECScoord.GetComponentDataFromEntity<c_Renderable>(EID);
-	c_Texture& texComponentData = ECScoord.GetComponentDataFromEntity<c_Texture>(EID);
+	//c_Texture& texComponentData = ECScoord.GetComponentDataFromEntity<c_Texture>(EID);
 
 	std::shared_ptr<Shader> shader = DataHandle.shader;
 	shader->bindProgram();
@@ -25,10 +25,15 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 	shader->setUniformMat4("projection", GL_FALSE, glm::value_ptr(cubeProjection));
 	shader->setUniformMat4("view", GL_FALSE, glm::value_ptr(cubeView));
 
+	glm::vec3 whiteColor = glm::vec3(1.0f, 1.0f, 1.0f);
+	shader->setUniform3fv("lightRGB", whiteColor);
+
+	/*
 	if(texComponentData.is3Dtex)
 	{
 		shader->setUniformFloat("iTime", deltaTime);
 	}
+	*/
 
 	if(rendData.emReflection == true)
 	{

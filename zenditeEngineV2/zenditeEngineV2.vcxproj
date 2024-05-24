@@ -150,6 +150,7 @@
     <ClCompile Include="src\API_Rendering\OpenGl_Renderer.cpp" />
     <ClCompile Include="src\Coordinator.cpp" />
     <ClCompile Include="src\geometrySetup.cpp" />
+    <ClCompile Include="src\helper\DayCycleCoordinator.cpp" />
     <ClCompile Include="src\helper\Skydome.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Model_Loading\EntityNode.cpp" />
@@ -197,6 +198,7 @@
     <ClInclude Include="src\EventManager\I_Observer.h" />
     <ClInclude Include="src\EventManager\I_Subject.h" />
     <ClInclude Include="src\geometrySetup.h" />
+    <ClInclude Include="src\helper\DayCycleCoordinator.h" />
     <ClInclude Include="src\helper\Skydome.h" />
     <ClInclude Include="src\menu.h" />
     <ClInclude Include="src\Model_Loading\EntityNode.h" />
@@ -542,6 +544,10 @@
     <None Include="res\shaders\shellTexturing\vs_shellTexturingV1.glsl" />
     <None Include="res\shaders\simple\fs_shaderSingleColor.glsl" />
     <None Include="res\shaders\simple\vs_shaderSingleColor.glsl" />
+    <None Include="res\shaders\worldLighting\fs_dirLight.glsl" />
+    <None Include="res\shaders\worldLighting\fs_lightEmitter.glsl" />
+    <None Include="res\shaders\worldLighting\vs_dirLight.glsl" />
+    <None Include="res\shaders\worldLighting\vs_lightEmitter.glsl" />
     <None Include="src\vendor\glm\detail\func_common.inl" />
     <None Include="src\vendor\glm\detail\func_common_simd.inl" />
     <None Include="src\vendor\glm\detail\func_exponential.inl" />

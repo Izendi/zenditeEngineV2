@@ -78,6 +78,9 @@
     <ClCompile Include="src\helper\Skydome.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\helper\DayCycleCoordinator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\vendor\glm\detail\_features.hpp">
@@ -1070,6 +1073,9 @@
     <ClInclude Include="src\helper\Skydome.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\helper\DayCycleCoordinator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\vendor\glm\detail\func_common.inl">
@@ -1520,5 +1526,9 @@
     <None Include="res\shaders\PerlinNoise\vs_shiftingColors.glsl" />
     <None Include="res\shaders\shellTexturing\fs_shellTexturingV1.glsl" />
     <None Include="res\shaders\shellTexturing\vs_shellTexturingV1.glsl" />
+    <None Include="res\shaders\worldLighting\fs_dirLight.glsl" />
+    <None Include="res\shaders\worldLighting\vs_dirLight.glsl" />
+    <None Include="res\shaders\worldLighting\vs_lightEmitter.glsl" />
+    <None Include="res\shaders\worldLighting\fs_lightEmitter.glsl" />
   </ItemGroup>
 </Project>

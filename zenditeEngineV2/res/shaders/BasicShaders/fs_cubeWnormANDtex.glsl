@@ -16,8 +16,6 @@ float LinearizeDepth(float depth)
     return (2.0 * near * far) / (far + near - z * (far - near));
 }
 
-
-
 void main()
 {
     vec4 texColor = texture(colorTexture, texCoord);

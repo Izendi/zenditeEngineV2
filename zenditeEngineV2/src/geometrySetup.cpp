@@ -44,7 +44,7 @@ void genMenu_1(
 	unsigned int& SEED,
 	unsigned int& frequency,
 	bool& reload,
-	int &octaves,
+	int& octaves,
 	float& lacunarity,
 	float& persistence,
 	float& amplitude,
@@ -52,7 +52,8 @@ void genMenu_1(
 	float& cloud_noiseFrequency,
 	float& cloud_persistence,
 	float& cloud_amplitude,
-	float& discardThreshold
+	float& discardThreshold,
+	bool& pauseSun
 )
 {
 	// Start the Dear ImGui frame
@@ -98,6 +99,21 @@ void genMenu_1(
 					std::cout << "Reload == True" << std::endl;
 				}
 			}
+
+			if (ImGui::Checkbox("Pause Sun", &pauseSun))
+			{
+				// This block is executed when the checkbox state changes
+				if (!pauseSun)
+				{
+					std::cout << "pauseSun == False" << std::endl;
+				}
+				else
+				{
+					std::cout << "pauseSun == True" << std::endl;
+				}
+			}
+
+			
 
 			if (ImGui::InputScalar("Unsigned Int Input", ImGuiDataType_U32, &SEED))
 			{
@@ -1251,6 +1267,7 @@ namespace util
 		entities.push_back(COORD.CreateEntity());
 		entities.push_back(COORD.CreateEntity());
 		entities.push_back(COORD.CreateEntity());
+		entities.push_back(COORD.CreateEntity());
 
 		std::cout << "\n - entities.size() = " << entities.size() << std::endl;
 
@@ -1315,6 +1332,15 @@ namespace util
 		c_Transform tr_3;
 		c_Transform tr_4;
 		c_Transform tr_hf;
+		c_Transform tr_sun;
+
+		//tr_sun
+		glm::mat4 mm_tr_sun = glm::mat4(1.0f);
+		glm::vec3 pos_tr_sun(0.0f, 6.0f, 0.0f);
+		glm::vec3 scale_tr_sun(0.25f, 0.25f, 0.25f);
+		mm_tr_sun = glm::translate(mm_tr_sun, pos_tr_sun);
+		mm_tr_sun = glm::scale(mm_tr_sun, scale_tr_sun);
+		tr_sun.modelMat.push_back(mm_tr_sun);
 
 		//tr_0
 		glm::mat4 mm_tr0 = glm::mat4(1.0f);
@@ -1469,6 +1495,11 @@ namespace util
 		size_t sizeOfVerticalQuad = sizeof(verticalQuad) / sizeof(float);
 		size_t sizeOfVQIndices = sizeof(vertQuadIndices) / sizeof(unsigned int);
 
+		c_Renderable rc_sun;
+		rc_sun.isLightEmitter = true;
+		addDataToRenderable(rc_sun, vertCubePosData, vertCubeNormData, vertCubeTexCoordData, indices, sizeOfVertCubePosData, sizeOfIndices);
+		rc_sun.outline = false;
+
 		c_Renderable rc_0;
 		addDataToRenderable(rc_0, vertCubePosData, vertCubeNormData, vertCubeTexCoordData, indices, sizeOfVertCubePosData, sizeOfIndices);
 		rc_0.outline = false;
@@ -1514,6 +1545,8 @@ namespace util
 		c_Texture tx_6;
 		tx_6.texUnit = redWindowTexUnit;
 
+		c_Modified md_sun;
+		md_sun.isModifed = true;
 
 		c_Modified md_0;
 		md_0.isModifed = true;
@@ -1560,6 +1593,9 @@ namespace util
 		c_EntityInfo ei_0;
 		ei_0.name = "Wall Col Cube";
 
+		c_EntityInfo ei_sun;
+		ei_sun.name = "Sun Object";
+
 		c_EntityInfo ei_1;
 		ei_1.name = "Floor";
 
@@ -1586,59 +1622,70 @@ namespace util
 		COORD.setShaderForEntity(entities[0], shaders[0]);
 		COORD.StoreShaderInEntityDataHandle(entities[0]);
 
-		COORD.AddComponentToEntity<c_Transform>(entities[1], tr_2);
-		COORD.AddComponentToEntity<c_Renderable>(entities[1], rc_0);
-		COORD.AddComponentToEntity<c_Texture>(entities[1], tx_2);
-		COORD.AddComponentToEntity<c_AABB>(entities[1], aabb_2);
-		COORD.AddComponentToEntity<c_Wall>(entities[1], wall_0);
-		COORD.AddComponentToEntity<c_Modified>(entities[1], md_2);
-		COORD.AddComponentToEntity<c_EntityInfo>(entities[1], ei_2);
+		COORD.AddComponentToEntity<c_Transform>(entities[1], tr_sun);
+		COORD.AddComponentToEntity<c_Renderable>(entities[1], rc_sun);
+		//COORD.AddComponentToEntity<c_Texture>(entities[1], tx_1);
+		//COORD.AddComponentToEntity<c_AABB>(entities[1], aabb_0);
+		//COORD.AddComponentToEntity<c_WallCollider>(entities[1], wallCollider_2);
+		COORD.AddComponentToEntity<c_EntityInfo>(entities[1], ei_sun);
+		COORD.AddComponentToEntity<c_Modified>(entities[1], md_sun);
 		COORD.SetUpRenderData(entities[1]);
-		COORD.setShaderForEntity(entities[1], shaders[0]);
+		COORD.setShaderForEntity(entities[1], shaders[5]);
 		COORD.StoreShaderInEntityDataHandle(entities[1]);
 
-		COORD.AddComponentToEntity<c_Transform>(entities[2], tr_0);
-		COORD.AddComponentToEntity<c_Renderable>(entities[2], rc_1);
-		COORD.AddComponentToEntity<c_Texture>(entities[2], tx_3);
-		COORD.AddComponentToEntity<c_AABB>(entities[2], aabb_0);
-		COORD.AddComponentToEntity<c_WallCollider>(entities[2], wallCollider_2);
-		COORD.AddComponentToEntity<c_EntityInfo>(entities[2], ei_0);
-		COORD.AddComponentToEntity<c_Modified>(entities[2], md_0);
-		COORD.SetUpRenderData(entities[2]); //#NOTE: SetUpRenderData and setShaderForEntity will do nothing if the entity does no have a c_RenderableComponent
-		COORD.setShaderForEntity(entities[2], shaders[0]); //#C_NOTE: Will need to set the map but not the DH, that needs to be done separatly by the renderer.
+		COORD.AddComponentToEntity<c_Transform>(entities[2], tr_2);
+		COORD.AddComponentToEntity<c_Renderable>(entities[2], rc_0);
+		COORD.AddComponentToEntity<c_Texture>(entities[2], tx_2);
+		COORD.AddComponentToEntity<c_AABB>(entities[2], aabb_2);
+		COORD.AddComponentToEntity<c_Wall>(entities[2], wall_0);
+		COORD.AddComponentToEntity<c_Modified>(entities[2], md_2);
+		COORD.AddComponentToEntity<c_EntityInfo>(entities[2], ei_2);
+		COORD.SetUpRenderData(entities[2]);
+		COORD.setShaderForEntity(entities[2], shaders[0]);
 		COORD.StoreShaderInEntityDataHandle(entities[2]);
 
-		COORD.AddComponentToEntity<c_Transform>(entities[3], tr_3);
-		COORD.AddComponentToEntity<c_Renderable>(entities[3], rc_3);
+		COORD.AddComponentToEntity<c_Transform>(entities[3], tr_0);
+		COORD.AddComponentToEntity<c_Renderable>(entities[3], rc_1);
 		COORD.AddComponentToEntity<c_Texture>(entities[3], tx_3);
-		COORD.AddComponentToEntity<c_EntityInfo>(entities[3], ei_3);
-		COORD.AddComponentToEntity<c_Modified>(entities[3], md_3);
+		COORD.AddComponentToEntity<c_AABB>(entities[3], aabb_0);
+		COORD.AddComponentToEntity<c_WallCollider>(entities[3], wallCollider_2);
+		COORD.AddComponentToEntity<c_EntityInfo>(entities[3], ei_0);
+		COORD.AddComponentToEntity<c_Modified>(entities[3], md_0);
 		COORD.SetUpRenderData(entities[3]); //#NOTE: SetUpRenderData and setShaderForEntity will do nothing if the entity does no have a c_RenderableComponent
 		COORD.setShaderForEntity(entities[3], shaders[0]); //#C_NOTE: Will need to set the map but not the DH, that needs to be done separatly by the renderer.
 		COORD.StoreShaderInEntityDataHandle(entities[3]);
 
-		skydome.CreateSkydome(16, 16, 8, glm::vec3(-3.35f, 2.25f, 2.95f), glm::vec3(0.8f, 0.45f, 0.8f));
-		//skydome.setSkydomeTransform(glm::vec3(1.0f, 10.0f, 1.0f), glm::vec3(0.2f, 0.2f, 0.2f));
-
-		COORD.AddComponentToEntity<c_Transform>(entities[4], skydome.GetComponent_Transform());
-		COORD.AddComponentToEntity<c_Renderable>(entities[4], skydome.GetComponent_Renderable());
-		COORD.AddComponentToEntity<c_Texture>(entities[4], tx_3/*skydome.GetComponent_Texture()*/);
-		COORD.AddComponentToEntity<c_EntityInfo>(entities[4], skydome.GetComponent_EntityInfo());
-		COORD.AddComponentToEntity<c_Modified>(entities[4], skydome.GetComponent_Modified());
+		COORD.AddComponentToEntity<c_Transform>(entities[4], tr_3);
+		COORD.AddComponentToEntity<c_Renderable>(entities[4], rc_3);
+		COORD.AddComponentToEntity<c_Texture>(entities[4], tx_3);
+		COORD.AddComponentToEntity<c_EntityInfo>(entities[4], ei_3);
+		COORD.AddComponentToEntity<c_Modified>(entities[4], md_3);
 		COORD.SetUpRenderData(entities[4]); //#NOTE: SetUpRenderData and setShaderForEntity will do nothing if the entity does no have a c_RenderableComponent
 		COORD.setShaderForEntity(entities[4], shaders[0]); //#C_NOTE: Will need to set the map but not the DH, that needs to be done separatly by the renderer.
 		COORD.StoreShaderInEntityDataHandle(entities[4]);
 
-		COORD.AddComponentToEntity<c_Transform>(entities[5], tr_hf);
-		COORD.AddComponentToEntity<c_Renderable>(entities[5], rc_hf);
-		COORD.AddComponentToEntity<c_Texture>(entities[5], tx_0);
+		skydome.CreateSkydome(16, 16, 8, glm::vec3(-3.35f, 2.25f, 2.95f), glm::vec3(0.8f, 0.45f, 0.8f));
+		//skydome.setSkydomeTransform(glm::vec3(1.0f, 10.0f, 1.0f), glm::vec3(0.2f, 0.2f, 0.2f));
+
+		COORD.AddComponentToEntity<c_Transform>(entities[5], skydome.GetComponent_Transform());
+		COORD.AddComponentToEntity<c_Renderable>(entities[5], skydome.GetComponent_Renderable());
+		COORD.AddComponentToEntity<c_Texture>(entities[5], tx_3/*skydome.GetComponent_Texture()*/);
+		COORD.AddComponentToEntity<c_EntityInfo>(entities[5], skydome.GetComponent_EntityInfo());
+		COORD.AddComponentToEntity<c_Modified>(entities[5], skydome.GetComponent_Modified());
+		COORD.SetUpRenderData(entities[5]); //#NOTE: SetUpRenderData and setShaderForEntity will do nothing if the entity does no have a c_RenderableComponent
+		COORD.setShaderForEntity(entities[5], shaders[0]); //#C_NOTE: Will need to set the map but not the DH, that needs to be done separatly by the renderer.
+		COORD.StoreShaderInEntityDataHandle(entities[5]);
+
+		COORD.AddComponentToEntity<c_Transform>(entities[6], tr_hf);
+		COORD.AddComponentToEntity<c_Renderable>(entities[6], rc_hf);
+		COORD.AddComponentToEntity<c_Texture>(entities[6], tx_0);
 		//COORD.AddComponentToEntity<c_AABB>(entities[1], aabb_0);
 		//COORD.AddComponentToEntity<c_WallCollider>(entities[1], wallCollider_2);
-		COORD.AddComponentToEntity<c_EntityInfo>(entities[5], ei_hf);
-		COORD.AddComponentToEntity<c_Modified>(entities[5], md_hf);
-		COORD.SetUpRenderData(entities[5]);
-		COORD.setShaderForEntity(entities[5], shaders[3]);
-		COORD.StoreShaderInEntityDataHandle(entities[5]);
+		COORD.AddComponentToEntity<c_EntityInfo>(entities[6], ei_hf);
+		COORD.AddComponentToEntity<c_Modified>(entities[6], md_hf);
+		COORD.SetUpRenderData(entities[6]);
+		COORD.setShaderForEntity(entities[6], shaders[3]);
+		COORD.StoreShaderInEntityDataHandle(entities[6]);
 
 		//Loaded Models:
 		glm::mat4 ES0_mm = glm::mat4(1.0f);

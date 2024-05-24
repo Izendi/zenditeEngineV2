@@ -109,7 +109,8 @@ void genMenu_1(
 	float& cloud_noiseFrequency,
 	float& cloud_persistence,
 	float& cloud_amplitude,
-	float& discardThreshold
+	float& discardThreshold,
+	bool& pauseSun
 );
 
 std::vector<glm::vec2> generateUniformVectors(int num_vectors);

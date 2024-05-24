@@ -17,6 +17,8 @@
 #include "Coordinator.h"
 #include "ECS/Components.h"
 
+#include "helper/DayCycleCoordinator.h"
+
 
 //Test comment
 
@@ -65,6 +67,7 @@ bool toggle = true;
 bool wireframe = false;
 bool rotation = false;
 bool seedMovement = false;
+bool pauseSun = false;
 
 unsigned int SEED = 0;
 unsigned int frequency = 4;
@@ -174,17 +177,30 @@ int main(void)
 	std::shared_ptr<Shader> sh_ShellTexturing = std::make_shared<Shader>("res/shaders/shellTexturing/vs_shellTexturingV1.glsl",
 		"res/shaders/shellTexturing/fs_shellTexturingV1.glsl"); //#Shaders have not yet been abstracted into the API_Manger
 
+	std::shared_ptr<Shader> sh_DirLight = std::make_shared<Shader>("res/shaders/worldLighting/vs_dirLight.glsl",
+		"res/shaders/worldLighting/fs_dirLight.glsl");
+
+	std::shared_ptr<Shader> sh_LightEmitter = std::make_shared<Shader>("res/shaders/worldLighting/vs_lightEmitter.glsl",
+		"res/shaders/worldLighting/fs_lightEmitter.glsl");
+
 	std::shared_ptr<I_SceneFactory> sceneFactory = std::make_unique<MinimalSceneFactory>(COORD);
 
 	std::vector<std::shared_ptr<Shader>> shaders;
 	shaders.push_back(sh_basicWithTex);		// 0
 	sh_basicWithTex->setShaderArrayIndex(shaders.size() - 1);
 	shaders.push_back(sh_Skydome);			// 1
-	sh_basicWithTex->setShaderArrayIndex(shaders.size() - 1);
+	sh_Skydome->setShaderArrayIndex(shaders.size() - 1);
 	shaders.push_back(sh_Clouds);			// 2
-	sh_basicWithTex->setShaderArrayIndex(shaders.size() - 1);
+	sh_Clouds->setShaderArrayIndex(shaders.size() - 1);
 	shaders.push_back(sh_ShellTexturing);	// 3
-	sh_basicWithTex->setShaderArrayIndex(shaders.size() - 1);
+	sh_ShellTexturing->setShaderArrayIndex(shaders.size() - 1);
+
+	shaders.push_back(sh_DirLight);			// 4
+	sh_DirLight->setShaderArrayIndex(shaders.size() - 1);
+
+	shaders.push_back(sh_LightEmitter);		// 5
+	sh_LightEmitter->setShaderArrayIndex(shaders.size() - 1);
+	
 
 	std::vector<Entity> entities;
 	std::vector<Entity> allEntites;
@@ -359,6 +375,10 @@ int main(void)
 		glm::vec2(0.003f, 0.00f)
 	};
 
+	//Setup DayCycle Coordinator:
+	float sunRadius = 15.0f;
+	float singleCycleDuration = 15.0f;
+	DayCycleCoordinator DCC(COORD, entities[1], sunRadius, singleCycleDuration);
 
 
 	while (!glfwWindowShouldClose(window))
@@ -423,6 +443,16 @@ int main(void)
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
 
+		DCC.Update(deltaTime, currentFrame);
+		if(pauseSun == true)
+		{
+			DCC.Pause();
+		}
+		else
+		{
+			DCC.Resume();
+		}
+
 		COORD.runAllSystems(deltaTime, currentFrame, allEntites); //#ECS_RENDERING
 
 		genMenu_1(
@@ -450,21 +480,21 @@ int main(void)
 			cloud_noiseFrequency,
 			cloud_persistence,
 			cloud_amplitude,
-			discardThreshold
+			discardThreshold,
+			pauseSun
 			);
 
 		if (seedMovement == true)
 		{
 			SEED = SEED + 1;
-
 		}
 
 		util::resetHF
 		(
 			allTexUnits[0],
 			COORD,
-			COORD.GetComponentDataFromEntity<c_Renderable>(allEntites[5]),
-			allEntites[5],
+			COORD.GetComponentDataFromEntity<c_Renderable>(allEntites[6]),
+			allEntites[6],
 			heightFieldTex,
 			hfWidth,
 			hfHeight,
@@ -528,6 +558,11 @@ void processInput(GLFWwindow* window)
 		seedMovement = true;
 	if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS)
 		seedMovement = false;
+
+	if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS)
+		pauseSun = false;
+	if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS)
+		pauseSun = true;
 
 	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
 	{
