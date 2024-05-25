@@ -83,7 +83,7 @@ float cloud_noiseFrequency = 0.01f;
 float cloud_persistence = 0.5f;
 float cloud_amplitude = 1.0f;
 
-float discardThreshold = 0.05;
+float discardThreshold = 0.06;
 
 int main(void)
 {
@@ -161,6 +161,8 @@ int main(void)
 	COORD.RegisterComponents();
 	COORD.RegisterSystems();
 	COORD.SetUpSystemBitsets();
+
+	
 
 	std::cout << "\nRenderableSystem bitset: " << COORD.GetSystemBitset<RenderableSystem>() << std::endl;
 	//std::cout << "\Rigid_CollisionDetectionSystem bitset: " << COORD.GetSystemBitset<Rigid_CollisionDetectionSystem>() << std::endl;
@@ -376,8 +378,8 @@ int main(void)
 	};
 
 	//Setup DayCycle Coordinator:
-	float sunRadius = 15.0f;
-	float singleCycleDuration = 15.0f;
+	float sunRadius = 26.0f;
+	float singleCycleDuration = 20.0f;
 	DayCycleCoordinator DCC(COORD, entities[1], sunRadius, singleCycleDuration);
 
 
@@ -402,6 +404,9 @@ int main(void)
 		glBindTexture(GL_TEXTURE_2D, cloudNoiseTexture);
 		sh_Clouds->setUniformTextureUnit("noiseTexture", 8);
 		sh_Clouds->setUniformFloat("discardThreshold", discardThreshold);
+		
+		glm::vec3 skyColorValue = DCC.getSkyColor();
+		sh_Clouds->setUniform3fv("skyColor", skyColorValue);
 
 		glActiveTexture(GL_TEXTURE0);
 
@@ -428,7 +433,8 @@ int main(void)
 		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 
 		//glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		
+		glClearColor(skyColorValue.x, skyColorValue.y, skyColorValue.z, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // <== #HERE
 		glEnable(GL_DEPTH_TEST);
 

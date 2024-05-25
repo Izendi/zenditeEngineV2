@@ -1,7 +1,34 @@
 #version 420 core
 
+struct Material
+{
+    //sampler2D colorTexture;
+
+    //vec3 ambient;
+    //vec3 diffuse;
+    //vec3 specular;
+    float shininess;
+};
+
+struct Light
+{
+    vec3 direction;
+
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
+
+
+uniform vec3 viewPos;
+uniform Material material;
+uniform Light light;
+
 in vec2 texCoord;
 in vec3 localPosition;
+
+in vec3 FragPos;
+in vec3 Normal;
 
 out vec4 FragColor;
 
@@ -40,10 +67,33 @@ void main()
         }
     }
 
+    //Add Dir Light info here:
+    // ambient
+    vec3 ambient = light.ambient * texture(highTexture, texCoord).rgb;
+
+    // diffuse 
+    vec3 norm = normalize(Normal);
+    //vec3 lightDir = normalize(light.position - FragPos);
+    vec3 lightDir = light.direction; //is normalized on the CPU side.
+    float diff = max(dot(norm, lightDir), 0.0);
+    vec3 diffuse = light.diffuse * diff * texture(highTexture, texCoord).rgb;
+
+    // specular
+    vec3 viewDir = normalize(viewPos - FragPos);
+    vec3 reflectDir = reflect(-lightDir, norm);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    vec3 specular = light.specular * spec;// * material.specular;
+
+    vec3 lightResult = ambient + diffuse + specular;
+    //FragColor = vec4(result, 1.0);
+
 
     if (result >= baseNoGrassValue * layerHeight) //baseNoGrassValue = 0.025 (is a good starting value)
     {
         texColor = texture(colorTexture, texCoord);
+        texColor.x = texColor.x * lightResult.x;
+        texColor.y = texColor.y * lightResult.y;
+        texColor.z = texColor.z * lightResult.z;
     }
     else
     {
@@ -63,7 +113,12 @@ void main()
     {
         if (localPosition.y > 14.0)
         {
-            vec4 texColor = texture(highTexture, texCoord);
+            texColor = texture(highTexture, texCoord);
+
+            texColor.x = texColor.x * lightResult.x;
+            texColor.y = texColor.y * lightResult.y;
+            texColor.z = texColor.z * lightResult.z;
+
             FragColor = texColor;
             check = true;
         }

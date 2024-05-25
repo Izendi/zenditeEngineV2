@@ -15,6 +15,9 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 {
 	c_Transform& trans = ECScoord.GetComponentDataFromEntity<c_Transform>(EID);
 	c_Renderable& rendData = ECScoord.GetComponentDataFromEntity<c_Renderable>(EID);
+	
+
+	c_Transform& sunTrans = ECScoord.GetComponentDataFromEntity<c_Transform>(1);
 	//c_Texture& texComponentData = ECScoord.GetComponentDataFromEntity<c_Texture>(EID);
 
 	std::shared_ptr<Shader> shader = DataHandle.shader;
@@ -27,6 +30,24 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 
 	glm::vec3 whiteColor = glm::vec3(1.0f, 1.0f, 1.0f);
 	shader->setUniform3fv("lightRGB", whiteColor);
+
+	glm::vec3 ambient = glm::vec3(0.2f, 0.2f, 0.2f);
+	glm::vec3 diffuse = glm::vec3(0.5f, 0.5f, 0.5f);
+	glm::vec3 specular = glm::vec3(1.0f, 1.0f, 1.0f);
+
+	glm::vec3 lightDirection = glm::normalize(glm::vec3(sunTrans.modelMat[0][3]));
+	
+
+	shader->setUniform3fv("light.ambient", ambient);
+	shader->setUniform3fv("light.diffuse", diffuse);
+	shader->setUniform3fv("light.specular", specular);
+
+	shader->setUniform3fv("light.direction", lightDirection);
+
+	glm::vec3 viewPos = cam->getPosition();
+	shader->setUniform3fv("viewPos", viewPos);
+
+	shader->setUniformFloat("material.shininess", 32.0f);
 
 	/*
 	if(texComponentData.is3Dtex)
@@ -47,8 +68,8 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 		shader->setUniformTextureUnit("colorTexture", DataHandle.texUnit);
 
 		//Temporary uniform setter for height map blended texture tests:
-		shader->setUniformTextureUnit("highTexture", 0);
-		shader->setUniformTextureUnit("lowTexture", 1);
+		shader->setUniformTextureUnit("highTexture", 1);
+		shader->setUniformTextureUnit("lowTexture", 5);
 
 		if (rendData.outline == false)
 		{

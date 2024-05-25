@@ -1388,7 +1388,7 @@ namespace util
 		//16 layers at present
 
 		glm::mat4 mm_tr_hf = glm::mat4(1.0f);
-		glm::vec3 pos_tr_hf(0.0f, -7.2f, 0.0f);
+		glm::vec3 pos_tr_hf(-9.3f, 0.0f, -9.3f);
 		glm::vec3 scale_tr_hf(0.2f, 0.2f, 0.2f);
 		mm_tr_hf = glm::translate(mm_tr_hf, pos_tr_hf);
 		mm_tr_hf = glm::scale(mm_tr_hf, scale_tr_hf);
@@ -1545,6 +1545,9 @@ namespace util
 		c_Texture tx_6;
 		tx_6.texUnit = redWindowTexUnit;
 
+		c_Texture tx_CloudNoise;
+		tx_CloudNoise.texUnit = cloudNoiseTextureUnit;
+
 		c_Modified md_sun;
 		md_sun.isModifed = true;
 
@@ -1664,12 +1667,12 @@ namespace util
 		COORD.setShaderForEntity(entities[4], shaders[0]); //#C_NOTE: Will need to set the map but not the DH, that needs to be done separatly by the renderer.
 		COORD.StoreShaderInEntityDataHandle(entities[4]);
 
-		skydome.CreateSkydome(16, 16, 8, glm::vec3(-3.35f, 2.25f, 2.95f), glm::vec3(0.8f, 0.45f, 0.8f));
+		skydome.CreateSkydome(16, 16, 8, glm::vec3(1.450f, -1.90f, 0.50f), glm::vec3(2.80f, 2.00f, 2.80f));
 		//skydome.setSkydomeTransform(glm::vec3(1.0f, 10.0f, 1.0f), glm::vec3(0.2f, 0.2f, 0.2f));
 
 		COORD.AddComponentToEntity<c_Transform>(entities[5], skydome.GetComponent_Transform());
 		COORD.AddComponentToEntity<c_Renderable>(entities[5], skydome.GetComponent_Renderable());
-		COORD.AddComponentToEntity<c_Texture>(entities[5], tx_3/*skydome.GetComponent_Texture()*/);
+		COORD.AddComponentToEntity<c_Texture>(entities[5], tx_CloudNoise/*skydome.GetComponent_Texture()*/);
 		COORD.AddComponentToEntity<c_EntityInfo>(entities[5], skydome.GetComponent_EntityInfo());
 		COORD.AddComponentToEntity<c_Modified>(entities[5], skydome.GetComponent_Modified());
 		COORD.SetUpRenderData(entities[5]); //#NOTE: SetUpRenderData and setShaderForEntity will do nothing if the entity does no have a c_RenderableComponent
@@ -1678,7 +1681,7 @@ namespace util
 
 		COORD.AddComponentToEntity<c_Transform>(entities[6], tr_hf);
 		COORD.AddComponentToEntity<c_Renderable>(entities[6], rc_hf);
-		COORD.AddComponentToEntity<c_Texture>(entities[6], tx_0);
+		COORD.AddComponentToEntity<c_Texture>(entities[6], tx_6);
 		//COORD.AddComponentToEntity<c_AABB>(entities[1], aabb_0);
 		//COORD.AddComponentToEntity<c_WallCollider>(entities[1], wallCollider_2);
 		COORD.AddComponentToEntity<c_EntityInfo>(entities[6], ei_hf);

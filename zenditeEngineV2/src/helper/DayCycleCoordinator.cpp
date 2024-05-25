@@ -42,6 +42,31 @@ void DayCycleCoordinator::Update(float deltaTime, float currentTime)
 		glm::mat4 modelMatrix = glm::mat4(1.0f);  // Initialize to identity matrix
 		modelMatrix = glm::translate(modelMatrix, glm::vec3(x, y, z));
 
+		float t = 0.0f;
+
+		float degreesAngle = m_Angle * (180.0f / glm::pi<float>());
+
+		if (degreesAngle < 120.0f)
+		{
+			t = degreesAngle / 120.0f;
+			m_SkyColor = glm::mix(m_dawn, m_midday, t);
+		}
+		else if (degreesAngle < 180.0f)
+		{
+			t = (degreesAngle - 120.0f) / 60.0f;
+			m_SkyColor = glm::mix(m_midday, m_evening, t);
+		}
+		else if (degreesAngle < 270.0f)
+		{
+			t = (degreesAngle - 180.0f) / 90.0f;
+			m_SkyColor = glm::mix(m_evening, m_night, t);
+		}
+		else
+		{
+			t = (degreesAngle - 270.0f) / 90.0f;
+			m_SkyColor = glm::mix(m_night, m_dawn, t);
+		}
+
 		m_SunPosition->modelMat[0] = modelMatrix;
 	}
 }
@@ -49,6 +74,11 @@ void DayCycleCoordinator::Update(float deltaTime, float currentTime)
 void DayCycleCoordinator::setSingleCycleDuration(float time)
 {
 	m_SingleCycleDuration = time;
+}
+
+glm::vec3 DayCycleCoordinator::getSkyColor() const
+{
+	return m_SkyColor;
 }
 
 void DayCycleCoordinator::Pause()

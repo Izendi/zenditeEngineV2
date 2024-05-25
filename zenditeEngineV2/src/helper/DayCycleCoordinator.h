@@ -32,6 +32,11 @@ private:
 	glm::vec3 m_SkyColor;
 	glm::vec3 m_lightDirection;
 
+	glm::vec3 m_dawn = glm::vec3(0.1f, 0.1f, 0.3f);
+	glm::vec3 m_midday = glm::vec3(0.4f, 0.4f, 1.0f);
+	glm::vec3 m_evening = glm::vec3(0.3f, 0.1f, 0.5f);
+	glm::vec3 m_night = glm::vec3(0.0f, 0.0f, 0.1f);
+
 	float m_SingleCycleDuration;
 	float m_AngularSpeed;
 
@@ -43,6 +48,8 @@ public:
 	void Update(float deltaTime, float currentTime);
 
 	void setSingleCycleDuration(float time);
+
+	glm::vec3 getSkyColor() const;
 
 	void Pause();
 
