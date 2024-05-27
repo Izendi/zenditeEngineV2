@@ -42,12 +42,6 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 
 	float angleRadians = atan(lightDirection.y / lightDirection.z);
 
-	if(lightDirection.y < 0.26 && lightDirection.y > 0.24)
-	{
-		//std::cout << angleRadians * (180.0f/3.14f) << std::endl;
-	}
-	//std::cout << sin(angleRadians) << std::endl;
-
 	if(lightDirection.y > 0.25f)
 	{
 		angleRadians = std::abs(angleRadians);
@@ -108,8 +102,9 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 		shader->setUniformTextureUnit("colorTexture", DataHandle.texUnit);
 
 		//Temporary uniform setter for height map blended texture tests:
-		shader->setUniformTextureUnit("highTexture", 1);
-		shader->setUniformTextureUnit("lowTexture", 5);
+		shader->setUniformTextureUnit("rockTexture", 1);
+		shader->setUniformTextureUnit("snowTexture", 7);
+		shader->setUniformTextureUnit("sandTexture", 4);
 
 		if (rendData.outline == false)
 		{
@@ -135,6 +130,7 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 			shader->setUniformMat4("model", GL_FALSE, glm::value_ptr((trans.modelMat)[i]));
 
 			shader->setUniformFloat("baseNoGrassValue", 0.04);
+			//shader->setUniformFloat("baseNoGrassValue", 0.04);
 			//layerHeight
 			shader->setUniformFloat("layerHeight", (float)i);
 			shader->setUniformFloat("time", time);

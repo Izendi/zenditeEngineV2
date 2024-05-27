@@ -36,8 +36,10 @@ out vec4 FragColor;
 
 uniform sampler2D colorTexture;
 
-uniform sampler2D highTexture;
-uniform sampler2D lowTexture;
+//uniform sampler2D highTexture;
+uniform sampler2D rockTexture;
+uniform sampler2D snowTexture;
+uniform sampler2D sandTexture;
 
 uniform float baseNoGrassValue;
 uniform float layerHeight;
@@ -52,6 +54,10 @@ void main()
 {
     float gridSize = 400.0; //was 50
 
+    float minRockSlope = 0.7;
+    float maxSnowSlope = 0.9;
+
+
     // Calculate the grid cell coordinates
     vec2 gridPos = floor(texCoord * gridSize);
 
@@ -61,7 +67,7 @@ void main()
 
     if(layerHeight != 0)
     {
-        if (localPosition.y > 14.0)
+        if (localPosition.y > 14.0 || localPosition.y < 12.0)
         {
             discard;
         }
@@ -69,14 +75,14 @@ void main()
 
     //Add Dir Light info here:
     // ambient
-    vec3 ambient = light.ambient * texture(highTexture, texCoord).rgb;
+    vec3 ambient = light.ambient;// *texture(rockTexture, texCoord).rgb;
 
     // diffuse 
     vec3 norm = normalize(Normal);
     //vec3 lightDir = normalize(light.position - FragPos);
     vec3 lightDir = light.direction; //is normalized on the CPU side.
     float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = light.diffuse * diff * texture(highTexture, texCoord).rgb;
+    vec3 diffuse = light.diffuse * diff;// *texture(rockTexture, texCoord).rgb;
 
     // specular
     vec3 viewDir = normalize(viewPos - FragPos);
@@ -111,21 +117,33 @@ void main()
 
     if (layerHeight == 0)
     {
-        if (localPosition.y > 14.0)
+        if (localPosition.y > 14.0 || localPosition.y < 12.0)
         {
-            texColor = texture(highTexture, texCoord);
+            float rock_snow_weight = norm.y;
 
-            texColor.x = texColor.x * lightResult.x;
-            texColor.y = texColor.y * lightResult.y;
-            texColor.z = texColor.z * lightResult.z;
+            rock_snow_weight = max(minRockSlope, rock_snow_weight);
+            rock_snow_weight = min(maxSnowSlope, rock_snow_weight);
 
-            FragColor = texColor;
+            rock_snow_weight = rock_snow_weight - minRockSlope;
+
+            rock_snow_weight = rock_snow_weight / (maxSnowSlope - minRockSlope);
+
+            FragColor = mix(texture(rockTexture, texCoord) * vec4(lightResult, 1.0), texture(snowTexture, texCoord) * vec4(lightResult, 1.0), rock_snow_weight);
+                
+            
+            if (localPosition.y < 12.0)
+            {
+
+                FragColor = texture(sandTexture, texCoord) * vec4(lightResult, 1.0);
+            }
+            
             check = true;
         }
     }
 
     if (check != true)
     {
+        
         float intensity = layerHeight * 0.05;
         FragColor = texColor * (min(intensity, 1.0));
     }

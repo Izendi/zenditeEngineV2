@@ -41,6 +41,7 @@ void genMenu_1(
 	unsigned short int lavaTexUnit,
 	unsigned short int redWindowTexUnit,
 	unsigned short int cloudNoiseTexUnit,
+	unsigned short int simpleSnowTexUnit,
 	unsigned int& SEED,
 	unsigned int& frequency,
 	bool& reload,
@@ -415,7 +416,7 @@ void genMenu_1(
 						// you may want to build a string using the "###" operator to preserve a constant ID with a variable label)
 
 						static int selected_tex = -1;
-						const char* names[] = { "Height Field", "Rock" , "water", "grass Billboard", "lava", "Red Window", "Noise Clouds" };
+						const char* names[] = { "Height Field", "Rock" , "water", "grass Billboard", "simpleRock", "Red Window", "Noise Clouds", "simpleSnow" };
 						static bool toggles[] = { true, false };
 
 						if (ImGui::Button("Select texture"))
@@ -463,6 +464,11 @@ void genMenu_1(
 
 									case 6:
 										texData.texUnit = cloudNoiseTexUnit;
+										modified.isModifed = true;
+										break;
+
+									case 7:
+										texData.texUnit = simpleSnowTexUnit;
 										modified.isModifed = true;
 										break;
 
@@ -1318,12 +1324,14 @@ namespace util
 		allTexUnits.push_back(waterTexUnit);
 		unsigned short int grassTexUnit = COORD.GenerateTexUnit("res/textures/grass.png", "png");				 // tx Unit = 3
 		allTexUnits.push_back(grassTexUnit);
-		unsigned short int lavaTexUnit = COORD.GenerateTexUnit("res/textures/lava.jpg", "jpg");					 // tx Unit = 4
+		unsigned short int lavaTexUnit = COORD.GenerateTexUnit("res/textures/simpleSand.jpg", "jpg");			 // tx Unit = 4
 		allTexUnits.push_back(lavaTexUnit);
 		unsigned short int redWindowTexUnit = COORD.GenerateTexUnit("res/textures/grassColor3.png", "png");		 // tx Unit = 5
 		allTexUnits.push_back(redWindowTexUnit);
 		unsigned short int cloudNoiseTextureUnit = COORD.GenerateTexUnit("res/textures/awesomeface.png", "png"); // tx Unit = 6
 		allTexUnits.push_back(cloudNoiseTextureUnit);
+		unsigned short int snowTexUnit = COORD.GenerateTexUnit("res/textures/snowTexture.jpg", "jpg"); // tx Unit = 7
+		allTexUnits.push_back(snowTexUnit);
 
 
 		c_Transform tr_0;
