@@ -1343,7 +1343,7 @@ namespace util
 		cm_faces.push_back("C:/Code/Chalmers/myGraphicsCode/zenditeEngineV2/zenditeEngineV2/res/textures/skybox/back.jpg");
 
 		//A cube map is just a texture, as such it is created using a texture ID handle:
-		unsigned short int cubeMapTexUnit = COORD.GenerateTexUnit("res/textures/awesomeface.png", "png"); // even though I pass in awesome face here, the calls to glBindTexture will override this.
+		unsigned short int cubeMapTexUnit = COORD.GenerateTexUnit("res/textures/awesomeface_ Copy.png", "png"); // even though I pass in awesome face here, the calls to glBindTexture will override this.
 		allTexUnits.push_back(cubeMapTexUnit); //tx Unit = 8
 
 		unsigned int cubeMapHandle;
