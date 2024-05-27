@@ -98,6 +98,7 @@ struct c_Renderable
 	bool outline = false;
 	bool blending = false;
 	bool active = true;
+	bool isActive = true;
 	
 	bool isLightEmitter = false;
 

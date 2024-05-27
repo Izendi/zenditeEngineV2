@@ -449,6 +449,8 @@ int main(void)
 	float singleCycleDuration = 20.0f;
 	DayCycleCoordinator DCC(COORD, entities[1], sunRadius, singleCycleDuration);
 
+	c_Renderable& waterFloor = COORD.GetComponentDataFromEntity<c_Renderable>(0);
+
 	while (!glfwWindowShouldClose(window))
 	{
 
@@ -504,6 +506,8 @@ int main(void)
 				//COORD.offsetCamera(offsetVec, 0.0f, 0.0f, 0.0f);
 				camera->ShiftDown(5.0f);
 				camera->RotateUp(40.0f);
+				
+				waterFloor.isActive = false;
 			}
 			else if(i == 1)
 			{
@@ -515,6 +519,8 @@ int main(void)
 				glm::vec3 offsetVec = glm::vec3(0.0f, 0.0f, 0.0f);
 				camera->ShiftDown(-5.0f);
 				camera->RotateUp(-40.0f);
+
+				waterFloor.isActive = true;
 				//COORD.offsetCamera(offsetVec, 0.0f, 0.0f, 0.0f);
 			}
 
