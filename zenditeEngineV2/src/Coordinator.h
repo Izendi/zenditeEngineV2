@@ -11,6 +11,7 @@
 
 #include "API_Rendering/OpenGL_Manager.h"
 
+
 class Camera;
 class I_Renderer;
 

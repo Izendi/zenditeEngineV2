@@ -81,6 +81,13 @@ glm::vec3 DayCycleCoordinator::getSkyColor() const
 	return m_SkyColor;
 }
 
+glm::vec3 DayCycleCoordinator::getSunPosition() const
+{
+	glm::vec3 sunPosition = m_SunPosition->modelMat[0][3];
+
+	return sunPosition;
+}
+
 void DayCycleCoordinator::Pause()
 {
 	m_Halt = true;

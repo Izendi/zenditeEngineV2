@@ -1676,7 +1676,7 @@ namespace util
 		COORD.AddComponentToEntity<c_EntityInfo>(entities[5], skydome.GetComponent_EntityInfo());
 		COORD.AddComponentToEntity<c_Modified>(entities[5], skydome.GetComponent_Modified());
 		COORD.SetUpRenderData(entities[5]); //#NOTE: SetUpRenderData and setShaderForEntity will do nothing if the entity does no have a c_RenderableComponent
-		COORD.setShaderForEntity(entities[5], shaders[0]); //#C_NOTE: Will need to set the map but not the DH, that needs to be done separatly by the renderer.
+		COORD.setShaderForEntity(entities[5], shaders[1]); //#C_NOTE: Will need to set the map but not the DH, that needs to be done separatly by the renderer.
 		COORD.StoreShaderInEntityDataHandle(entities[5]);
 
 		COORD.AddComponentToEntity<c_Transform>(entities[6], tr_hf);

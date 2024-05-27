@@ -382,7 +382,6 @@ int main(void)
 	float singleCycleDuration = 20.0f;
 	DayCycleCoordinator DCC(COORD, entities[1], sunRadius, singleCycleDuration);
 
-
 	while (!glfwWindowShouldClose(window))
 	{
 		float currentFrame = static_cast<float>(glfwGetTime());
@@ -407,6 +406,7 @@ int main(void)
 		
 		glm::vec3 skyColorValue = DCC.getSkyColor();
 		sh_Clouds->setUniform3fv("skyColor", skyColorValue);
+
 
 		glActiveTexture(GL_TEXTURE0);
 

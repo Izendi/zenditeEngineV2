@@ -35,8 +35,48 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 	glm::vec3 diffuse = glm::vec3(0.5f, 0.5f, 0.5f);
 	glm::vec3 specular = glm::vec3(1.0f, 1.0f, 1.0f);
 
+	glm::vec3 cloudAmbient = glm::vec3(0.5f, 0.5f, 0.5f);
+	glm::vec3 cloudDiffuse = glm::vec3(0.8f, 0.8f, 0.8f);
+
 	glm::vec3 lightDirection = glm::normalize(glm::vec3(sunTrans.modelMat[0][3]));
+
+	float angleRadians = atan(lightDirection.y / lightDirection.z);
+
+	if(lightDirection.y < 0.26 && lightDirection.y > 0.24)
+	{
+		//std::cout << angleRadians * (180.0f/3.14f) << std::endl;
+	}
+	//std::cout << sin(angleRadians) << std::endl;
+
+	if(lightDirection.y > 0.25f)
+	{
+		angleRadians = std::abs(angleRadians);
+	}
+	else
+	{
+		angleRadians = 14.0f * (3.14159/180.0f);
+	}
+
 	
+
+	//std::cout << angleRadians * (180.0f / 3.1482f) << "\n";
+
+	//
+	shader->setUniformFloat("Light.constant", 1.0f);
+	shader->setUniformFloat("light.linear", 0.09f);
+	shader->setUniformFloat("light.quadratic", 0.032f);
+
+	shader->setUniformFloat("angleRadians", angleRadians);
+
+	glm::vec3 sunWorldPosition = glm::vec3(sunTrans.modelMat[0][3]);
+	shader->setUniform3fv("lightPosition", sunWorldPosition);
+
+	//glm::vec3 ambientPointLight = glm::vec3(0.2f, 0.2f, 0.2f);
+	//glm::vec3 difffusePointLight = glm::vec3(0.5f, 0.5f, 0.5f);
+	//
+	
+	shader->setUniform3fv("light.cloudAmbient", cloudAmbient);
+	shader->setUniform3fv("light.cloudDiffuse", cloudDiffuse);
 
 	shader->setUniform3fv("light.ambient", ambient);
 	shader->setUniform3fv("light.diffuse", diffuse);

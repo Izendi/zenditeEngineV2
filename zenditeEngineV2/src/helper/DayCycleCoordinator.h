@@ -51,6 +51,8 @@ public:
 
 	glm::vec3 getSkyColor() const;
 
+	glm::vec3 getSunPosition() const;
+
 	void Pause();
 
 	void Resume();
