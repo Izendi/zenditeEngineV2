@@ -1333,6 +1333,50 @@ namespace util
 		unsigned short int snowTexUnit = COORD.GenerateTexUnit("res/textures/snowTexture.jpg", "jpg"); // tx Unit = 7
 		allTexUnits.push_back(snowTexUnit);
 
+		//Set up cube map tex unit:
+		std::vector<std::string> cm_faces; //Contains the file path to the faces:
+		cm_faces.push_back("C:/Code/Chalmers/myGraphicsCode/zenditeEngineV2/zenditeEngineV2/res/textures/skybox/right.jpg");
+		cm_faces.push_back("C:/Code/Chalmers/myGraphicsCode/zenditeEngineV2/zenditeEngineV2/res/textures/skybox/left.jpg");
+		cm_faces.push_back("C:/Code/Chalmers/myGraphicsCode/zenditeEngineV2/zenditeEngineV2/res/textures/skybox/top.jpg");
+		cm_faces.push_back("C:/Code/Chalmers/myGraphicsCode/zenditeEngineV2/zenditeEngineV2/res/textures/skybox/bottom.jpg");
+		cm_faces.push_back("C:/Code/Chalmers/myGraphicsCode/zenditeEngineV2/zenditeEngineV2/res/textures/skybox/front.jpg");
+		cm_faces.push_back("C:/Code/Chalmers/myGraphicsCode/zenditeEngineV2/zenditeEngineV2/res/textures/skybox/back.jpg");
+
+		//A cube map is just a texture, as such it is created using a texture ID handle:
+		unsigned short int cubeMapTexUnit = COORD.GenerateTexUnit("res/textures/awesomeface.png", "png"); // even though I pass in awesome face here, the calls to glBindTexture will override this.
+		allTexUnits.push_back(cubeMapTexUnit); //tx Unit = 8
+
+		unsigned int cubeMapHandle;
+		glGenTextures(1, &cubeMapHandle);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapHandle);
+
+		int width, height, nrChannels;
+		unsigned char* cubeMapData;
+
+		for (unsigned int i = 0; i < cm_faces.size(); i++)
+		{
+			unsigned char* data = stbi_load(cm_faces[i].c_str(), &width, &height, &nrChannels, 0);
+
+			if (data)
+			{
+				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+				stbi_image_free(data);
+			}
+			else
+			{
+				std::cout << "Cube map texture failed to load :( " << std::endl;
+			}
+		}
+
+		//set the texture parameters (which specify how a texture should be sampled):
+		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
+
+		//unsigned short int heightMapTex = COORD.GenerateTexUnit("res/textures/heightmap.png", "PNG");
+		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
 		c_Transform tr_0;
 		c_Transform tr_1;
@@ -1556,6 +1600,11 @@ namespace util
 		c_Texture tx_CloudNoise;
 		tx_CloudNoise.texUnit = cloudNoiseTextureUnit;
 
+		c_Texture tx_EM;
+		tx_EM.texUnit = cubeMapTexUnit;
+
+
+
 		c_Modified md_sun;
 		md_sun.isModifed = true;
 
@@ -1624,7 +1673,7 @@ namespace util
 
 		COORD.AddComponentToEntity<c_Transform>(entities[0], tr_1);
 		COORD.AddComponentToEntity<c_Renderable>(entities[0], rc_1);
-		COORD.AddComponentToEntity<c_Texture>(entities[0], tx_1);
+		COORD.AddComponentToEntity<c_Texture>(entities[0], tx_EM);
 		//COORD.AddComponentToEntity<c_AABB>(entities[1], aabb_0);
 		//COORD.AddComponentToEntity<c_WallCollider>(entities[1], wallCollider_2);
 		COORD.AddComponentToEntity<c_EntityInfo>(entities[0], ei_1);
