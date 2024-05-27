@@ -93,6 +93,20 @@ public:
 			Position += -WorldUp * velocity;
 	}
 
+	void ShiftDown(float units)
+	{
+		Position += -WorldUp * units;
+	}
+	
+	void RotateUp(float degrees)
+	{
+
+		Pitch += degrees;
+
+		// update Front, Right and Up Vectors using the updated Euler angles
+		updateCameraVectors();
+	}
+
 	// processes input received from a mouse input system. Expects the offset value in both the x and y direction.
 	void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true)
 	{

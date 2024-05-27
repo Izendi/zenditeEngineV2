@@ -1098,12 +1098,24 @@ namespace util
 				-1.0f,  1.0f,  1.0f
 		};
 
+		float HorizontalQuad[] = {
+				-1.0f, 1.0f, -1.0f,
+				 1.0f, 1.0f, -1.0f,
+				 1.0f, 1.0f,  1.0f,
+				-1.0f, 1.0f,  1.0f };
+
 		float vertQuadVertNorms[] = {
 			0.0f,  0.0f,  1.0f,
 			0.0f,  0.0f,  1.0f,
 			0.0f,  0.0f,  1.0f,
 			0.0f,  0.0f,  1.0f
 		};
+
+		float horizontalQuadVertNorms[] = {
+			0.0f, 1.0f, 0.0f,
+			0.0f, 1.0f, 0.0f,
+			0.0f, 1.0f, 0.0f,
+			0.0f, 1.0f, 0.0f	};
 
 		float vertQuadTexCoord[] = {
 			0.0f, 0.0f,
@@ -1333,6 +1345,11 @@ namespace util
 		unsigned short int snowTexUnit = COORD.GenerateTexUnit("res/textures/snowTexture.jpg", "jpg"); // tx Unit = 7
 		allTexUnits.push_back(snowTexUnit);
 
+		unsigned short int reflectionTexUnit = COORD.GenerateTexUnit("res/textures/awesomeface_3.png", "png"); // tx Unit = 8
+		allTexUnits.push_back(snowTexUnit);
+		unsigned short int refractionTexUnit = COORD.GenerateTexUnit("res/textures/awesomeface_4.png", "png"); // tx Unit = 9
+		allTexUnits.push_back(snowTexUnit);
+
 		//Set up cube map tex unit:
 		std::vector<std::string> cm_faces; //Contains the file path to the faces:
 		cm_faces.push_back("C:/Code/Chalmers/myGraphicsCode/zenditeEngineV2/zenditeEngineV2/res/textures/skybox/right.jpg");
@@ -1376,7 +1393,7 @@ namespace util
 		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
 
 		//unsigned short int heightMapTex = COORD.GenerateTexUnit("res/textures/heightmap.png", "PNG");
-		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+		//glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
 		c_Transform tr_0;
 		c_Transform tr_1;
@@ -1552,6 +1569,11 @@ namespace util
 		addDataToRenderable(rc_sun, vertCubePosData, vertCubeNormData, vertCubeTexCoordData, indices, sizeOfVertCubePosData, sizeOfIndices);
 		rc_sun.outline = false;
 
+		c_Renderable rc_flatQuad;
+		rc_flatQuad.emReflection = true;
+		rc_flatQuad.outline = false;
+		addDataToRenderable(rc_flatQuad, HorizontalQuad, horizontalQuadVertNorms, vertQuadTexCoord, vertQuadIndices, sizeOfVerticalQuad, sizeOfVQIndices);
+
 		c_Renderable rc_0;
 		addDataToRenderable(rc_0, vertCubePosData, vertCubeNormData, vertCubeTexCoordData, indices, sizeOfVertCubePosData, sizeOfIndices);
 		rc_0.outline = false;
@@ -1562,6 +1584,7 @@ namespace util
 		c_Renderable rc_1;
 		addDataToRenderable(rc_1, vertCubePosData, vertCubeNormData, vertCubeTexCoordData, indices, sizeOfVertCubePosData, sizeOfIndices);
 		rc_1.outline = false;
+		rc_1.emReflection = true;
 
 		//verticalQuad
 		//vertQuadTexCoord
@@ -1603,6 +1626,11 @@ namespace util
 		c_Texture tx_EM;
 		tx_EM.texUnit = cubeMapTexUnit;
 
+		c_Texture tx_reflection;
+		tx_reflection.texUnit = reflectionTexUnit;
+
+		c_Texture tx_refreaction;
+		tx_refreaction.texUnit = refractionTexUnit;
 
 
 		c_Modified md_sun;
@@ -1672,7 +1700,7 @@ namespace util
 		ei_hf.name = "Height Field";
 
 		COORD.AddComponentToEntity<c_Transform>(entities[0], tr_1);
-		COORD.AddComponentToEntity<c_Renderable>(entities[0], rc_1);
+		COORD.AddComponentToEntity<c_Renderable>(entities[0], rc_flatQuad);
 		COORD.AddComponentToEntity<c_Texture>(entities[0], tx_EM);
 		//COORD.AddComponentToEntity<c_AABB>(entities[1], aabb_0);
 		//COORD.AddComponentToEntity<c_WallCollider>(entities[1], wallCollider_2);
@@ -1695,7 +1723,7 @@ namespace util
 
 		COORD.AddComponentToEntity<c_Transform>(entities[2], tr_2);
 		COORD.AddComponentToEntity<c_Renderable>(entities[2], rc_0);
-		COORD.AddComponentToEntity<c_Texture>(entities[2], tx_2);
+		COORD.AddComponentToEntity<c_Texture>(entities[2], tx_reflection);
 		COORD.AddComponentToEntity<c_AABB>(entities[2], aabb_2);
 		COORD.AddComponentToEntity<c_Wall>(entities[2], wall_0);
 		COORD.AddComponentToEntity<c_Modified>(entities[2], md_2);

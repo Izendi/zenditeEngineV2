@@ -7,6 +7,8 @@ Coordinator::Coordinator(std::string API_Type, std::string Render_Type, std::sha
 {
 	m_ECSCoord = std::make_shared<ECSCoordinator>();
 
+	cameraPtr = camera;
+
 	if (API_Type == "opengl")
 	{
 		m_APImanager = std::make_shared<OpenGL_Manager>();
@@ -150,6 +152,11 @@ void Coordinator::StoreShaderInEntityDataHandle(Entity EID)
 unsigned short int Coordinator::GenerateTexUnit(std::string texFilePath, std::string fileType)
 {
 	return m_APImanager->GenerateTexUnit(texFilePath, fileType);
+}
+
+void Coordinator::offsetCamera(glm::vec3 offsetVector, float offset_x_angle, float offset_y_angle, float offset_z_angle)
+{
+	cameraPtr->Position = cameraPtr->Position + offsetVector;
 }
 
 uint32_t Coordinator::GetActiveEntities() const

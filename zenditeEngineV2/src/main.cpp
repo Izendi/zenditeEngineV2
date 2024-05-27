@@ -51,6 +51,8 @@ void setUpBasicModelMatrix(glm::mat4& MM, glm::vec3 pos, glm::vec3 scale)
 
 // camera
 std::shared_ptr<Camera> camera = std::make_shared<Camera>(glm::vec3(0.0f, 0.0f, 3.0f));
+std::shared_ptr<Camera> Reflectioncamera = std::make_shared<Camera>(glm::vec3(0.0f, 0.0f, 3.0f));
+std::shared_ptr<Camera> Refractioncamera = std::make_shared<Camera>(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -266,6 +268,65 @@ int main(void)
 
 	unsigned seedCounter = 0;
 
+	//Water FBOs --- START
+	unsigned int FBO_reflection;
+	unsigned int FBO_refraction;
+
+	glGenFramebuffers(1, &FBO_reflection);
+	glGenFramebuffers(1, &FBO_refraction);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, FBO_reflection);
+
+	unsigned int reflectionTexture;
+
+	unsigned int short reflectionTexUnit = 8;
+	glActiveTexture(GL_TEXTURE0 + reflectionTexUnit);
+
+	glGenTextures(1, &reflectionTexture);
+	glBindTexture(GL_TEXTURE_2D, reflectionTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, reflectionTexture, 0);
+	
+	unsigned int reflection_rbo;
+	glGenRenderbuffers(1, &reflection_rbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, reflection_rbo);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT); // use a single render buffer object for both a depth AND stencil buffer.
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, reflection_rbo); // now actually attach it
+	
+	// Check if framebuffer is complete
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		std::cout << "ERROR::FRAMEBUFFER:: reflection Framebuffer is not complete!" << std::endl;
+	
+	glBindFramebuffer(GL_FRAMEBUFFER, FBO_refraction);
+
+	unsigned int refractionTexture;
+
+	unsigned int short refractionTexUnit = 9;
+	glActiveTexture(GL_TEXTURE0 + refractionTexUnit);
+
+	glGenTextures(1, &refractionTexture);
+	glBindTexture(GL_TEXTURE_2D, refractionTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, refractionTexture, 0);
+
+	unsigned int refraction_rbo;
+	glGenRenderbuffers(1, &refraction_rbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, refraction_rbo);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT); // use a single renderbuffer object for both a depth AND stencil buffer.
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, refraction_rbo); // now actually attach it
+
+	// Check if framebuffer is complete
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		std::cout << "ERROR::FRAMEBUFFER:: refraction Framebuffer is not complete!" << std::endl;
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	//Water FBOs --- END
+
 
 	//FBO - START:
 
@@ -390,6 +451,7 @@ int main(void)
 
 	while (!glfwWindowShouldClose(window))
 	{
+
 		float currentFrame = static_cast<float>(glfwGetTime());
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
@@ -405,11 +467,11 @@ int main(void)
 		}
 
 		// Bind the noise texture
-		glActiveTexture(GL_TEXTURE8);
+		glActiveTexture(GL_TEXTURE14);
 		glBindTexture(GL_TEXTURE_2D, cloudNoiseTexture);
-		sh_Clouds->setUniformTextureUnit("noiseTexture", 8);
+		sh_Clouds->setUniformTextureUnit("noiseTexture", 14);
 		sh_Clouds->setUniformFloat("discardThreshold", discardThreshold);
-		
+
 		glm::vec3 skyColorValue = DCC.getSkyColor();
 		sh_Clouds->setUniform3fv("skyColor", skyColorValue);
 
@@ -433,18 +495,44 @@ int main(void)
 
 		glBindVertexArray(0);
 
-		glBindFramebuffer(GL_FRAMEBUFFER, 0); //rebind default framebuffer
-		//FBO - END
+		for(int i = 0; i < 3; i++)
+		{
+			if(i == 0)
+			{
+				glBindFramebuffer(GL_FRAMEBUFFER, FBO_reflection); 
+				glm::vec3 offsetVec = glm::vec3(0.0f, -5.0f, 0.0f);
+				//COORD.offsetCamera(offsetVec, 0.0f, 0.0f, 0.0f);
+				camera->ShiftDown(5.0f);
+				camera->RotateUp(40.0f);
+			}
+			else if(i == 1)
+			{
+				glBindFramebuffer(GL_FRAMEBUFFER, FBO_refraction); 
+			}
+			else
+			{
+				glBindFramebuffer(GL_FRAMEBUFFER, 0); //rebind default framebuffer
+				glm::vec3 offsetVec = glm::vec3(0.0f, 0.0f, 0.0f);
+				camera->ShiftDown(-5.0f);
+				camera->RotateUp(-40.0f);
+				//COORD.offsetCamera(offsetVec, 0.0f, 0.0f, 0.0f);
+			}
 
-		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+			
+			//FBO - END
 
-		//glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-		
-		glClearColor(skyColorValue.x, skyColorValue.y, skyColorValue.z, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // <== #HERE
-		glEnable(GL_DEPTH_TEST);
+			glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 
-		//glDepthFunc(GL_ALWAYS);
+			//glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+			glClearColor(skyColorValue.x, skyColorValue.y, skyColorValue.z, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // <== #HERE
+			glEnable(GL_DEPTH_TEST);
+
+			//glDepthFunc(GL_ALWAYS);
+
+			COORD.runAllSystems(deltaTime, currentFrame, allEntites); //#ECS_RENDERING
+		}
 
 		if(wireframe == true)
 		{
@@ -465,7 +553,7 @@ int main(void)
 			DCC.Resume();
 		}
 
-		COORD.runAllSystems(deltaTime, currentFrame, allEntites); //#ECS_RENDERING
+		
 
 		genMenu_1(
 			deltaTime,
@@ -536,6 +624,8 @@ int main(void)
 	}
 
 	glDeleteFramebuffers(1, &cloudFBO);
+	glDeleteFramebuffers(1, &FBO_reflection);
+	glDeleteFramebuffers(1, &FBO_refraction);
 
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();

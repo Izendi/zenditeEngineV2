@@ -32,7 +32,7 @@ private:
 	std::shared_ptr<WallCollisionHandlingSystem> m_WallCollisionHandlingSystem;
 	std::shared_ptr<PositionTrackerSystem> m_PositionTrackerSystem;
 
-
+	std::shared_ptr<Camera> cameraPtr;
 	
 public:
 	Coordinator(std::string API_Type, std::string Render_Type, std::shared_ptr<Camera> camera);
@@ -93,6 +93,8 @@ public:
 	}
 
 	unsigned short int GenerateTexUnit(std::string texFilePath, std::string fileType);
+
+	void offsetCamera(glm::vec3 offsetVector, float offset_x_angle, float offset_y_angle, float offset_z_angle);
 
 	void GenerateShadowMapForEntity(Entity EID);
 };

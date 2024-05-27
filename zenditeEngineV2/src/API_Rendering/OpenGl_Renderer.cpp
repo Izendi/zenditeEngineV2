@@ -52,8 +52,8 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 	}
 
 	//Skybox Texture:
-	shader->setUniformInt("skybox", DataHandle.texUnit);
-	shader->setUniform3fv("cameraPos", cam->Position);
+	//shader->setUniformInt("skybox", DataHandle.texUnit);
+	//shader->setUniform3fv("cameraPos", cam->Position);
 
 	//std::cout << angleRadians * (180.0f / 3.1482f) << "\n";
 
