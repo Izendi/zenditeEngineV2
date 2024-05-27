@@ -1679,7 +1679,7 @@ namespace util
 		COORD.AddComponentToEntity<c_EntityInfo>(entities[0], ei_1);
 		COORD.AddComponentToEntity<c_Modified>(entities[0], md_1);
 		COORD.SetUpRenderData(entities[0]);
-		COORD.setShaderForEntity(entities[0], shaders[0]);
+		COORD.setShaderForEntity(entities[0], shaders[6]);
 		COORD.StoreShaderInEntityDataHandle(entities[0]);
 
 		COORD.AddComponentToEntity<c_Transform>(entities[1], tr_sun);

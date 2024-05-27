@@ -185,6 +185,9 @@ int main(void)
 	std::shared_ptr<Shader> sh_LightEmitter = std::make_shared<Shader>("res/shaders/worldLighting/vs_lightEmitter.glsl",
 		"res/shaders/worldLighting/fs_lightEmitter.glsl");
 
+	std::shared_ptr<Shader> sh_emReflection = std::make_shared<Shader>("res/shaders/cubeMaps/vs_emReflection.glsl",
+		"res/shaders/cubeMaps/fs_emReflection.glsl");
+
 	std::shared_ptr<I_SceneFactory> sceneFactory = std::make_unique<MinimalSceneFactory>(COORD);
 
 	std::vector<std::shared_ptr<Shader>> shaders;
@@ -202,6 +205,9 @@ int main(void)
 
 	shaders.push_back(sh_LightEmitter);		// 5
 	sh_LightEmitter->setShaderArrayIndex(shaders.size() - 1);
+
+	shaders.push_back(sh_emReflection);		// 6
+	sh_emReflection->setShaderArrayIndex(shaders.size() - 1);
 	
 
 	std::vector<Entity> entities;

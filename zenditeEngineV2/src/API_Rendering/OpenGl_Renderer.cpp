@@ -106,6 +106,8 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 		shader->setUniformTextureUnit("snowTexture", 7);
 		shader->setUniformTextureUnit("sandTexture", 4);
 
+		//SET SKYBOX REFLECTION SHADER HERE
+
 		if (rendData.outline == false)
 		{
 			//glStencilFunc(GL_ALWAYS, 1, 0xFF); // all fragments should pass the stencil test	
