@@ -51,19 +51,29 @@ void DayCycleCoordinator::Update(float deltaTime, float currentTime)
 			t = degreesAngle / 120.0f;
 			m_SkyColor = glm::mix(m_dawn, m_midday, t);
 		}
-		else if (degreesAngle < 180.0f)
+		else if (degreesAngle < 170.0f)
 		{
-			t = (degreesAngle - 120.0f) / 60.0f;
+			t = (degreesAngle - 120.0f) / 50.0f;
 			m_SkyColor = glm::mix(m_midday, m_evening, t);
 		}
-		else if (degreesAngle < 270.0f)
+		else if (degreesAngle < 190.0f)
 		{
-			t = (degreesAngle - 180.0f) / 90.0f;
-			m_SkyColor = glm::mix(m_evening, m_night, t);
+			t = (degreesAngle - 170.0f) / 20.0f;
+			m_SkyColor = glm::mix(m_evening, m_sunset, t);
+		}
+		else if(degreesAngle < 200.0f)
+		{
+			t = (degreesAngle - 190.0f) / 10.0f;
+			m_SkyColor = glm::mix(m_sunset, m_night, t);
+		}
+		else if(degreesAngle < 260.0f)
+		{
+			t = (degreesAngle - 200.0f) / 60.0f;
+			m_SkyColor = glm::mix(m_night, m_night, t);
 		}
 		else
 		{
-			t = (degreesAngle - 270.0f) / 90.0f;
+			t = (degreesAngle - 260.0f) / 100.0f;
 			m_SkyColor = glm::mix(m_night, m_dawn, t);
 		}
 

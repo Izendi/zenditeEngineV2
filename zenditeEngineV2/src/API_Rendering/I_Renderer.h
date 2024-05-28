@@ -20,7 +20,7 @@ public:
 		cam = camera;
 	}
 
-	virtual void Render(const R_DataHandle& DataHandle, ECSCoordinator& ECScoord, Entity EID, float deltaTime, float time, int clippingPlane) = 0;
+	virtual void Render(const R_DataHandle& DataHandle, ECSCoordinator& ECScoord, Entity EID, float deltaTime, float time, int clippingPlane, float& offset) = 0;
 	virtual void RenderAABB(const R_DataHandle& DataHandle, 
 		Shader& AABBShader,
 		const c_AABB& AABB_Data,

@@ -87,6 +87,8 @@ float cloud_amplitude = 1.0f;
 
 float discardThreshold = 0.06;
 
+float offsetVal = 0.0f;
+
 int main(void)
 {
 	do 
@@ -579,7 +581,7 @@ int main(void)
 
 			//glDepthFunc(GL_ALWAYS);
 
-			COORD.runAllSystems(deltaTime, currentFrame, allEntites, clippingPlane); //#ECS_RENDERING
+			COORD.runAllSystems(deltaTime, currentFrame, allEntites, clippingPlane, offsetVal); //#ECS_RENDERING
 		}
 
 		if(wireframe == true)

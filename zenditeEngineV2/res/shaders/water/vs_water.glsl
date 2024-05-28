@@ -11,17 +11,18 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
+const float tiling = 6.0;
+
 void main()
 {
     
-
     vec4 worldPos = model * vec4(aPos.x, aPos.y, aPos.z, 1.0);
 
     clipSpace = projection * view * worldPos;;
 
     gl_Position = clipSpace;
     //texCoord = aTexCoord;
-    texCoord = aTexCoord;
+    texCoord = vec2(aPos.x / 2.0 + 0.5, aPos.z/2.0 + 0.5) * tiling;
 
 
 }

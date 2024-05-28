@@ -1355,7 +1355,7 @@ namespace util
 		allTexUnits.push_back(reflectionTexUnit);
 		unsigned short int refractionTexUnit = COORD.GenerateTexUnit("res/textures/awesomeface_4.png", "png"); // tx Unit = 9
 		allTexUnits.push_back(refractionTexUnit);
-		unsigned short int DuDvTexUnit = COORD.GenerateTexUnit("res/textures/waterDUDV.png", "png"); // tx Unit = 10
+		unsigned short int DuDvTexUnit = COORD.GenerateTexUnit("res/textures/DM.jpg", "jpg"); // tx Unit = 10
 		allTexUnits.push_back(DuDvTexUnit);
 
 		//Set up cube map tex unit:

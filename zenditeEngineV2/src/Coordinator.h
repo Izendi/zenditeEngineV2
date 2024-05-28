@@ -57,7 +57,7 @@ public:
 
 	Entity CreateEntity();
 
-	void runAllSystems(float deltaTime, float time, std::vector<Entity>& entities, int clippingPlane);
+	void runAllSystems(float deltaTime, float time, std::vector<Entity>& entities, int clippingPlane, float& offsetVal);
 	
 	void setShaderForEntity(Entity EID, std::shared_ptr<Shader> shader);
 

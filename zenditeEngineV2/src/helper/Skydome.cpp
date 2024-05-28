@@ -163,7 +163,7 @@ void Skydome::CreateSkydome(unsigned nLats, unsigned nlongs, float fRadius, glm:
 		renderable.indices.push_back(1 + i * nlongs);
 	}
 	
-	std::cout << " --  ";
+	//std::cout << " --  ";
 
 
 }
