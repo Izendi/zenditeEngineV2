@@ -190,6 +190,13 @@ int main(void)
 	std::shared_ptr<Shader> sh_emReflection = std::make_shared<Shader>("res/shaders/cubeMaps/vs_emReflection.glsl",
 		"res/shaders/cubeMaps/fs_emReflection.glsl");
 
+
+	std::shared_ptr<Shader> sh_waterReflection = std::make_shared<Shader>("res/shaders/water/vs_Reflection.glsl",
+		"res/shaders/water/fs_Reflection.glsl");
+
+	std::shared_ptr<Shader> sh_waterRefraction = std::make_shared<Shader>("res/shaders/water/vs_Refraction.glsl",
+		"res/shaders/water/fs_Refraction.glsl");
+
 	std::shared_ptr<I_SceneFactory> sceneFactory = std::make_unique<MinimalSceneFactory>(COORD);
 
 	std::vector<std::shared_ptr<Shader>> shaders;
@@ -210,6 +217,12 @@ int main(void)
 
 	shaders.push_back(sh_emReflection);		// 6
 	sh_emReflection->setShaderArrayIndex(shaders.size() - 1);
+
+	shaders.push_back(sh_waterReflection);		// 7
+	sh_waterReflection->setShaderArrayIndex(shaders.size() - 1);
+
+	shaders.push_back(sh_waterRefraction);		// 8
+	sh_waterRefraction->setShaderArrayIndex(shaders.size() - 1);
 	
 
 	std::vector<Entity> entities;
@@ -512,13 +525,15 @@ int main(void)
 			else if(i == 1)
 			{
 				glBindFramebuffer(GL_FRAMEBUFFER, FBO_refraction); 
+				camera->ShiftDown(-10.0f);
+				camera->RotateUp(-40.0f);
 			}
 			else
 			{
 				glBindFramebuffer(GL_FRAMEBUFFER, 0); //rebind default framebuffer
 				glm::vec3 offsetVec = glm::vec3(0.0f, 0.0f, 0.0f);
-				camera->ShiftDown(-5.0f);
-				camera->RotateUp(-40.0f);
+				camera->ShiftDown(5.0f);
+				//camera->RotateUp(-40.0f);
 
 				waterFloor.isActive = true;
 				//COORD.offsetCamera(offsetVec, 0.0f, 0.0f, 0.0f);

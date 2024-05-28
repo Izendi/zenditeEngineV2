@@ -1584,7 +1584,7 @@ namespace util
 		c_Renderable rc_1;
 		addDataToRenderable(rc_1, vertCubePosData, vertCubeNormData, vertCubeTexCoordData, indices, sizeOfVertCubePosData, sizeOfIndices);
 		rc_1.outline = false;
-		rc_1.emReflection = true;
+		//rc_1.emReflection = true;
 
 		//verticalQuad
 		//vertQuadTexCoord
@@ -1721,26 +1721,26 @@ namespace util
 		COORD.setShaderForEntity(entities[1], shaders[5]);
 		COORD.StoreShaderInEntityDataHandle(entities[1]);
 
-		COORD.AddComponentToEntity<c_Transform>(entities[2], tr_2);
+		COORD.AddComponentToEntity<c_Transform>(entities[2], tr_2); //Displays water reflection texture
 		COORD.AddComponentToEntity<c_Renderable>(entities[2], rc_0);
 		COORD.AddComponentToEntity<c_Texture>(entities[2], tx_reflection);
 		COORD.AddComponentToEntity<c_AABB>(entities[2], aabb_2);
 		COORD.AddComponentToEntity<c_Wall>(entities[2], wall_0);
 		COORD.AddComponentToEntity<c_Modified>(entities[2], md_2);
-		COORD.AddComponentToEntity<c_EntityInfo>(entities[2], ei_2);
+		COORD.AddComponentToEntity<c_EntityInfo>(entities[2], ei_2); // Wall cube
 		COORD.SetUpRenderData(entities[2]);
-		COORD.setShaderForEntity(entities[2], shaders[0]);
+		COORD.setShaderForEntity(entities[2], shaders[7]);
 		COORD.StoreShaderInEntityDataHandle(entities[2]);
 
-		COORD.AddComponentToEntity<c_Transform>(entities[3], tr_0);
+		COORD.AddComponentToEntity<c_Transform>(entities[3], tr_0); //Displays refraction Texture
 		COORD.AddComponentToEntity<c_Renderable>(entities[3], rc_1);
-		COORD.AddComponentToEntity<c_Texture>(entities[3], tx_3);
+		COORD.AddComponentToEntity<c_Texture>(entities[3], tx_refreaction);
 		COORD.AddComponentToEntity<c_AABB>(entities[3], aabb_0);
 		COORD.AddComponentToEntity<c_WallCollider>(entities[3], wallCollider_2);
-		COORD.AddComponentToEntity<c_EntityInfo>(entities[3], ei_0);
+		COORD.AddComponentToEntity<c_EntityInfo>(entities[3], ei_0); // Wall Col Cube
 		COORD.AddComponentToEntity<c_Modified>(entities[3], md_0);
 		COORD.SetUpRenderData(entities[3]); //#NOTE: SetUpRenderData and setShaderForEntity will do nothing if the entity does no have a c_RenderableComponent
-		COORD.setShaderForEntity(entities[3], shaders[0]); //#C_NOTE: Will need to set the map but not the DH, that needs to be done separatly by the renderer.
+		COORD.setShaderForEntity(entities[3], shaders[8]); //#C_NOTE: Will need to set the map but not the DH, that needs to be done separatly by the renderer.
 		COORD.StoreShaderInEntityDataHandle(entities[3]);
 
 		COORD.AddComponentToEntity<c_Transform>(entities[4], tr_3);
@@ -1786,9 +1786,11 @@ namespace util
 		ES0_mm = glm::rotate(ES0_mm, angleX, glm::vec3(1, 0, 0));
 		ES0_mm = glm::scale(ES0_mm, ES0_scale);
 
+		//Uncomment below to render backpack sample object
+		/*
 		map_SceneNameToEntitiyScene["Backpack_1"] = sceneFactory->CreateEntityScene("res/models/backpack/", "backpack.obj", ES0_mm, shaders[0], 1);
-		//std::shared_ptr<EntityScene> ES_0 = sceneFactory->CreateEntityScene("res/models/backpack/", "backpack.obj", ES0_mm, sh_shadows, 1);
 		map_SceneEntites["Backpack_1"] = map_SceneNameToEntitiyScene["Backpack_1"]->GetSceneEntities();
+		*/
 	}
 
 }

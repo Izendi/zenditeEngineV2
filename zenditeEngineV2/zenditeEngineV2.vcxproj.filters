@@ -1530,5 +1530,9 @@
     <None Include="res\shaders\worldLighting\vs_dirLight.glsl" />
     <None Include="res\shaders\worldLighting\vs_lightEmitter.glsl" />
     <None Include="res\shaders\worldLighting\fs_lightEmitter.glsl" />
+    <None Include="res\shaders\water\fs_Reflection.glsl" />
+    <None Include="res\shaders\water\vs_Reflection.glsl" />
+    <None Include="res\shaders\water\fs_Refraction.glsl" />
+    <None Include="res\shaders\water\vs_Refraction.glsl" />
   </ItemGroup>
 </Project>

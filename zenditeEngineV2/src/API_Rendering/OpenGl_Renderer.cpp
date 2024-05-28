@@ -109,6 +109,9 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 
 			shader->setUniformTextureUnit("colorTexture", DataHandle.texUnit);
 
+			shader->setUniformTextureUnit("fboReflectionTexture", DataHandle.texUnit);
+			shader->setUniformTextureUnit("fboRefractionTexture", DataHandle.texUnit);
+
 			//Temporary uniform setter for height map blended texture tests:
 			shader->setUniformTextureUnit("rockTexture", 1);
 			shader->setUniformTextureUnit("snowTexture", 7);
