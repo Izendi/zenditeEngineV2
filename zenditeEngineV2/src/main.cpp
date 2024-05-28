@@ -580,8 +580,8 @@ int main(void)
 			glEnable(GL_DEPTH_TEST);
 
 			//glDepthFunc(GL_ALWAYS);
-
-			COORD.runAllSystems(deltaTime, currentFrame, allEntites, clippingPlane, offsetVal); //#ECS_RENDERING
+			glm::vec3 currentSkyColor = DCC.getSkyColor();
+			COORD.runAllSystems(deltaTime, currentFrame, allEntites, clippingPlane, offsetVal, currentSkyColor.r, currentSkyColor.g, currentSkyColor.b); //#ECS_RENDERING
 		}
 
 		if(wireframe == true)

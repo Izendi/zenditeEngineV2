@@ -11,7 +11,7 @@ OpenGL_Renderer::OpenGL_Renderer(std::shared_ptr<Camera> cam) : I_Renderer(cam)
 		"res/shaders/simple/fs_shaderSingleColor.glsl");
 }
 
-void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECScoord, Entity EID, float deltaTime, float time, int clippingPlane, float& offset)
+void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECScoord, Entity EID, float deltaTime, float time, int clippingPlane, float& offset, float r, float g, float b)
 {
 	c_Transform& trans = ECScoord.GetComponentDataFromEntity<c_Transform>(EID);
 	c_Renderable& rendData = ECScoord.GetComponentDataFromEntity<c_Renderable>(EID);
@@ -132,6 +132,9 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 
 			shader->setUniformTextureUnit("fboReflectionTexture", DataHandle.texUnit);
 			shader->setUniformTextureUnit("fboRefractionTexture", DataHandle.texUnit);
+
+			glm::vec3 currentSkyColor = glm::vec3(r, g, b);
+			shader->setUniform3fv("currentSkyColor", currentSkyColor);
 
 			offset = offset + 0.002f * deltaTime;
 			if(offset > 1.0f)

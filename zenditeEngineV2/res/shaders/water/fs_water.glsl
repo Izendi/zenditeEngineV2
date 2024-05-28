@@ -16,6 +16,8 @@ uniform sampler2D colorTexture;
 
 uniform float rippleOffset;
 
+uniform vec3 currentSkyColor;
+
 const float strength = 0.015;
 
 void main()
@@ -46,7 +48,10 @@ void main()
     
     //FragColor = texColor;
     vec4 finalColor = mix(reflectionColor, refractionColor, 0.5);
+    
     finalColor = mix(finalColor, vec4(0.0, 0.2, 0.4, 1.0), 0.2);
+    //currentSkyColor
+    finalColor = mix(finalColor, vec4(currentSkyColor.r, currentSkyColor.g, currentSkyColor.b, 1.0), 0.2);
 
     FragColor = finalColor; //Add a unform for the iterpolation factor that can be controlled by the menu
 
