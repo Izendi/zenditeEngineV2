@@ -38,6 +38,7 @@ public:
 	void setUniform3fv(std::string name, float v1, float v2, float v3) const;
 	void setUniformTextureUnit(std::string name, unsigned int x);
 	void setUniformMat4(std::string name, GLboolean transpose, const GLfloat* mat);
+	void setUniform4fv(std::string name, glm::vec4& vec) const;
 
 	void bindProgram() const;
 

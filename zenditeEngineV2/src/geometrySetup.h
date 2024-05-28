@@ -99,6 +99,7 @@ void genMenu_1(
 	unsigned short int brickWallTexUnit,
 	unsigned short int cloudNoiseTexUnit,
 	unsigned short int simpleSnowTexUnit,
+	unsigned short int texUnit10,
 	unsigned int& SEED,
 	unsigned int& frequency,
 	bool& reload,

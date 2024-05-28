@@ -16,9 +16,15 @@ uniform mat4 projection;
 uniform float layerHeight;
 uniform float time;
 
+uniform vec4 ClippingPlane;
+
+
 void main()
 {
     //float sinPhaseShift = float(layerHeight) * 0.5;
+
+    vec4 worldPos = model * vec4(aPos.x, aPos.y, aPos.z, 1.0);
+    gl_ClipDistance[0] = dot(worldPos, ClippingPlane);
     
     float sway = (sin(time) + 0.9)/2 ; //+ sinPhaseShift);
 

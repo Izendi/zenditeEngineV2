@@ -42,6 +42,7 @@ void genMenu_1(
 	unsigned short int redWindowTexUnit,
 	unsigned short int cloudNoiseTexUnit,
 	unsigned short int simpleSnowTexUnit,
+	unsigned short int texUnit10,
 	unsigned int& SEED,
 	unsigned int& frequency,
 	bool& reload,
@@ -416,7 +417,7 @@ void genMenu_1(
 						// you may want to build a string using the "###" operator to preserve a constant ID with a variable label)
 
 						static int selected_tex = -1;
-						const char* names[] = { "Height Field", "Rock" , "water", "grass Billboard", "simpleRock", "Red Window", "Noise Clouds", "simpleSnow" };
+						const char* names[] = { "Height Field", "Rock" , "water", "grass Billboard", "simpleRock", "Red Window", "Noise Clouds", "simpleSnow", "texUnit10" };
 						static bool toggles[] = { true, false };
 
 						if (ImGui::Button("Select texture"))
@@ -469,6 +470,11 @@ void genMenu_1(
 
 									case 7:
 										texData.texUnit = simpleSnowTexUnit;
+										modified.isModifed = true;
+										break;
+
+									case 8:
+										texData.texUnit = texUnit10;
 										modified.isModifed = true;
 										break;
 
@@ -1346,9 +1352,11 @@ namespace util
 		allTexUnits.push_back(snowTexUnit);
 
 		unsigned short int reflectionTexUnit = COORD.GenerateTexUnit("res/textures/awesomeface_3.png", "png"); // tx Unit = 8
-		allTexUnits.push_back(snowTexUnit);
+		allTexUnits.push_back(reflectionTexUnit);
 		unsigned short int refractionTexUnit = COORD.GenerateTexUnit("res/textures/awesomeface_4.png", "png"); // tx Unit = 9
-		allTexUnits.push_back(snowTexUnit);
+		allTexUnits.push_back(refractionTexUnit);
+		unsigned short int DuDvTexUnit = COORD.GenerateTexUnit("res/textures/waterDUDV.png", "png"); // tx Unit = 10
+		allTexUnits.push_back(DuDvTexUnit);
 
 		//Set up cube map tex unit:
 		std::vector<std::string> cm_faces; //Contains the file path to the faces:
@@ -1421,8 +1429,8 @@ namespace util
 
 		//tr_1
 		glm::mat4 mm_tr1 = glm::mat4(1.0f);
-		glm::vec3 pos_tr1(-5.0f, -3.5f, -5.0f);
-		glm::vec3 scale_tr1(15.0f, 0.2f, 15.0f);
+		glm::vec3 pos_tr1(0.6f, 2.376f, 0.6f);
+		glm::vec3 scale_tr1(9.95f, 0.01f, 9.95f);
 		mm_tr1 = glm::translate(mm_tr1, pos_tr1);
 		mm_tr1 = glm::scale(mm_tr1, scale_tr1);
 		tr_1.modelMat.push_back(mm_tr1);
@@ -1570,7 +1578,7 @@ namespace util
 		rc_sun.outline = false;
 
 		c_Renderable rc_flatQuad;
-		rc_flatQuad.emReflection = true;
+		rc_flatQuad.emReflection = false;
 		rc_flatQuad.outline = false;
 		addDataToRenderable(rc_flatQuad, HorizontalQuad, horizontalQuadVertNorms, vertQuadTexCoord, vertQuadIndices, sizeOfVerticalQuad, sizeOfVQIndices);
 
@@ -1631,6 +1639,9 @@ namespace util
 
 		c_Texture tx_refreaction;
 		tx_refreaction.texUnit = refractionTexUnit;
+
+		c_Texture tx_DuDv;
+		tx_DuDv.texUnit = DuDvTexUnit;
 
 
 		c_Modified md_sun;
@@ -1701,13 +1712,13 @@ namespace util
 
 		COORD.AddComponentToEntity<c_Transform>(entities[0], tr_1);
 		COORD.AddComponentToEntity<c_Renderable>(entities[0], rc_flatQuad);
-		COORD.AddComponentToEntity<c_Texture>(entities[0], tx_EM);
+		COORD.AddComponentToEntity<c_Texture>(entities[0], tx_DuDv);
 		//COORD.AddComponentToEntity<c_AABB>(entities[1], aabb_0);
 		//COORD.AddComponentToEntity<c_WallCollider>(entities[1], wallCollider_2);
 		COORD.AddComponentToEntity<c_EntityInfo>(entities[0], ei_1);
 		COORD.AddComponentToEntity<c_Modified>(entities[0], md_1);
 		COORD.SetUpRenderData(entities[0]);
-		COORD.setShaderForEntity(entities[0], shaders[6]);
+		COORD.setShaderForEntity(entities[0], shaders[9]);
 		COORD.StoreShaderInEntityDataHandle(entities[0]);
 
 		COORD.AddComponentToEntity<c_Transform>(entities[1], tr_sun);

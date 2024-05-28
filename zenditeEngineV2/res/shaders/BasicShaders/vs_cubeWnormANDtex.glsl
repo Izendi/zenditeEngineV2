@@ -9,8 +9,15 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
+uniform vec4 ClippingPlane;
+
+
 void main()
 {
+
+    vec4 worldPos = model * vec4(aPos.x, aPos.y, aPos.z, 1.0);
+    gl_ClipDistance[0] = dot(worldPos, ClippingPlane);
+
     gl_Position = projection * view * model * vec4(aPos, 1.0);
     texCoord = aTexCoord;
 }

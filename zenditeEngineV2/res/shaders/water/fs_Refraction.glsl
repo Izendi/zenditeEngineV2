@@ -10,7 +10,9 @@ uniform sampler2D fboRefractionTexture;
 
 void main()
 {
-    vec4 texColor = texture(fboRefractionTexture, texCoord);
+    vec2 flippedTexCoord = vec2(texCoord.x, 1.0 - texCoord.y);
+
+    vec4 texColor = texture(fboRefractionTexture, flippedTexCoord);
 
     if (texColor.a < 0.1)
     {

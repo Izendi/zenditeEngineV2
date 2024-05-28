@@ -76,6 +76,13 @@ void Shader::setUniform3fv(std::string name, glm::vec3& vec) const
 	GLCALL(glUniform3fv(glGetUniformLocation(shaderProgHandle, n), 1, &vec[0]));
 }
 
+void Shader::setUniform4fv(std::string name, glm::vec4& vec) const
+{
+	const char* n = name.c_str();
+	GLCALL(glUniform4fv(glGetUniformLocation(shaderProgHandle, n), 1, &vec[0]));
+}
+
+
 void Shader::setUniform3fv(std::string name, float v1, float v2, float v3) const
 {
 	const char* n = name.c_str();

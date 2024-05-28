@@ -197,6 +197,9 @@ int main(void)
 	std::shared_ptr<Shader> sh_waterRefraction = std::make_shared<Shader>("res/shaders/water/vs_Refraction.glsl",
 		"res/shaders/water/fs_Refraction.glsl");
 
+	std::shared_ptr<Shader> sh_Water = std::make_shared<Shader>("res/shaders/water/vs_water.glsl",
+		"res/shaders/water/fs_water.glsl");
+
 	std::shared_ptr<I_SceneFactory> sceneFactory = std::make_unique<MinimalSceneFactory>(COORD);
 
 	std::vector<std::shared_ptr<Shader>> shaders;
@@ -224,6 +227,8 @@ int main(void)
 	shaders.push_back(sh_waterRefraction);		// 8
 	sh_waterRefraction->setShaderArrayIndex(shaders.size() - 1);
 	
+	shaders.push_back(sh_Water);		// 9
+	sh_Water->setShaderArrayIndex(shaders.size() - 1);
 
 	std::vector<Entity> entities;
 	std::vector<Entity> allEntites;
@@ -282,6 +287,8 @@ int main(void)
 	unsigned seedCounter = 0;
 
 	//Water FBOs --- START
+	//glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+
 	unsigned int FBO_reflection;
 	unsigned int FBO_refraction;
 
@@ -464,6 +471,10 @@ int main(void)
 
 	c_Renderable& waterFloor = COORD.GetComponentDataFromEntity<c_Renderable>(0);
 
+	glEnable(GL_CLIP_DISTANCE0);
+
+	int clippingPlane = 0;
+
 	while (!glfwWindowShouldClose(window))
 	{
 
@@ -510,29 +521,45 @@ int main(void)
 
 		glBindVertexArray(0);
 
+		float waterHeight = COORD.GetComponentDataFromEntity<c_Transform>(0).modelMat[0][3].y;
+		float cameraHeight = camera->getPosition().y;
+		float camera_water_diff = fabs((cameraHeight - waterHeight));
+
+		//std::cout << camera_water_diff << std::endl;
+
 		for(int i = 0; i < 3; i++)
 		{
 			if(i == 0)
 			{
+				clippingPlane = 0;
+				glEnable(GL_CLIP_DISTANCE0);
 				glBindFramebuffer(GL_FRAMEBUFFER, FBO_reflection); 
 				glm::vec3 offsetVec = glm::vec3(0.0f, -5.0f, 0.0f);
 				//COORD.offsetCamera(offsetVec, 0.0f, 0.0f, 0.0f);
-				camera->ShiftDown(5.0f);
-				camera->RotateUp(40.0f);
+				camera->ShiftDown(camera_water_diff * 2.0f);
+				//camera->RotateUp(40.0f);
+				camera->InvertPitch();
 				
 				waterFloor.isActive = false;
 			}
 			else if(i == 1)
 			{
+				clippingPlane = 1;
+				glEnable(GL_CLIP_DISTANCE0);
 				glBindFramebuffer(GL_FRAMEBUFFER, FBO_refraction); 
-				camera->ShiftDown(-10.0f);
-				camera->RotateUp(-40.0f);
+				//camera->ShiftDown(-10.0f);
+				//camera->RotateUp(-40.0f);
+				camera->ShiftDown(-camera_water_diff * 2.0f);
+				camera->InvertPitch();
 			}
 			else
 			{
+				clippingPlane = 2;
+				glDisable(GL_CLIP_DISTANCE0);
+				//glEnable(GL_CLIP_DISTANCE0);
 				glBindFramebuffer(GL_FRAMEBUFFER, 0); //rebind default framebuffer
 				glm::vec3 offsetVec = glm::vec3(0.0f, 0.0f, 0.0f);
-				camera->ShiftDown(5.0f);
+				
 				//camera->RotateUp(-40.0f);
 
 				waterFloor.isActive = true;
@@ -552,7 +579,7 @@ int main(void)
 
 			//glDepthFunc(GL_ALWAYS);
 
-			COORD.runAllSystems(deltaTime, currentFrame, allEntites); //#ECS_RENDERING
+			COORD.runAllSystems(deltaTime, currentFrame, allEntites, clippingPlane); //#ECS_RENDERING
 		}
 
 		if(wireframe == true)
@@ -591,6 +618,7 @@ int main(void)
 			allTexUnits[5],
 			allTexUnits[6],
 			allTexUnits[7],
+			10,
 			SEED,
 			frequency,
 			reload,

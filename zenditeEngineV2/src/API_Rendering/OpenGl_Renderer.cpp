@@ -11,7 +11,7 @@ OpenGL_Renderer::OpenGL_Renderer(std::shared_ptr<Camera> cam) : I_Renderer(cam)
 		"res/shaders/simple/fs_shaderSingleColor.glsl");
 }
 
-void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECScoord, Entity EID, float deltaTime, float time)
+void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECScoord, Entity EID, float deltaTime, float time, int clippingPlane)
 {
 	c_Transform& trans = ECScoord.GetComponentDataFromEntity<c_Transform>(EID);
 	c_Renderable& rendData = ECScoord.GetComponentDataFromEntity<c_Renderable>(EID);
@@ -47,6 +47,27 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 		glm::vec3 lightDirection = glm::normalize(glm::vec3(sunTrans.modelMat[0][3]));
 
 		float angleRadians = atan(lightDirection.y / lightDirection.z);
+
+		float waterHeight = ECScoord.GetComponentDataFromEntity<c_Transform>(0).modelMat[0][3].y;
+
+		glm::vec4 reflectionClippingPlane = glm::vec4(0.0f, 1.0f, 0.0f, -waterHeight);
+		glm::vec4 refractionClippingPlane = glm::vec4(0.0f, -1.0f, 0.0f, waterHeight);
+
+		if(clippingPlane == 0)
+		{
+			shader->setUniform4f("ClippingPlane", reflectionClippingPlane.x, reflectionClippingPlane.y, reflectionClippingPlane.z, reflectionClippingPlane.a);
+			
+		}
+		else if(clippingPlane == 1)
+		{
+			shader->setUniform4f("ClippingPlane", refractionClippingPlane.x, refractionClippingPlane.y, refractionClippingPlane.z, refractionClippingPlane.a);
+		}
+		else
+		{
+			shader->setUniformTextureUnit("waterReflectionTexture", 8);
+			shader->setUniformTextureUnit("waterRefractionTexture", 9);
+		}
+		
 
 		if (lightDirection.y > 0.25f)
 		{
@@ -111,6 +132,8 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 
 			shader->setUniformTextureUnit("fboReflectionTexture", DataHandle.texUnit);
 			shader->setUniformTextureUnit("fboRefractionTexture", DataHandle.texUnit);
+
+			//shader->setUniform4f("refractionClippingPlane", refractionClippingPlane);
 
 			//Temporary uniform setter for height map blended texture tests:
 			shader->setUniformTextureUnit("rockTexture", 1);
