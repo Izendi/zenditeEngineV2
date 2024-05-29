@@ -30,6 +30,8 @@ in vec3 localPosition;
 in vec3 FragPos;
 in vec3 Normal;
 
+in vec4 FragPosLightSpace;
+
 out vec4 FragColor;
 
 //uniform vec4 ourColor;
@@ -41,12 +43,26 @@ uniform sampler2D rockTexture;
 uniform sampler2D snowTexture;
 uniform sampler2D sandTexture;
 
+uniform sampler2D shadowMap;
+
 uniform float baseNoGrassValue;
 uniform float layerHeight;
 //uniform float time;
 
 float random(vec2 st) {
     return fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
+}
+
+//This functions code was taken from: https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping
+float ShadowCalculation(vec4 FragPosLightSpace)
+{
+    vec3 projCoords = FragPosLightSpace.xyz / FragPosLightSpace.w;
+    projCoords = projCoords * 0.5 + 0.5;
+    float closestDepth = texture(shadowMap, projCoords.xy).r;
+    float currentDepth = projCoords.z;
+    float shadow = currentDepth > closestDepth ? 1.0 : 0.0;
+
+    return shadow;
 }
 
 
@@ -57,6 +73,7 @@ void main()
     float minRockSlope = 0.7;
     float maxSnowSlope = 0.9;
 
+    float shadow = ShadowCalculation(FragPosLightSpace);
 
     // Calculate the grid cell coordinates
     vec2 gridPos = floor(texCoord * gridSize);
@@ -90,7 +107,7 @@ void main()
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
     vec3 specular = light.specular * spec;// * material.specular;
 
-    vec3 lightResult = ambient + diffuse + specular;
+    vec3 lightResult = ambient + (diffuse + specular) * (1.0 - shadow);
     //FragColor = vec4(result, 1.0);
 
 

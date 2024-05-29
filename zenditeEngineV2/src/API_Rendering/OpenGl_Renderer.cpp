@@ -54,7 +54,10 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 
 		glm::mat4 lightView = glm::lookAt(currentSunPosition, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-		glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+		glm::mat4 lightSpaceMatrix = cubeProjection * lightView;
+
+		shader->setUniformMat4("lightSpaceMatrix", GL_FALSE, glm::value_ptr(lightSpaceMatrix));
+		shader->setUniformTextureUnit("shadowMap", 16);
 
 		if (renderPass != 0)
 		{
