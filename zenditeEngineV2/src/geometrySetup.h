@@ -15,6 +15,7 @@ class Coordinator;
 class c_Renderable;
 class EntityScene;
 class I_SceneFactory;
+class DayCycleCoordinator;
 
 namespace util
 {
@@ -112,7 +113,13 @@ void genMenu_1(
 	float& cloud_persistence,
 	float& cloud_amplitude,
 	float& discardThreshold,
-	bool& pauseSun
+	bool& pauseSun,
+	DayCycleCoordinator* DCC,
+	float* dawnColor,
+	float* middayColor,
+	float* eveningColor,
+	float* sunsetColor,
+	float* nightColor
 );
 
 std::vector<glm::vec2> generateUniformVectors(int num_vectors);

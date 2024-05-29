@@ -36,6 +36,8 @@ uniform Light light;
 uniform sampler2D waterReflectionTexture;
 uniform sampler2D waterRefractionTexture;
 
+uniform sampler2D refractionDepthTexture;
+
 uniform sampler2D colorTexture;
 uniform sampler2D normalMap;
 
@@ -47,26 +49,35 @@ const float strength = 0.015;
 
 void main()
 {
-    vec2 ndc = (clipSpace.xy / clipSpace.w)/2.0 + 0.5;
-    
+    vec2 ndc = (clipSpace.xy / clipSpace.w) / 2.0 + 0.5;
+
     vec2 reflectionTexCoord = vec2(ndc.x, -ndc.y);
     vec2 refractionTexCoord = vec2(ndc.x, ndc.y);
 
+    float near = 0.1;
+    float far = 100.0;
+    float depth = texture(refractionDepthTexture, refractionTexCoord).r;
+    float floorDistance = 2.0 * near * far / (far + near - (2.0 * depth - 1.0) * (far - near));
+
+    depth = gl_FragCoord.z;
+    float waterDistance = 2.0 * near * far / (far + near - (2.0 * depth - 1.0) * (far - near));
+
+    float waterDepth = floorDistance - waterDistance;
 
     //vec2 flippedTexCoord = vec2(texCoord.x, 1.0 - texCoord.y);
 
     vec2 distortion_1 = (texture(colorTexture, vec2(texCoord.x, texCoord.y + rippleOffset)).rg * 2.0 - 1.0) * strength;
     vec2 distortion_2 = (texture(colorTexture, vec2(-texCoord.x + rippleOffset, texCoord.y)).rg * 2.0 - 1.0) * strength;
-    
-    vec2 combinedDistortion = distortion_1 + distortion_2;
+
+    vec2 combinedDistortion = distortion_1 + distortion_2 * clamp(waterDepth / 0.3, 0.0, 1.0);
 
     reflectionTexCoord += combinedDistortion;
-    reflectionTexCoord.x = clamp(reflectionTexCoord.x, 0.01, 0.99);
-    reflectionTexCoord.y = clamp(reflectionTexCoord.y, -0.99, -0.01);
-    
+    reflectionTexCoord.x = clamp(reflectionTexCoord.x, 0.0001, 0.9999);
+    reflectionTexCoord.y = clamp(reflectionTexCoord.y, -0.9999, -0.0001);
+
 
     refractionTexCoord += combinedDistortion;
-    //refractionTexCoord.x = clamp(refractionTexCoord.x, 0.01, 0.99);
+    refractionTexCoord = clamp(refractionTexCoord, 0.001, 0.999);
     //refractionTexCoord.y = clamp(refractionTexCoord.y, -0.99, -0.01);
 
     vec4 reflectionColor = texture(waterReflectionTexture, reflectionTexCoord);
@@ -74,10 +85,10 @@ void main()
 
     vec4 normalMapColor = texture(normalMap, combinedDistortion);
     vec3 normal = vec3(normalMapColor.r * 2.0 - 1.0, normalMapColor.b, normalMapColor.g * 2.0 - 1.0);
-    
+
     normal = normalize(normal);
 
-    vec3 lightDir = light.direction; 
+    vec3 lightDir = light.direction;
 
     // specular
     vec3 viewDir = normalize(viewPos - FragPos);
@@ -85,14 +96,18 @@ void main()
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
     vec3 specular = light.specular * spec;// * material.specular;
 
-    vec3 lightResult = specular;
+    vec3 lightResult = specular * clamp(waterDepth / 0.09, 0.0, 1.0);
 
     //FragColor = texColor;
     vec4 finalColor = mix(reflectionColor, refractionColor, 0.5);
-    
-    finalColor = mix(finalColor, vec4(0.0, 0.2, 0.4, 1.0), 0.2);
-    finalColor = mix(finalColor, vec4(currentSkyColor.r, currentSkyColor.g, currentSkyColor.b, 1.0), 0.2);
 
-    FragColor = finalColor + vec4(lightResult, 0.0); //Add a unform for the iterpolation factor that can be controlled by the menu
+    finalColor = mix(finalColor, vec4(0.0, 0.2, 0.4, 1.0), 0.2);
+    //finalColor = mix(finalColor, vec4(currentSkyColor.r/2.0, currentSkyColor.g/2.0, currentSkyColor.b/2.0, 1.0), 0.01);
+    //finalColor = mix(finalColor, vec4(0.851, 0.835, 0.059, 1.0), 0.5);
+
+    FragColor = finalColor + vec4(lightResult, 0.5); //Add a unform for the iterpolation factor that can be controlled by the menu
+    FragColor.a = clamp(waterDepth/0.05, 0.5, 1.0);
+    
     //FragColor = normalMapColor;
+    //FragColor = vec4(waterDepth/1.0);
 }

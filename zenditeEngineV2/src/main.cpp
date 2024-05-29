@@ -89,6 +89,12 @@ float discardThreshold = 0.06;
 
 float offsetVal = 0.0f;
 
+float dawnColor[3] = { 0.25f, 0.35f, 1.0f };
+float middayColor[3] = { 0.25f, 0.35f, 1.0f };
+float eveningColor[3] = {0.25f, 0.35f, 1.0f};
+float sunsetColor[3] = {0.7f, 0.3f, 0.2f};
+float nightColor[3] = {0.0f, 0.0f, 0.1f};
+
 int main(void)
 {
 	do 
@@ -335,11 +341,19 @@ int main(void)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, refractionTexture, 0);
 
-	unsigned int refraction_rbo;
-	glGenRenderbuffers(1, &refraction_rbo);
-	glBindRenderbuffer(GL_RENDERBUFFER, refraction_rbo);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT); // use a single renderbuffer object for both a depth AND stencil buffer.
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, refraction_rbo); // now actually attach it
+	unsigned int refractionDepthTex;
+	unsigned int short refractionDepthTU = 13;
+	glActiveTexture(GL_TEXTURE0 + refractionDepthTU);
+	
+	glGenTextures(1, &refractionDepthTex);
+	glBindTexture(GL_TEXTURE_2D, refractionDepthTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SCR_WIDTH, SCR_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, refractionDepthTex, 0);
+	
 
 	// Check if framebuffer is complete
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -476,6 +490,29 @@ int main(void)
 	glEnable(GL_CLIP_DISTANCE0);
 
 	int clippingPlane = 0;
+
+	// Enable alpha blending
+
+	dawnColor[0] = DCC.m_dawn.r;
+	dawnColor[1] = DCC.m_dawn.g;
+	dawnColor[2] = DCC.m_dawn.b;
+
+	middayColor[0] = DCC.m_midday.r;
+	middayColor[1] = DCC.m_midday.g;
+	middayColor[2] = DCC.m_midday.b;
+
+	eveningColor[0] = DCC.m_evening.r;
+	eveningColor[1] = DCC.m_evening.g;
+	eveningColor[2] = DCC.m_evening.b;
+
+	sunsetColor[0] = DCC.m_sunset.r;
+	sunsetColor[1] = DCC.m_sunset.g;
+	sunsetColor[2] = DCC.m_sunset.b;
+
+	nightColor[0] = DCC.m_night.r;
+	nightColor[1] = DCC.m_night.g;
+	nightColor[2] = DCC.m_night.b;
+	
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -633,7 +670,13 @@ int main(void)
 			cloud_persistence,
 			cloud_amplitude,
 			discardThreshold,
-			pauseSun
+			pauseSun,
+			&DCC,
+			dawnColor,
+			middayColor,
+			eveningColor,
+			sunsetColor,
+			nightColor
 			);
 
 		if (seedMovement == true)

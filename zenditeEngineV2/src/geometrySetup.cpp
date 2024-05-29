@@ -9,6 +9,7 @@
 #include <cstdlib>
 
 #include "Model_Loading/MinimalSceneFactory.h"
+#include "helper/DayCycleCoordinator.h"
 
 float FbmNoise2D(float x, float y, unsigned int frequency, int octaves, float lacunarity, float persistence, float amplitude, float maxAmplitude)
 {
@@ -55,7 +56,13 @@ void genMenu_1(
 	float& cloud_persistence,
 	float& cloud_amplitude,
 	float& discardThreshold,
-	bool& pauseSun
+	bool& pauseSun,
+	DayCycleCoordinator* DCC,
+	float* dawnColor,
+	float* middayColor,
+	float* eveningColor,
+	float* sunsetColor,
+	float* nightColor
 )
 {
 	// Start the Dear ImGui frame
@@ -150,6 +157,36 @@ void genMenu_1(
 				// This block is executed when the input value changes
 				
 			}
+
+			ImGui::NewLine();
+			ImGui::Text("--- Sky Color Values ---");
+			
+			if (ImGui::SliderFloat3("Dawn", dawnColor, 0.0f, 2.0f))
+			{
+				// Update the glm::vec3 with the new values
+				DCC->m_dawn = glm::vec3(dawnColor[0], dawnColor[1], dawnColor[2]);
+			}
+			if (ImGui::SliderFloat3("Midday", middayColor, 0.0f, 2.0f))
+			{
+				// Update the glm::vec3 with the new values
+				DCC->m_midday = glm::vec3(middayColor[0], middayColor[1], middayColor[2]);
+			}
+			if (ImGui::SliderFloat3("Evening", eveningColor, 0.0f, 2.0f))
+			{
+				// Update the glm::vec3 with the new values
+				DCC->m_evening = glm::vec3(eveningColor[0], eveningColor[1], eveningColor[2]);
+			}
+			if (ImGui::SliderFloat3("Sunset", sunsetColor, 0.0f, 2.0f))
+			{
+				// Update the glm::vec3 with the new values
+				DCC->m_sunset = glm::vec3(sunsetColor[0], sunsetColor[1], sunsetColor[2]);
+			}
+			if (ImGui::SliderFloat3("Night", nightColor, 0.0f, 2.0f))
+			{
+				// Update the glm::vec3 with the new values
+				DCC->m_evening = glm::vec3(nightColor[0], nightColor[1], nightColor[2]);
+			}
+			
 
 			ImGui::NewLine();
 			ImGui::Text("--- Cloud Parameters ---");
@@ -1366,11 +1403,10 @@ namespace util
 		unsigned short int NMtextUnit = COORD.GenerateTexUnit("res/textures/NM.jpg", "jpg"); // tx unit = 11
 		allTexUnits.push_back(NMtextUnit);
 
-		unsigned short int refractionDepthTexUnit = COORD.GenerateTexUnit("res/textures/awesomeface_7.png", "png"); // tx Unit = 13
-		allTexUnits.push_back(refractionDepthTexUnit);
+		//unsigned short int refractionDepthTexUnit = COORD.GenerateTexUnit("res/textures/awesomeface_7.png", "png"); // tx Unit = 12
+		//allTexUnits.push_back(refractionDepthTexUnit);
 
-		unsigned short int lightViewTexUnit = COORD.GenerateTexUnit("res/textures/awesomeface_6.png", "png"); // tx Unit = 13
-		allTexUnits.push_back(lightViewTexUnit);
+		
 
 		//Set up cube map tex unit:
 		std::vector<std::string> cm_faces; //Contains the file path to the faces:
@@ -1594,6 +1630,7 @@ namespace util
 		c_Renderable rc_flatQuad;
 		rc_flatQuad.emReflection = false;
 		rc_flatQuad.outline = false;
+		rc_flatQuad.notWater = false;
 		addDataToRenderable(rc_flatQuad, HorizontalQuad, horizontalQuadVertNorms, vertQuadTexCoord, vertQuadIndices, sizeOfVerticalQuad, sizeOfVQIndices);
 
 		c_Renderable rc_0;
@@ -1663,7 +1700,7 @@ namespace util
 		tx_waterNM.texUnit = NMtextUnit;
 
 		c_Texture tx_lightView;
-		tx_lightView.texUnit = lightViewTexUnit;
+		//tx_lightView.texUnit = lightViewTexUnit;
 
 
 		c_Modified md_sun;

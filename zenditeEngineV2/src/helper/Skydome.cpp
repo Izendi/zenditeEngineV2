@@ -3,7 +3,7 @@
 
 Skydome::Skydome()
 {
-
+	//renderable.notWater = false;
 }
 
 void Skydome::DestroySkydome()

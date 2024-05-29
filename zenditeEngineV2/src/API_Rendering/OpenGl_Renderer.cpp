@@ -16,6 +16,22 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 	c_Transform& trans = ECScoord.GetComponentDataFromEntity<c_Transform>(EID);
 	c_Renderable& rendData = ECScoord.GetComponentDataFromEntity<c_Renderable>(EID);
 	
+	/*
+	if (EID > 5)
+	{
+		glDisable(GL_BLEND);
+	}
+	*/
+	if (rendData.notWater == true)
+	{
+		glDisable(GL_BLEND);
+	}
+	else
+	{
+		//glEnable(GL_BLEND);
+		//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+
 	if(rendData.isActive == false)
 	{
 
@@ -50,8 +66,10 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 
 		float waterHeight = ECScoord.GetComponentDataFromEntity<c_Transform>(0).modelMat[0][3].y;
 
-		glm::vec4 reflectionClippingPlane = glm::vec4(0.0f, 1.0f, 0.0f, -waterHeight);
-		glm::vec4 refractionClippingPlane = glm::vec4(0.0f, -1.0f, 0.0f, waterHeight);
+		glm::vec4 reflectionClippingPlane = glm::vec4(0.0f, 1.0f, 0.0f, -waterHeight + 0.05f);
+		glm::vec4 refractionClippingPlane = glm::vec4(0.0f, -1.0f, 0.0f, waterHeight + 0.05f);
+
+		shader->setUniformTextureUnit("refractionDepthTexture", 13);
 
 		if(clippingPlane == 0)
 		{
@@ -68,6 +86,8 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 			shader->setUniformTextureUnit("waterRefractionTexture", 9);
 
 			shader->setUniformTextureUnit("normalMap", 11);
+
+			
 		}
 		
 

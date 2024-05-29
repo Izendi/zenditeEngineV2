@@ -103,6 +103,8 @@ struct c_Renderable
 	bool isLightEmitter = false;
 
 	bool emReflection = false; //#If_active_you_must_set_the_appropriate_shader_for_the_Entity
+
+	bool notWater = true;
 	
 	void clear()
 	{
@@ -112,6 +114,7 @@ struct c_Renderable
 		blending = false;
 		active = true;
 		emReflection = false;
+		notWater = true;
 	}
 };
 
