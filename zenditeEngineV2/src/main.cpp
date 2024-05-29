@@ -583,7 +583,7 @@ int main(void)
 			glm::vec3 currentSkyColor = DCC.getSkyColor();
 			COORD.runAllSystems(deltaTime, currentFrame, allEntites, clippingPlane, offsetVal, currentSkyColor.r, currentSkyColor.g, currentSkyColor.b); //#ECS_RENDERING
 		}
-
+		
 		if(wireframe == true)
 		{
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

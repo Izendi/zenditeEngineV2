@@ -66,6 +66,8 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 		{
 			shader->setUniformTextureUnit("waterReflectionTexture", 8);
 			shader->setUniformTextureUnit("waterRefractionTexture", 9);
+
+			shader->setUniformTextureUnit("normalMap", 11);
 		}
 		
 
@@ -132,6 +134,8 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 
 			shader->setUniformTextureUnit("fboReflectionTexture", DataHandle.texUnit);
 			shader->setUniformTextureUnit("fboRefractionTexture", DataHandle.texUnit);
+
+			//shader->setUniformTextureUnit("normalMap", DataHandle.texUnit);
 
 			glm::vec3 currentSkyColor = glm::vec3(r, g, b);
 			shader->setUniform3fv("currentSkyColor", currentSkyColor);

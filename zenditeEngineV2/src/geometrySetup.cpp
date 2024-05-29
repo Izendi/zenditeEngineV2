@@ -1073,7 +1073,6 @@ namespace util
 		*/
 		fb.clear();
 
-
 	}
 
 	void setupSceneECS(Coordinator& COORD,
@@ -1355,8 +1354,20 @@ namespace util
 		allTexUnits.push_back(reflectionTexUnit);
 		unsigned short int refractionTexUnit = COORD.GenerateTexUnit("res/textures/awesomeface_4.png", "png"); // tx Unit = 9
 		allTexUnits.push_back(refractionTexUnit);
+		
+		//old normal map => NM.jpg
+		//old DUDV => DM.jpg
+
+		//new DUDV => newWaterDUDV.jpg
+		//new normal => newNormal.jpg
+
 		unsigned short int DuDvTexUnit = COORD.GenerateTexUnit("res/textures/DM.jpg", "jpg"); // tx Unit = 10
 		allTexUnits.push_back(DuDvTexUnit);
+		unsigned short int NMtextUnit = COORD.GenerateTexUnit("res/textures/NM.jpg", "jpg"); // tx unit = 11
+		allTexUnits.push_back(NMtextUnit);
+
+		unsigned short int lightViewTexUnit = COORD.GenerateTexUnit("res/textures/awesomeface_6.png", "png"); // tx Unit = 12
+		allTexUnits.push_back(lightViewTexUnit);
 
 		//Set up cube map tex unit:
 		std::vector<std::string> cm_faces; //Contains the file path to the faces:
@@ -1585,6 +1596,7 @@ namespace util
 		c_Renderable rc_0;
 		addDataToRenderable(rc_0, vertCubePosData, vertCubeNormData, vertCubeTexCoordData, indices, sizeOfVertCubePosData, sizeOfIndices);
 		rc_0.outline = false;
+		rc_0.isActive = false;
 
 		std::cout << "\nsize of vertCubePosData = " << sizeOfVertCubePosData << std::endl;
 		std::cout << "\nsize of Indices         = " << sizeOfIndices << std::endl;
@@ -1592,6 +1604,7 @@ namespace util
 		c_Renderable rc_1;
 		addDataToRenderable(rc_1, vertCubePosData, vertCubeNormData, vertCubeTexCoordData, indices, sizeOfVertCubePosData, sizeOfIndices);
 		rc_1.outline = false;
+		rc_1.isActive = false;
 		//rc_1.emReflection = true;
 
 		//verticalQuad
@@ -1642,6 +1655,12 @@ namespace util
 
 		c_Texture tx_DuDv;
 		tx_DuDv.texUnit = DuDvTexUnit;
+
+		c_Texture tx_waterNM;
+		tx_waterNM.texUnit = NMtextUnit;
+
+		c_Texture tx_lightView;
+		tx_lightView.texUnit = lightViewTexUnit;
 
 
 		c_Modified md_sun;
@@ -1735,8 +1754,8 @@ namespace util
 		COORD.AddComponentToEntity<c_Transform>(entities[2], tr_2); //Displays water reflection texture
 		COORD.AddComponentToEntity<c_Renderable>(entities[2], rc_0);
 		COORD.AddComponentToEntity<c_Texture>(entities[2], tx_reflection);
-		COORD.AddComponentToEntity<c_AABB>(entities[2], aabb_2);
-		COORD.AddComponentToEntity<c_Wall>(entities[2], wall_0);
+		//COORD.AddComponentToEntity<c_AABB>(entities[2], aabb_2);
+		//COORD.AddComponentToEntity<c_Wall>(entities[2], wall_0);
 		COORD.AddComponentToEntity<c_Modified>(entities[2], md_2);
 		COORD.AddComponentToEntity<c_EntityInfo>(entities[2], ei_2); // Wall cube
 		COORD.SetUpRenderData(entities[2]);
@@ -1746,8 +1765,8 @@ namespace util
 		COORD.AddComponentToEntity<c_Transform>(entities[3], tr_0); //Displays refraction Texture
 		COORD.AddComponentToEntity<c_Renderable>(entities[3], rc_1);
 		COORD.AddComponentToEntity<c_Texture>(entities[3], tx_refreaction);
-		COORD.AddComponentToEntity<c_AABB>(entities[3], aabb_0);
-		COORD.AddComponentToEntity<c_WallCollider>(entities[3], wallCollider_2);
+		//COORD.AddComponentToEntity<c_AABB>(entities[3], aabb_0);
+		//COORD.AddComponentToEntity<c_WallCollider>(entities[3], wallCollider_2);
 		COORD.AddComponentToEntity<c_EntityInfo>(entities[3], ei_0); // Wall Col Cube
 		COORD.AddComponentToEntity<c_Modified>(entities[3], md_0);
 		COORD.SetUpRenderData(entities[3]); //#NOTE: SetUpRenderData and setShaderForEntity will do nothing if the entity does no have a c_RenderableComponent

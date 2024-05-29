@@ -7,6 +7,8 @@ out vec2 texCoord;
 
 out vec4 clipSpace;
 
+out vec3 FragPos;
+
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
@@ -24,5 +26,5 @@ void main()
     //texCoord = aTexCoord;
     texCoord = vec2(aPos.x / 2.0 + 0.5, aPos.z/2.0 + 0.5) * tiling;
 
-
+    FragPos = vec3(model * vec4(aPos, 1.0));
 }
