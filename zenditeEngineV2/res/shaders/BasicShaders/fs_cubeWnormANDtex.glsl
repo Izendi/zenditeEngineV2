@@ -18,16 +18,28 @@ float LinearizeDepth(float depth)
 
 void main()
 {
+    /*
     vec4 texColor = texture(colorTexture, texCoord);
+    */
 
+    float depthValue = texture(colorTexture, texCoord).r;
+    
+    depthValue += -0.8;
+    
+    depthValue = (depthValue - 0.5) / (1.0 + 0.9) + 0.5;
+
+    
+    /*
     if (texColor.a < 0.1)
     {
         discard; //stop processing this fragment and write nothing to the framebuffer.
     }
+    */
 
+    /*
     FragColor = texColor;
+    */
 
-    //float depth = LinearizeDepth(gl_FragCoord.z) / far;
-    //FragColor = vec4(vec3(depth), 1.0);
+    FragColor = vec4(vec3(depthValue), 1.0);
     
 }

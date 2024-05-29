@@ -1403,9 +1403,9 @@ namespace util
 		unsigned short int NMtextUnit = COORD.GenerateTexUnit("res/textures/NM.jpg", "jpg"); // tx unit = 11
 		allTexUnits.push_back(NMtextUnit);
 
-		//unsigned short int refractionDepthTexUnit = COORD.GenerateTexUnit("res/textures/awesomeface_7.png", "png"); // tx Unit = 12
-		//allTexUnits.push_back(refractionDepthTexUnit);
-
+		unsigned short int lightViewDepthTexUnit = COORD.GenerateTexUnit("res/textures/awesomeface_7.png", "png"); // tx Unit = 12
+		allTexUnits.push_back(lightViewDepthTexUnit);
+		lightViewDepthTexUnit = 16;
 		
 
 		//Set up cube map tex unit:
@@ -1644,7 +1644,7 @@ namespace util
 		c_Renderable rc_1;
 		addDataToRenderable(rc_1, vertCubePosData, vertCubeNormData, vertCubeTexCoordData, indices, sizeOfVertCubePosData, sizeOfIndices);
 		rc_1.outline = false;
-		rc_1.isActive = false;
+		rc_1.isActive = true;
 		//rc_1.emReflection = true;
 
 		//verticalQuad
@@ -1699,8 +1699,8 @@ namespace util
 		c_Texture tx_waterNM;
 		tx_waterNM.texUnit = NMtextUnit;
 
-		c_Texture tx_lightView;
-		//tx_lightView.texUnit = lightViewTexUnit;
+		c_Texture tx_lightViewDepth;
+		tx_lightViewDepth.texUnit = lightViewDepthTexUnit;
 
 
 		c_Modified md_sun;
@@ -1804,18 +1804,18 @@ namespace util
 
 		COORD.AddComponentToEntity<c_Transform>(entities[3], tr_0); //Displays refraction Texture
 		COORD.AddComponentToEntity<c_Renderable>(entities[3], rc_1);
-		COORD.AddComponentToEntity<c_Texture>(entities[3], tx_refreaction);
-		//COORD.AddComponentToEntity<c_AABB>(entities[3], aabb_0);
-		//COORD.AddComponentToEntity<c_WallCollider>(entities[3], wallCollider_2);
+		COORD.AddComponentToEntity<c_Texture>(entities[3], tx_lightViewDepth);
+		COORD.AddComponentToEntity<c_AABB>(entities[3], aabb_0);
+		COORD.AddComponentToEntity<c_WallCollider>(entities[3], wallCollider_2);
 		COORD.AddComponentToEntity<c_EntityInfo>(entities[3], ei_0); // Wall Col Cube
 		COORD.AddComponentToEntity<c_Modified>(entities[3], md_0);
 		COORD.SetUpRenderData(entities[3]); //#NOTE: SetUpRenderData and setShaderForEntity will do nothing if the entity does no have a c_RenderableComponent
-		COORD.setShaderForEntity(entities[3], shaders[8]); //#C_NOTE: Will need to set the map but not the DH, that needs to be done separatly by the renderer.
+		COORD.setShaderForEntity(entities[3], shaders[0]); //#C_NOTE: Will need to set the map but not the DH, that needs to be done separatly by the renderer.
 		COORD.StoreShaderInEntityDataHandle(entities[3]);
 
 		COORD.AddComponentToEntity<c_Transform>(entities[4], tr_3);
 		COORD.AddComponentToEntity<c_Renderable>(entities[4], rc_3);
-		COORD.AddComponentToEntity<c_Texture>(entities[4], tx_3);
+		COORD.AddComponentToEntity<c_Texture>(entities[4], tx_lightViewDepth);
 		COORD.AddComponentToEntity<c_EntityInfo>(entities[4], ei_3);
 		COORD.AddComponentToEntity<c_Modified>(entities[4], md_3);
 		COORD.SetUpRenderData(entities[4]); //#NOTE: SetUpRenderData and setShaderForEntity will do nothing if the entity does no have a c_RenderableComponent

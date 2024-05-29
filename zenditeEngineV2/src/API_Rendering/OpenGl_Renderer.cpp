@@ -11,7 +11,7 @@ OpenGL_Renderer::OpenGL_Renderer(std::shared_ptr<Camera> cam) : I_Renderer(cam)
 		"res/shaders/simple/fs_shaderSingleColor.glsl");
 }
 
-void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECScoord, Entity EID, float deltaTime, float time, int clippingPlane, float& offset, float r, float g, float b)
+void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECScoord, Entity EID, float deltaTime, float time, int clippingPlane, float& offset, float r, float g, float b, int renderPass)
 {
 	c_Transform& trans = ECScoord.GetComponentDataFromEntity<c_Transform>(EID);
 	c_Renderable& rendData = ECScoord.GetComponentDataFromEntity<c_Renderable>(EID);
@@ -38,7 +38,6 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 	}
 	else
 	{
-
 		c_Transform& sunTrans = ECScoord.GetComponentDataFromEntity<c_Transform>(1);
 		//c_Texture& texComponentData = ECScoord.GetComponentDataFromEntity<c_Texture>(EID);
 
@@ -47,190 +46,412 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 		bindVao(DataHandle.VAO);
 		glm::mat4 cubeProjection = glm::perspective(glm::radians(cam->Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 		glm::mat4 cubeView = cam->GetViewMatrix();
-		shader->setUniformMat4("projection", GL_FALSE, glm::value_ptr(cubeProjection));
-		shader->setUniformMat4("view", GL_FALSE, glm::value_ptr(cubeView));
 
-		glm::vec3 whiteColor = glm::vec3(1.0f, 1.0f, 1.0f);
-		shader->setUniform3fv("lightRGB", whiteColor);
-
-		glm::vec3 ambient = glm::vec3(0.2f, 0.2f, 0.2f);
-		glm::vec3 diffuse = glm::vec3(0.5f, 0.5f, 0.5f);
-		glm::vec3 specular = glm::vec3(1.0f, 1.0f, 1.0f);
-
-		glm::vec3 cloudAmbient = glm::vec3(0.5f, 0.5f, 0.5f);
-		glm::vec3 cloudDiffuse = glm::vec3(0.8f, 0.8f, 0.8f);
-
-		glm::vec3 lightDirection = glm::normalize(glm::vec3(sunTrans.modelMat[0][3]));
-
-		float angleRadians = atan(lightDirection.y / lightDirection.z);
-
-		float waterHeight = ECScoord.GetComponentDataFromEntity<c_Transform>(0).modelMat[0][3].y;
-
-		glm::vec4 reflectionClippingPlane = glm::vec4(0.0f, 1.0f, 0.0f, -waterHeight + 0.05f);
-		glm::vec4 refractionClippingPlane = glm::vec4(0.0f, -1.0f, 0.0f, waterHeight + 0.05f);
-
-		shader->setUniformTextureUnit("refractionDepthTexture", 13);
-
-		if(clippingPlane == 0)
-		{
-			shader->setUniform4f("ClippingPlane", reflectionClippingPlane.x, reflectionClippingPlane.y, reflectionClippingPlane.z, reflectionClippingPlane.a);
-			
-		}
-		else if(clippingPlane == 1)
-		{
-			shader->setUniform4f("ClippingPlane", refractionClippingPlane.x, refractionClippingPlane.y, refractionClippingPlane.z, refractionClippingPlane.a);
-		}
-		else
-		{
-			shader->setUniformTextureUnit("waterReflectionTexture", 8);
-			shader->setUniformTextureUnit("waterRefractionTexture", 9);
-
-			shader->setUniformTextureUnit("normalMap", 11);
-
-			
-		}
-		
-
-		if (lightDirection.y > 0.25f)
-		{
-			angleRadians = std::abs(angleRadians);
-		}
-		else
-		{
-			angleRadians = 14.0f * (3.14159 / 180.0f);
-		}
-
-		//Skybox Texture:
-		//shader->setUniformInt("skybox", DataHandle.texUnit);
-		//shader->setUniform3fv("cameraPos", cam->Position);
-
-		//std::cout << angleRadians * (180.0f / 3.1482f) << "\n";
+		glm::mat4 lightProjection = glm::ortho(-0.0f, (float)SCR_WIDTH, 0.0f, (float)SCR_HEIGHT, 0.1f, 100.0f);
 
 		//
-		shader->setUniformFloat("Light.constant", 1.0f);
-		shader->setUniformFloat("light.linear", 0.09f);
-		shader->setUniformFloat("light.quadratic", 0.032f);
+		glm::vec3 currentSunPosition = glm::vec3(sunTrans.modelMat[0][3]);
 
-		shader->setUniformFloat("angleRadians", angleRadians);
+		glm::mat4 lightView = glm::lookAt(currentSunPosition, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-		glm::vec3 sunWorldPosition = glm::vec3(sunTrans.modelMat[0][3]);
-		shader->setUniform3fv("lightPosition", sunWorldPosition);
+		glm::mat4 lightSpaceMatrix = lightProjection * lightView;
 
-		//glm::vec3 ambientPointLight = glm::vec3(0.2f, 0.2f, 0.2f);
-		//glm::vec3 difffusePointLight = glm::vec3(0.5f, 0.5f, 0.5f);
-		//
-
-		shader->setUniform3fv("light.cloudAmbient", cloudAmbient);
-		shader->setUniform3fv("light.cloudDiffuse", cloudDiffuse);
-
-		shader->setUniform3fv("light.ambient", ambient);
-		shader->setUniform3fv("light.diffuse", diffuse);
-		shader->setUniform3fv("light.specular", specular);
-
-		shader->setUniform3fv("light.direction", lightDirection);
-
-		glm::vec3 viewPos = cam->getPosition();
-		shader->setUniform3fv("viewPos", viewPos);
-
-		shader->setUniformFloat("material.shininess", 32.0f);
-
-		/*
-		if(texComponentData.is3Dtex)
+		if (renderPass != 0)
 		{
-			shader->setUniformFloat("iTime", deltaTime);
-		}
-		*/
-
-		if (rendData.emReflection == true)
-		{
-			//#Continue_from_here!
-			shader->setUniformInt("skybox", DataHandle.texUnit);
-			shader->setUniform3fv("cameraPos", cam->Position);
+			shader->setUniformMat4("projection", GL_FALSE, glm::value_ptr(cubeProjection));
+			shader->setUniformMat4("view", GL_FALSE, glm::value_ptr(cubeView));
 		}
 		else
 		{
+			
+			shader->setUniformMat4("projection", GL_FALSE, glm::value_ptr(cubeProjection));
+			shader->setUniformMat4("view", GL_FALSE, glm::value_ptr(lightView));
+			
 
-			shader->setUniformTextureUnit("colorTexture", DataHandle.texUnit);
+			/*
+			shader->setUniformMat4("projection", GL_FALSE, glm::value_ptr(cubeProjection));
+			shader->setUniformMat4("view", GL_FALSE, glm::value_ptr(cubeView));
+			*/
+		}
 
-			shader->setUniformTextureUnit("fboReflectionTexture", DataHandle.texUnit);
-			shader->setUniformTextureUnit("fboRefractionTexture", DataHandle.texUnit);
+		if(renderPass != 0)
+		{
+			glm::vec3 whiteColor = glm::vec3(1.0f, 1.0f, 1.0f);
+			shader->setUniform3fv("lightRGB", whiteColor);
 
-			//shader->setUniformTextureUnit("normalMap", DataHandle.texUnit);
 
-			glm::vec3 currentSkyColor = glm::vec3(r, g, b);
-			shader->setUniform3fv("currentSkyColor", currentSkyColor);
 
-			offset = offset + 0.002f * deltaTime;
-			if(offset > 1.0f)
+			glm::vec3 ambient = glm::vec3(0.2f, 0.2f, 0.2f);
+			glm::vec3 diffuse = glm::vec3(0.5f, 0.5f, 0.5f);
+			glm::vec3 specular = glm::vec3(1.0f, 1.0f, 1.0f);
+
+			glm::vec3 cloudAmbient = glm::vec3(0.5f, 0.5f, 0.5f);
+			glm::vec3 cloudDiffuse = glm::vec3(0.8f, 0.8f, 0.8f);
+
+			glm::vec3 lightDirection = glm::normalize(glm::vec3(sunTrans.modelMat[0][3]));
+
+			float angleRadians = atan(lightDirection.y / lightDirection.z);
+
+			float waterHeight = ECScoord.GetComponentDataFromEntity<c_Transform>(0).modelMat[0][3].y;
+
+			glm::vec4 reflectionClippingPlane = glm::vec4(0.0f, 1.0f, 0.0f, -waterHeight + 0.05f);
+			glm::vec4 refractionClippingPlane = glm::vec4(0.0f, -1.0f, 0.0f, waterHeight + 0.05f);
+
+			shader->setUniformTextureUnit("refractionDepthTexture", 13);
+
+			if (clippingPlane == 0)
 			{
-				offset = 0.0f;
+				shader->setUniform4f("ClippingPlane", reflectionClippingPlane.x, reflectionClippingPlane.y, reflectionClippingPlane.z, reflectionClippingPlane.a);
+
 			}
-			shader->setUniformFloat("rippleOffset", offset);
-
-			//shader->setUniform4f("refractionClippingPlane", refractionClippingPlane);
-
-			//Temporary uniform setter for height map blended texture tests:
-			shader->setUniformTextureUnit("rockTexture", 1);
-			shader->setUniformTextureUnit("snowTexture", 7);
-			shader->setUniformTextureUnit("sandTexture", 4);
-
-			//SET SKYBOX REFLECTION SHADER HERE
-
-			if (rendData.outline == false)
+			else if (clippingPlane == 1)
 			{
-				//glStencilFunc(GL_ALWAYS, 1, 0xFF); // all fragments should pass the stencil test	
-				//glStencilMask(0xFF); // enable writing to the stencil buffer
-				glStencilMask(0x00);
+				shader->setUniform4f("ClippingPlane", refractionClippingPlane.x, refractionClippingPlane.y, refractionClippingPlane.z, refractionClippingPlane.a);
 			}
 			else
 			{
-				glStencilFunc(GL_ALWAYS, 1, 0xFF);
-				glStencilMask(0xFF);
+				shader->setUniformTextureUnit("waterReflectionTexture", 8);
+				shader->setUniformTextureUnit("waterRefractionTexture", 9);
+
+				shader->setUniformTextureUnit("normalMap", 11);
+
+
 			}
 
-			if (rendData.blending == true)
+
+			if (lightDirection.y > 0.25f)
+			{
+				angleRadians = std::abs(angleRadians);
+			}
+			else
+			{
+				angleRadians = 14.0f * (3.14159 / 180.0f);
+			}
+
+			//Skybox Texture:
+			//shader->setUniformInt("skybox", DataHandle.texUnit);
+			//shader->setUniform3fv("cameraPos", cam->Position);
+
+			//std::cout << angleRadians * (180.0f / 3.1482f) << "\n";
+
+			//
+			shader->setUniformFloat("Light.constant", 1.0f);
+			shader->setUniformFloat("light.linear", 0.09f);
+			shader->setUniformFloat("light.quadratic", 0.032f);
+
+			shader->setUniformFloat("angleRadians", angleRadians);
+
+			glm::vec3 sunWorldPosition = glm::vec3(sunTrans.modelMat[0][3]);
+			shader->setUniform3fv("lightPosition", sunWorldPosition);
+
+			//glm::vec3 ambientPointLight = glm::vec3(0.2f, 0.2f, 0.2f);
+			//glm::vec3 difffusePointLight = glm::vec3(0.5f, 0.5f, 0.5f);
+			//
+
+			shader->setUniform3fv("light.cloudAmbient", cloudAmbient);
+			shader->setUniform3fv("light.cloudDiffuse", cloudDiffuse);
+
+			shader->setUniform3fv("light.ambient", ambient);
+			shader->setUniform3fv("light.diffuse", diffuse);
+			shader->setUniform3fv("light.specular", specular);
+
+			shader->setUniform3fv("light.direction", lightDirection);
+
+			glm::vec3 viewPos = cam->getPosition();
+			shader->setUniform3fv("viewPos", viewPos);
+
+			shader->setUniformFloat("material.shininess", 32.0f);
+
+			/*
+			if(texComponentData.is3Dtex)
+			{
+				shader->setUniformFloat("iTime", deltaTime);
+			}
+			*/
+
+			if (rendData.emReflection == true)
+			{
+				//#Continue_from_here!
+				shader->setUniformInt("skybox", DataHandle.texUnit);
+				shader->setUniform3fv("cameraPos", cam->Position);
+			}
+			else
 			{
 
+				shader->setUniformTextureUnit("colorTexture", DataHandle.texUnit);
+
+				shader->setUniformTextureUnit("fboReflectionTexture", DataHandle.texUnit);
+				shader->setUniformTextureUnit("fboRefractionTexture", DataHandle.texUnit);
+
+				//shader->setUniformTextureUnit("normalMap", DataHandle.texUnit);
+
+				glm::vec3 currentSkyColor = glm::vec3(r, g, b);
+				shader->setUniform3fv("currentSkyColor", currentSkyColor);
+
+				offset = offset + 0.002f * deltaTime;
+				if (offset > 1.0f)
+				{
+					offset = 0.0f;
+				}
+				shader->setUniformFloat("rippleOffset", offset);
+
+				//shader->setUniform4f("refractionClippingPlane", refractionClippingPlane);
+
+				//Temporary uniform setter for height map blended texture tests:
+				shader->setUniformTextureUnit("rockTexture", 1);
+				shader->setUniformTextureUnit("snowTexture", 7);
+				shader->setUniformTextureUnit("sandTexture", 4);
+
+				//SET SKYBOX REFLECTION SHADER HERE
+
+				if (rendData.outline == false)
+				{
+					//glStencilFunc(GL_ALWAYS, 1, 0xFF); // all fragments should pass the stencil test	
+					//glStencilMask(0xFF); // enable writing to the stencil buffer
+					glStencilMask(0x00);
+				}
+				else
+				{
+					glStencilFunc(GL_ALWAYS, 1, 0xFF);
+					glStencilMask(0xFF);
+				}
+
+				if (rendData.blending == true)
+				{
+
+				}
+
 			}
 
+			for (int i = 0; i < trans.modelMat.size(); ++i)
+			{
+				shader->setUniformMat4("model", GL_FALSE, glm::value_ptr((trans.modelMat)[i]));
+
+				shader->setUniformFloat("baseNoGrassValue", 0.04);
+				//shader->setUniformFloat("baseNoGrassValue", 0.04);
+				//layerHeight
+				shader->setUniformFloat("layerHeight", (float)i);
+				shader->setUniformFloat("time", time);
+
+				GLCALL(glDrawElements(GL_TRIANGLES, (rendData.indices).size(), GL_UNSIGNED_INT, 0));
+			}
+
+			if (rendData.outline == true)
+			{
+				m_sh_SingleColor->bindProgram();
+				//glDisable(GL_STENCIL_TEST);
+
+				glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+				glStencilMask(0x00); // disable writing to the stencil buffer
+				glDisable(GL_DEPTH_TEST);
+
+				float scaleFactor = 1.1;
+				glm::mat4 outlineMM;
+				outlineMM = glm::scale(trans.modelMat[0], glm::vec3(scaleFactor, scaleFactor, scaleFactor));
+
+				m_sh_SingleColor->setUniformMat4("projection", GL_FALSE, glm::value_ptr(cubeProjection));
+				m_sh_SingleColor->setUniformMat4("view", GL_FALSE, glm::value_ptr(cubeView));
+				(m_sh_SingleColor)->setUniformMat4("model", GL_FALSE, glm::value_ptr(outlineMM));
+
+				GLCALL(glDrawElements(GL_TRIANGLES, (rendData.indices).size(), GL_UNSIGNED_INT, 0));
+
+				//glDisable(GL_STENCIL_TEST);
+				glStencilMask(0xFF);
+				glStencilFunc(GL_ALWAYS, 1, 0xFF);
+				glEnable(GL_DEPTH_TEST);
+			}
 		}
-
-		for (int i = 0; i < trans.modelMat.size(); ++i)
+		
+		if(renderPass == 0 && (EID == 1 || EID == 6))
 		{
-			shader->setUniformMat4("model", GL_FALSE, glm::value_ptr((trans.modelMat)[i]));
 
-			shader->setUniformFloat("baseNoGrassValue", 0.04);
-			//shader->setUniformFloat("baseNoGrassValue", 0.04);
-			//layerHeight
-			shader->setUniformFloat("layerHeight", (float)i);
-			shader->setUniformFloat("time", time);
-
-			GLCALL(glDrawElements(GL_TRIANGLES, (rendData.indices).size(), GL_UNSIGNED_INT, 0));
 		}
-
-		if (rendData.outline == true)
+		else if(renderPass == 0)// && EID == 5) // Only run if EID is equal to skydome.
 		{
-			m_sh_SingleColor->bindProgram();
-			//glDisable(GL_STENCIL_TEST);
+			glm::vec3 whiteColor = glm::vec3(1.0f, 1.0f, 1.0f);
+			shader->setUniform3fv("lightRGB", whiteColor);
 
-			glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-			glStencilMask(0x00); // disable writing to the stencil buffer
-			glDisable(GL_DEPTH_TEST);
 
-			float scaleFactor = 1.1;
-			glm::mat4 outlineMM;
-			outlineMM = glm::scale(trans.modelMat[0], glm::vec3(scaleFactor, scaleFactor, scaleFactor));
 
-			m_sh_SingleColor->setUniformMat4("projection", GL_FALSE, glm::value_ptr(cubeProjection));
-			m_sh_SingleColor->setUniformMat4("view", GL_FALSE, glm::value_ptr(cubeView));
-			(m_sh_SingleColor)->setUniformMat4("model", GL_FALSE, glm::value_ptr(outlineMM));
+			glm::vec3 ambient = glm::vec3(0.2f, 0.2f, 0.2f);
+			glm::vec3 diffuse = glm::vec3(0.5f, 0.5f, 0.5f);
+			glm::vec3 specular = glm::vec3(1.0f, 1.0f, 1.0f);
 
-			GLCALL(glDrawElements(GL_TRIANGLES, (rendData.indices).size(), GL_UNSIGNED_INT, 0));
+			glm::vec3 cloudAmbient = glm::vec3(0.5f, 0.5f, 0.5f);
+			glm::vec3 cloudDiffuse = glm::vec3(0.8f, 0.8f, 0.8f);
 
-			//glDisable(GL_STENCIL_TEST);
-			glStencilMask(0xFF);
-			glStencilFunc(GL_ALWAYS, 1, 0xFF);
-			glEnable(GL_DEPTH_TEST);
+			glm::vec3 lightDirection = glm::normalize(glm::vec3(sunTrans.modelMat[0][3]));
+
+			float angleRadians = atan(lightDirection.y / lightDirection.z);
+
+			float waterHeight = ECScoord.GetComponentDataFromEntity<c_Transform>(0).modelMat[0][3].y;
+
+			glm::vec4 reflectionClippingPlane = glm::vec4(0.0f, 1.0f, 0.0f, -waterHeight + 0.05f);
+			glm::vec4 refractionClippingPlane = glm::vec4(0.0f, -1.0f, 0.0f, waterHeight + 0.05f);
+
+			shader->setUniformTextureUnit("refractionDepthTexture", 13);
+
+			if (clippingPlane == 0)
+			{
+				shader->setUniform4f("ClippingPlane", reflectionClippingPlane.x, reflectionClippingPlane.y, reflectionClippingPlane.z, reflectionClippingPlane.a);
+
+			}
+			else if (clippingPlane == 1)
+			{
+				shader->setUniform4f("ClippingPlane", refractionClippingPlane.x, refractionClippingPlane.y, refractionClippingPlane.z, refractionClippingPlane.a);
+			}
+			else
+			{
+				shader->setUniformTextureUnit("waterReflectionTexture", 8);
+				shader->setUniformTextureUnit("waterRefractionTexture", 9);
+
+				shader->setUniformTextureUnit("normalMap", 11);
+
+
+			}
+
+
+			if (lightDirection.y > 0.25f)
+			{
+				angleRadians = std::abs(angleRadians);
+			}
+			else
+			{
+				angleRadians = 14.0f * (3.14159 / 180.0f);
+			}
+
+			//Skybox Texture:
+			//shader->setUniformInt("skybox", DataHandle.texUnit);
+			//shader->setUniform3fv("cameraPos", cam->Position);
+
+			//std::cout << angleRadians * (180.0f / 3.1482f) << "\n";
+
+			//
+			shader->setUniformFloat("Light.constant", 1.0f);
+			shader->setUniformFloat("light.linear", 0.09f);
+			shader->setUniformFloat("light.quadratic", 0.032f);
+
+			shader->setUniformFloat("angleRadians", angleRadians);
+
+			glm::vec3 sunWorldPosition = glm::vec3(sunTrans.modelMat[0][3]);
+			shader->setUniform3fv("lightPosition", sunWorldPosition);
+
+			//glm::vec3 ambientPointLight = glm::vec3(0.2f, 0.2f, 0.2f);
+			//glm::vec3 difffusePointLight = glm::vec3(0.5f, 0.5f, 0.5f);
+			//
+
+			shader->setUniform3fv("light.cloudAmbient", cloudAmbient);
+			shader->setUniform3fv("light.cloudDiffuse", cloudDiffuse);
+
+			shader->setUniform3fv("light.ambient", ambient);
+			shader->setUniform3fv("light.diffuse", diffuse);
+			shader->setUniform3fv("light.specular", specular);
+
+			shader->setUniform3fv("light.direction", lightDirection);
+
+			glm::vec3 viewPos = cam->getPosition();
+			shader->setUniform3fv("viewPos", viewPos);
+
+			shader->setUniformFloat("material.shininess", 32.0f);
+
+			/*
+			if(texComponentData.is3Dtex)
+			{
+				shader->setUniformFloat("iTime", deltaTime);
+			}
+			*/
+
+			if (rendData.emReflection == true)
+			{
+				//#Continue_from_here!
+				shader->setUniformInt("skybox", DataHandle.texUnit);
+				shader->setUniform3fv("cameraPos", cam->Position);
+			}
+			else
+			{
+
+				shader->setUniformTextureUnit("colorTexture", DataHandle.texUnit);
+
+				shader->setUniformTextureUnit("fboReflectionTexture", DataHandle.texUnit);
+				shader->setUniformTextureUnit("fboRefractionTexture", DataHandle.texUnit);
+
+				//shader->setUniformTextureUnit("normalMap", DataHandle.texUnit);
+
+				glm::vec3 currentSkyColor = glm::vec3(r, g, b);
+				shader->setUniform3fv("currentSkyColor", currentSkyColor);
+
+				offset = offset + 0.002f * deltaTime;
+				if (offset > 1.0f)
+				{
+					offset = 0.0f;
+				}
+				shader->setUniformFloat("rippleOffset", offset);
+
+				//shader->setUniform4f("refractionClippingPlane", refractionClippingPlane);
+
+				//Temporary uniform setter for height map blended texture tests:
+				shader->setUniformTextureUnit("rockTexture", 1);
+				shader->setUniformTextureUnit("snowTexture", 7);
+				shader->setUniformTextureUnit("sandTexture", 4);
+
+				//SET SKYBOX REFLECTION SHADER HERE
+
+				if (rendData.outline == false)
+				{
+					//glStencilFunc(GL_ALWAYS, 1, 0xFF); // all fragments should pass the stencil test	
+					//glStencilMask(0xFF); // enable writing to the stencil buffer
+					glStencilMask(0x00);
+				}
+				else
+				{
+					glStencilFunc(GL_ALWAYS, 1, 0xFF);
+					glStencilMask(0xFF);
+				}
+
+				if (rendData.blending == true)
+				{
+
+				}
+
+			}
+
+			for (int i = 0; i < trans.modelMat.size(); ++i)
+			{
+				shader->setUniformMat4("model", GL_FALSE, glm::value_ptr((trans.modelMat)[i]));
+
+				shader->setUniformFloat("baseNoGrassValue", 0.04);
+				//shader->setUniformFloat("baseNoGrassValue", 0.04);
+				//layerHeight
+				shader->setUniformFloat("layerHeight", (float)i);
+				shader->setUniformFloat("time", time);
+
+				GLCALL(glDrawElements(GL_TRIANGLES, (rendData.indices).size(), GL_UNSIGNED_INT, 0));
+			}
+
+			if (rendData.outline == true)
+			{
+				m_sh_SingleColor->bindProgram();
+				//glDisable(GL_STENCIL_TEST);
+
+				glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+				glStencilMask(0x00); // disable writing to the stencil buffer
+				glDisable(GL_DEPTH_TEST);
+
+				float scaleFactor = 1.1;
+				glm::mat4 outlineMM;
+				outlineMM = glm::scale(trans.modelMat[0], glm::vec3(scaleFactor, scaleFactor, scaleFactor));
+
+				m_sh_SingleColor->setUniformMat4("projection", GL_FALSE, glm::value_ptr(cubeProjection));
+				m_sh_SingleColor->setUniformMat4("view", GL_FALSE, glm::value_ptr(cubeView));
+				(m_sh_SingleColor)->setUniformMat4("model", GL_FALSE, glm::value_ptr(outlineMM));
+
+				GLCALL(glDrawElements(GL_TRIANGLES, (rendData.indices).size(), GL_UNSIGNED_INT, 0));
+
+				//glDisable(GL_STENCIL_TEST);
+				glStencilMask(0xFF);
+				glStencilFunc(GL_ALWAYS, 1, 0xFF);
+				glEnable(GL_DEPTH_TEST);
+			}
 		}
 	}
 	

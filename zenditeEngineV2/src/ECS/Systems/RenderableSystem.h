@@ -28,7 +28,7 @@ public:
 		}
 	}
 
-	void Render(std::shared_ptr<I_Renderer> renderer, std::shared_ptr<I_API_Manager> apiManager, std::shared_ptr<ECSCoordinator> ECScoord, float deltaTime, float time, int clippingPlane, float& offsetVal, float r, float g, float b)
+	void Render(std::shared_ptr<I_Renderer> renderer, std::shared_ptr<I_API_Manager> apiManager, std::shared_ptr<ECSCoordinator> ECScoord, float deltaTime, float time, int clippingPlane, float& offsetVal, float r, float g, float b, int renderPass)
 	{	
 		for (auto const& EID : m_EntitySet)
 		{
@@ -43,7 +43,7 @@ public:
 		
 		for (auto const& EID : m_EntitySet)
 		{
-			renderer->Render(apiManager->GetEntityDataHandle(EID), *ECScoord, EID, deltaTime, time, clippingPlane, offsetVal, r, g, b);
+			renderer->Render(apiManager->GetEntityDataHandle(EID), *ECScoord, EID, deltaTime, time, clippingPlane, offsetVal, r, g, b, renderPass);
 		}
 	}
 

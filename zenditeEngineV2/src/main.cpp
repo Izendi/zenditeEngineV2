@@ -432,6 +432,37 @@ int main(void)
 	glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 
 
+	//Generate Light Dept FBO
+	unsigned int FBO_lightViewDepth;
+
+	glGenFramebuffers(1, &FBO_lightViewDepth);
+	
+	glBindFramebuffer(GL_FRAMEBUFFER, FBO_lightViewDepth);
+
+	unsigned int lightDepthTexture;
+
+	unsigned int short lightDepthTextureUnit = 16;
+	glActiveTexture(GL_TEXTURE0 + lightDepthTextureUnit);
+
+	glGenTextures(1, &lightDepthTexture);
+	glBindTexture(GL_TEXTURE_2D, lightDepthTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SCR_WIDTH, SCR_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, lightDepthTexture, 0);
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+
+	// Check if framebuffer is complete
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		std::cout << "ERROR::FRAMEBUFFER:: refraction Framebuffer is not complete!" << std::endl;
+	glActiveTexture(GL_TEXTURE0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
+
 	//Set Up Cloud Noise Octave Textures
 	float noiseData_1[512 * 512];
 	float noiseData_2[512 * 512];
@@ -513,6 +544,7 @@ int main(void)
 	nightColor[1] = DCC.m_night.g;
 	nightColor[2] = DCC.m_night.b;
 	
+	int lightDepthPass = 0;
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -566,60 +598,89 @@ int main(void)
 
 		//std::cout << camera_water_diff << std::endl;
 
-		for(int i = 0; i < 3; i++)
+		for(int ii = 0; ii < 2; ++ii)
 		{
-			if(i == 0)
-			{
-				clippingPlane = 0;
-				glEnable(GL_CLIP_DISTANCE0);
-				glBindFramebuffer(GL_FRAMEBUFFER, FBO_reflection); 
-				glm::vec3 offsetVec = glm::vec3(0.0f, -5.0f, 0.0f);
-				//COORD.offsetCamera(offsetVec, 0.0f, 0.0f, 0.0f);
-				camera->ShiftDown(camera_water_diff * 2.0f);
-				//camera->RotateUp(40.0f);
-				camera->InvertPitch();
-				
-				waterFloor.isActive = false;
-			}
-			else if(i == 1)
-			{
-				clippingPlane = 1;
-				glEnable(GL_CLIP_DISTANCE0);
-				glBindFramebuffer(GL_FRAMEBUFFER, FBO_refraction); 
-				//camera->ShiftDown(-10.0f);
-				//camera->RotateUp(-40.0f);
-				camera->ShiftDown(-camera_water_diff * 2.0f);
-				camera->InvertPitch();
-			}
-			else
+			if(ii == 0)
 			{
 				clippingPlane = 2;
 				glDisable(GL_CLIP_DISTANCE0);
 				//glEnable(GL_CLIP_DISTANCE0);
-				glBindFramebuffer(GL_FRAMEBUFFER, 0); //rebind default framebuffer
-				glm::vec3 offsetVec = glm::vec3(0.0f, 0.0f, 0.0f);
+				glBindFramebuffer(GL_FRAMEBUFFER, FBO_lightViewDepth); //rebind default framebuffer
 				
-				//camera->RotateUp(-40.0f);
+				waterFloor.isActive = false;
 
-				waterFloor.isActive = true;
-				//COORD.offsetCamera(offsetVec, 0.0f, 0.0f, 0.0f);
+				glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+
+				//glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+				glClearColor(skyColorValue.x, skyColorValue.y, skyColorValue.z, 1.0f);
+				glClear(GL_DEPTH_BUFFER_BIT); // <== #HERE
+				glEnable(GL_DEPTH_TEST);
+
+				//glDepthFunc(GL_ALWAYS);
+				glm::vec3 currentSkyColor = DCC.getSkyColor();
+				COORD.runAllSystems(deltaTime, currentFrame, allEntites, clippingPlane, offsetVal, currentSkyColor.r, currentSkyColor.g, currentSkyColor.b, 0);
 			}
+			else
+			{
+				for (int i = 0; i < 3; i++)
+				{
+					if (i == 0)
+					{
+						clippingPlane = 0;
+						glEnable(GL_CLIP_DISTANCE0);
+						glBindFramebuffer(GL_FRAMEBUFFER, FBO_reflection);
+						glm::vec3 offsetVec = glm::vec3(0.0f, -5.0f, 0.0f);
+						//COORD.offsetCamera(offsetVec, 0.0f, 0.0f, 0.0f);
+						camera->ShiftDown(camera_water_diff * 2.0f);
+						//camera->RotateUp(40.0f);
+						camera->InvertPitch();
 
+						waterFloor.isActive = false;
+					}
+					else if (i == 1)
+					{
+						clippingPlane = 1;
+						glEnable(GL_CLIP_DISTANCE0);
+						glBindFramebuffer(GL_FRAMEBUFFER, FBO_refraction);
+						//camera->ShiftDown(-10.0f);
+						//camera->RotateUp(-40.0f);
+						camera->ShiftDown(-camera_water_diff * 2.0f);
+						camera->InvertPitch();
+					}
+					else
+					{
+						clippingPlane = 2;
+						glDisable(GL_CLIP_DISTANCE0);
+						//glEnable(GL_CLIP_DISTANCE0);
+						glBindFramebuffer(GL_FRAMEBUFFER, 0); //rebind default framebuffer
+						glm::vec3 offsetVec = glm::vec3(0.0f, 0.0f, 0.0f);
+
+						//camera->RotateUp(-40.0f);
+
+						waterFloor.isActive = true;
+						//COORD.offsetCamera(offsetVec, 0.0f, 0.0f, 0.0f);
+					}
+
+
+					//FBO - END
+
+					glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+
+					//glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+					glClearColor(skyColorValue.x, skyColorValue.y, skyColorValue.z, 1.0f);
+					glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // <== #HERE
+					glEnable(GL_DEPTH_TEST);
+
+					//glDepthFunc(GL_ALWAYS);
+					glm::vec3 currentSkyColor = DCC.getSkyColor();
+					COORD.runAllSystems(deltaTime, currentFrame, allEntites, clippingPlane, offsetVal, currentSkyColor.r, currentSkyColor.g, currentSkyColor.b, 1); //#ECS_RENDERING
+				}
+			}
 			
-			//FBO - END
-
-			glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
-
-			//glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
-			glClearColor(skyColorValue.x, skyColorValue.y, skyColorValue.z, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // <== #HERE
-			glEnable(GL_DEPTH_TEST);
-
-			//glDepthFunc(GL_ALWAYS);
-			glm::vec3 currentSkyColor = DCC.getSkyColor();
-			COORD.runAllSystems(deltaTime, currentFrame, allEntites, clippingPlane, offsetVal, currentSkyColor.r, currentSkyColor.g, currentSkyColor.b); //#ECS_RENDERING
 		}
+		
 		
 		if(wireframe == true)
 		{
@@ -639,8 +700,6 @@ int main(void)
 		{
 			DCC.Resume();
 		}
-
-		
 
 		genMenu_1(
 			deltaTime,
