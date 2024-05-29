@@ -1366,7 +1366,10 @@ namespace util
 		unsigned short int NMtextUnit = COORD.GenerateTexUnit("res/textures/NM.jpg", "jpg"); // tx unit = 11
 		allTexUnits.push_back(NMtextUnit);
 
-		unsigned short int lightViewTexUnit = COORD.GenerateTexUnit("res/textures/awesomeface_6.png", "png"); // tx Unit = 12
+		unsigned short int refractionDepthTexUnit = COORD.GenerateTexUnit("res/textures/awesomeface_7.png", "png"); // tx Unit = 13
+		allTexUnits.push_back(refractionDepthTexUnit);
+
+		unsigned short int lightViewTexUnit = COORD.GenerateTexUnit("res/textures/awesomeface_6.png", "png"); // tx Unit = 13
 		allTexUnits.push_back(lightViewTexUnit);
 
 		//Set up cube map tex unit:
