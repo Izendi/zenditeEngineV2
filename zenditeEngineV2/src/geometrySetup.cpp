@@ -62,7 +62,9 @@ void genMenu_1(
 	float* middayColor,
 	float* eveningColor,
 	float* sunsetColor,
-	float* nightColor
+	float* nightColor,
+	bool& castShadows,
+	float& shadowIntensity
 )
 {
 	// Start the Dear ImGui frame
@@ -99,12 +101,10 @@ void genMenu_1(
 				// This block is executed when the checkbox state changes
 				if (!reload)
 				{
-					//reload = true;
 					std::cout << "Reload == False" << std::endl;
 				}
 				else
 				{
-					//reload = false;
 					std::cout << "Reload == True" << std::endl;
 				}
 			}
@@ -122,7 +122,22 @@ void genMenu_1(
 				}
 			}
 
+			if (ImGui::Checkbox("Cast Shadows", &castShadows))
+			{
+				// This block is executed when the checkbox state changes
+				if (!castShadows)
+				{
+					std::cout << "Cast Shadows == " << castShadows << std::endl;
+				}
+				else
+				{
+					std::cout << "Cast Shadows == " << castShadows << std::endl;
+				}
+			}
+
+			ImGui::SliderFloat("Shadow Intensity", &shadowIntensity, 0.0f, 1.0f);
 			
+			ImGui::NewLine();
 
 			if (ImGui::InputScalar("Unsigned Int Input", ImGuiDataType_U32, &SEED))
 			{

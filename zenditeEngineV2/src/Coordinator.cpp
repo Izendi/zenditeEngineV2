@@ -164,9 +164,9 @@ uint32_t Coordinator::GetActiveEntities() const
 	return m_ECSCoord->GetActiveEntities();
 }
 
-void Coordinator::runAllSystems(float deltaTime, float time, std::vector<Entity>& entities, int clippingPlane, float& offsetVal, float r, float g, float b, int renderPass)
+void Coordinator::runAllSystems(float deltaTime, float time, std::vector<Entity>& entities, int clippingPlane, float& offsetVal, float r, float g, float b, int renderPass, bool& castShadows, float& shadowIntensity)
 {
-	m_RenderableSystem->Render(m_Renderer, m_APImanager, m_ECSCoord, deltaTime, time, clippingPlane, offsetVal, r, g, b, renderPass);
+	m_RenderableSystem->Render(m_Renderer, m_APImanager, m_ECSCoord, deltaTime, time, clippingPlane, offsetVal, r, g, b, renderPass, castShadows, shadowIntensity);
 	m_CollisionDetectionAABBSystem->checkCollisions(m_ECSCoord);
 	
 	m_SetUpWallAABBSystem->Setup(m_ECSCoord);

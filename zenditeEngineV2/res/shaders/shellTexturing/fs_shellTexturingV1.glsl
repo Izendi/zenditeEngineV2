@@ -47,6 +47,8 @@ uniform sampler2D shadowMap;
 
 uniform float baseNoGrassValue;
 uniform float layerHeight;
+
+uniform float shadowIntensity;
 //uniform float time;
 
 float random(vec2 st) {
@@ -62,7 +64,7 @@ float ShadowCalculation(vec4 FragPosLightSpace)
     float currentDepth = projCoords.z;
     float shadow = currentDepth > closestDepth ? 1.0 : 0.0;
 
-    return shadow;
+    return shadow * shadowIntensity;
 }
 
 

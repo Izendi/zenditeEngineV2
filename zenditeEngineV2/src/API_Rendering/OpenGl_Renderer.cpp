@@ -11,7 +11,7 @@ OpenGL_Renderer::OpenGL_Renderer(std::shared_ptr<Camera> cam) : I_Renderer(cam)
 		"res/shaders/simple/fs_shaderSingleColor.glsl");
 }
 
-void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECScoord, Entity EID, float deltaTime, float time, int clippingPlane, float& offset, float r, float g, float b, int renderPass)
+void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECScoord, Entity EID, float deltaTime, float time, int clippingPlane, float& offset, float r, float g, float b, int renderPass, bool& castShadows, float& shadowIntensity)
 {
 	c_Transform& trans = ECScoord.GetComponentDataFromEntity<c_Transform>(EID);
 	c_Renderable& rendData = ECScoord.GetComponentDataFromEntity<c_Renderable>(EID);
@@ -58,6 +58,8 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 
 		shader->setUniformMat4("lightSpaceMatrix", GL_FALSE, glm::value_ptr(lightSpaceMatrix));
 		shader->setUniformTextureUnit("shadowMap", 16);
+
+		shader->setUniformFloat("shadowIntensity", shadowIntensity);
 
 		if (renderPass != 0)
 		{
@@ -265,7 +267,7 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 			}
 		}
 		
-		if(renderPass == 0 && (EID == 1 || EID == 6))
+		if(castShadows == false || (renderPass == 0 && (EID == 1 || EID == 6)))
 		{
 
 		}

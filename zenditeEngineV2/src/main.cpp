@@ -95,6 +95,9 @@ float eveningColor[3] = {0.25f, 0.35f, 1.0f};
 float sunsetColor[3] = {0.7f, 0.3f, 0.2f};
 float nightColor[3] = {0.0f, 0.0f, 0.1f};
 
+bool castShadows = true;
+float shadowIntensity = 1.0f;
+
 int main(void)
 {
 	do 
@@ -619,7 +622,7 @@ int main(void)
 
 				//glDepthFunc(GL_ALWAYS);
 				glm::vec3 currentSkyColor = DCC.getSkyColor();
-				COORD.runAllSystems(deltaTime, currentFrame, allEntites, clippingPlane, offsetVal, currentSkyColor.r, currentSkyColor.g, currentSkyColor.b, 0);
+				COORD.runAllSystems(deltaTime, currentFrame, allEntites, clippingPlane, offsetVal, currentSkyColor.r, currentSkyColor.g, currentSkyColor.b, 0, castShadows, shadowIntensity);
 			}
 			else
 			{
@@ -675,7 +678,7 @@ int main(void)
 
 					//glDepthFunc(GL_ALWAYS);
 					glm::vec3 currentSkyColor = DCC.getSkyColor();
-					COORD.runAllSystems(deltaTime, currentFrame, allEntites, clippingPlane, offsetVal, currentSkyColor.r, currentSkyColor.g, currentSkyColor.b, 1); //#ECS_RENDERING
+					COORD.runAllSystems(deltaTime, currentFrame, allEntites, clippingPlane, offsetVal, currentSkyColor.r, currentSkyColor.g, currentSkyColor.b, 1, castShadows, shadowIntensity); //#ECS_RENDERING
 				}
 			}
 			
@@ -735,7 +738,9 @@ int main(void)
 			middayColor,
 			eveningColor,
 			sunsetColor,
-			nightColor
+			nightColor,
+			castShadows,
+			shadowIntensity
 			);
 
 		if (seedMovement == true)

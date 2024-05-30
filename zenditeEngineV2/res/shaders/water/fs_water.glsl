@@ -6,17 +6,32 @@
 in vec2 texCoord;
 in vec3 FragPos;
 in vec4 clipSpace;
+
+in vec4 FragPosLightSpace;
+
 out vec4 FragColor;
+
+uniform sampler2D shadowMap;
+
+uniform float shadowIntensity;
 
 //uniform vec4 ourColor;
 
+//This functions code was taken from: https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping
+float ShadowCalculation(vec4 FragPosLightSpace)
+{
+    vec3 projCoords = FragPosLightSpace.xyz / FragPosLightSpace.w;
+    projCoords = projCoords * 0.5 + 0.5;
+    float closestDepth = texture(shadowMap, projCoords.xy).r;
+    float currentDepth = projCoords.z;
+    float shadow = currentDepth > closestDepth ? 1.0 : 0.0;
+
+    return shadow * shadowIntensity;
+}
+
+
 struct Material
 {
-    //sampler2D colorTexture;
-
-    //vec3 ambient;
-    //vec3 diffuse;
-    //vec3 specular;
     float shininess;
 };
 
@@ -49,6 +64,8 @@ const float strength = 0.015;
 
 void main()
 {
+    float shadow = ShadowCalculation(FragPosLightSpace);
+
     vec2 ndc = (clipSpace.xy / clipSpace.w) / 2.0 + 0.5;
 
     vec2 reflectionTexCoord = vec2(ndc.x, -ndc.y);
@@ -78,7 +95,7 @@ void main()
 
     refractionTexCoord += combinedDistortion;
     refractionTexCoord = clamp(refractionTexCoord, 0.001, 0.999);
-    //refractionTexCoord.y = clamp(refractionTexCoord.y, -0.99, -0.01);
+    
 
     vec4 reflectionColor = texture(waterReflectionTexture, reflectionTexCoord);
     vec4 refractionColor = texture(waterRefractionTexture, refractionTexCoord);
@@ -96,7 +113,7 @@ void main()
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
     vec3 specular = light.specular * spec;// * material.specular;
 
-    vec3 lightResult = specular * clamp(waterDepth / 0.09, 0.0, 1.0);
+    vec3 lightResult = specular * (1.0 - shadow) * clamp(waterDepth / 0.09, 0.0, 1.0);
 
     //FragColor = texColor;
     vec4 finalColor = mix(reflectionColor, refractionColor, 0.5);

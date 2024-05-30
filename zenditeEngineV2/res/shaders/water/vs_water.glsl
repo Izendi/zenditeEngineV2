@@ -9,9 +9,13 @@ out vec4 clipSpace;
 
 out vec3 FragPos;
 
+out vec4 FragPosLightSpace;
+
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+
+uniform mat4 lightSpaceMatrix;
 
 const float tiling = 6.0;
 
@@ -27,4 +31,6 @@ void main()
     texCoord = vec2(aPos.x / 2.0 + 0.5, aPos.z/2.0 + 0.5) * tiling;
 
     FragPos = vec3(model * vec4(aPos, 1.0));
+
+    FragPosLightSpace = lightSpaceMatrix * vec4(FragPos, 1.0);
 }
