@@ -99,6 +99,9 @@ bool castShadows = true;
 float shadowIntensity = 1.0f;
 float waterShadowIntensity = 1.0f;
 
+float haltedTime = 0.0f;
+bool haltClouds = false;
+
 int main(void)
 {
 	do 
@@ -549,6 +552,7 @@ int main(void)
 	nightColor[2] = DCC.m_night.b;
 	
 	int lightDepthPass = 0;
+	bool checkHalt = true;
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -559,7 +563,21 @@ int main(void)
 
 		// START => Cloud Noise Octaves 
 		sh_Clouds->bindProgram();
-		sh_Clouds->setUniformFloat("time", currentFrame);
+
+		if(haltClouds)
+		{
+			if (checkHalt)
+			{
+				haltedTime = currentFrame;
+				checkHalt = false;
+			}
+			sh_Clouds->setUniformFloat("time", haltedTime);
+		}
+		else
+		{
+			sh_Clouds->setUniformFloat("time", currentFrame);
+			checkHalt = true;
+		}
 
 		for (int i = 0; i < 4; ++i) {
 			std::string uniformName = "speed[" + std::to_string(i) + "]";
@@ -742,7 +760,8 @@ int main(void)
 			nightColor,
 			castShadows,
 			shadowIntensity,
-			waterShadowIntensity
+			waterShadowIntensity,
+			haltClouds
 			);
 
 		if (seedMovement == true)

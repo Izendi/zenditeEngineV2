@@ -65,7 +65,8 @@ void genMenu_1(
 	float* nightColor,
 	bool& castShadows,
 	float& shadowIntensity,
-	float& waterShadowIntensity
+	float& waterShadowIntensity,
+	bool& haltClouds
 )
 {
 	// Start the Dear ImGui frame
@@ -133,6 +134,18 @@ void genMenu_1(
 				else
 				{
 					std::cout << "Cast Shadows == " << castShadows << std::endl;
+				}
+			}
+			if (ImGui::Checkbox("halt clouds", &haltClouds))
+			{
+				// This block is executed when the checkbox state changes
+				if (!castShadows)
+				{
+					std::cout << "haltClouds == " << haltClouds << std::endl;
+				}
+				else
+				{
+					std::cout << "haltClouds == " << haltClouds << std::endl;
 				}
 			}
 
@@ -1661,7 +1674,7 @@ namespace util
 		c_Renderable rc_1;
 		addDataToRenderable(rc_1, vertCubePosData, vertCubeNormData, vertCubeTexCoordData, indices, sizeOfVertCubePosData, sizeOfIndices);
 		rc_1.outline = false;
-		rc_1.isActive = true;
+		rc_1.isActive = false;
 		//rc_1.emReflection = true;
 
 		//verticalQuad
@@ -1672,6 +1685,7 @@ namespace util
 		c_Renderable rc_3;
 		addDataToRenderable(rc_3, verticalQuad, vertQuadVertNorms, vertQuadTexCoord, vertQuadIndices, sizeOfVerticalQuad, sizeOfVQIndices);
 		rc_3.outline = false;
+		rc_3.isActive = false;
 
 		//We need to generate a VBO based on the HF data here:
 
@@ -1822,8 +1836,8 @@ namespace util
 		COORD.AddComponentToEntity<c_Transform>(entities[3], tr_0); //Displays refraction Texture
 		COORD.AddComponentToEntity<c_Renderable>(entities[3], rc_1);
 		COORD.AddComponentToEntity<c_Texture>(entities[3], tx_lightViewDepth);
-		COORD.AddComponentToEntity<c_AABB>(entities[3], aabb_0);
-		COORD.AddComponentToEntity<c_WallCollider>(entities[3], wallCollider_2);
+		//COORD.AddComponentToEntity<c_AABB>(entities[3], aabb_0);
+		//COORD.AddComponentToEntity<c_WallCollider>(entities[3], wallCollider_2);
 		COORD.AddComponentToEntity<c_EntityInfo>(entities[3], ei_0); // Wall Col Cube
 		COORD.AddComponentToEntity<c_Modified>(entities[3], md_0);
 		COORD.SetUpRenderData(entities[3]); //#NOTE: SetUpRenderData and setShaderForEntity will do nothing if the entity does no have a c_RenderableComponent

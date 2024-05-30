@@ -122,7 +122,8 @@ void genMenu_1(
 	float* nightColor,
 	bool& castShadows,
 	float& shadowIntensity,
-	float& waterShadowIntensity
+	float& waterShadowIntensity,
+	bool& haltClouds
 );
 
 std::vector<glm::vec2> generateUniformVectors(int num_vectors);
