@@ -13,7 +13,7 @@ out vec4 FragColor;
 
 uniform sampler2D shadowMap;
 
-uniform float shadowIntensity;
+uniform float waterShadowIntensity;
 
 //uniform vec4 ourColor;
 
@@ -26,7 +26,7 @@ float ShadowCalculation(vec4 FragPosLightSpace)
     float currentDepth = projCoords.z;
     float shadow = currentDepth > closestDepth ? 1.0 : 0.0;
 
-    return shadow * shadowIntensity;
+    return shadow * waterShadowIntensity;
 }
 
 

@@ -64,7 +64,8 @@ void genMenu_1(
 	float* sunsetColor,
 	float* nightColor,
 	bool& castShadows,
-	float& shadowIntensity
+	float& shadowIntensity,
+	float& waterShadowIntensity
 )
 {
 	// Start the Dear ImGui frame
@@ -136,6 +137,7 @@ void genMenu_1(
 			}
 
 			ImGui::SliderFloat("Shadow Intensity", &shadowIntensity, 0.0f, 1.0f);
+			ImGui::SliderFloat("Water Shadow Inten", &waterShadowIntensity, 0.0f, 1.0f);
 			
 			ImGui::NewLine();
 

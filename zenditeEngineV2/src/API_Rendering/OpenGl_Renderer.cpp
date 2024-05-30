@@ -11,7 +11,7 @@ OpenGL_Renderer::OpenGL_Renderer(std::shared_ptr<Camera> cam) : I_Renderer(cam)
 		"res/shaders/simple/fs_shaderSingleColor.glsl");
 }
 
-void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECScoord, Entity EID, float deltaTime, float time, int clippingPlane, float& offset, float r, float g, float b, int renderPass, bool& castShadows, float& shadowIntensity)
+void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECScoord, Entity EID, float deltaTime, float time, int clippingPlane, float& offset, float r, float g, float b, int renderPass, bool& castShadows, float& shadowIntensity, float& waterShadowIntensity)
 {
 	c_Transform& trans = ECScoord.GetComponentDataFromEntity<c_Transform>(EID);
 	c_Renderable& rendData = ECScoord.GetComponentDataFromEntity<c_Renderable>(EID);
@@ -60,6 +60,7 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 		shader->setUniformTextureUnit("shadowMap", 16);
 
 		shader->setUniformFloat("shadowIntensity", shadowIntensity);
+		shader->setUniformFloat("waterShadowIntensity", waterShadowIntensity);
 
 		if (renderPass != 0)
 		{
