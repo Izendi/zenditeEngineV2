@@ -14,18 +14,17 @@
 float FbmNoise2D(float x, float y, unsigned int frequency, int octaves, float lacunarity, float persistence, float amplitude, float maxAmplitude)
 {
 	float total = 0.0f;
-	//float amplitude = 1.0f;
-	//float maxAmplitude = 0.0f; // Used for normalization
 	float freq = (float)frequency;
 
-	for (int i = 0; i < octaves; ++i) {
-		total += stb_perlin_noise3(x * frequency, y * frequency, 0.0f, 0, 0, 0) * amplitude;
-		frequency *= lacunarity;
+	for (int i = 0; i < octaves; ++i) 
+	{
+		total += stb_perlin_noise3(x * freq, y * freq, 0.0f, 0, 0, 0) * amplitude;
+		freq *= lacunarity;
 		maxAmplitude += amplitude;
 		amplitude *= persistence;
 	}
 
-	return total / maxAmplitude; // Normalize the result
+	return total / maxAmplitude; // Normalize output
 }
 
 void genMenu_1(
@@ -925,7 +924,6 @@ namespace util
 		}
 
 		//Store perlin noise in OpenGL texture.
-		//glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, hfWidth, hfHeight, GL_RGBA, GL_FLOAT, data.data());
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, hfWidth, hfHeight, GL_RGBA, GL_FLOAT, noiseData.data());
 
 
