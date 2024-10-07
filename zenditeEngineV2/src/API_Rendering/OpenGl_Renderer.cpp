@@ -277,8 +277,6 @@ void OpenGL_Renderer::Render(const R_DataHandle& DataHandle, ECSCoordinator& ECS
 			glm::vec3 whiteColor = glm::vec3(1.0f, 1.0f, 1.0f);
 			shader->setUniform3fv("lightRGB", whiteColor);
 
-
-
 			glm::vec3 ambient = glm::vec3(0.2f, 0.2f, 0.2f);
 			glm::vec3 diffuse = glm::vec3(0.5f, 0.5f, 0.5f);
 			glm::vec3 specular = glm::vec3(1.0f, 1.0f, 1.0f);
